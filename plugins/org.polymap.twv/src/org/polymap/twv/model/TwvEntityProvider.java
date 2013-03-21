@@ -35,8 +35,6 @@ import org.polymap.rhei.data.entityfeature.DefaultEntityProvider;
 import org.polymap.rhei.data.entityfeature.EntityProvider;
 import org.polymap.rhei.data.entityfeature.EntityProvider3;
 
-import org.polymap.kaps.form.EingangsNummerFormatter;
-
 /**
  * Basisklasse für alle TWV {@link EntityProvider}. Die Klasse liefert einfache
  * Implementationen für Methoden. Die Geometrie muss immer im Property "geom" liegen.
@@ -79,7 +77,6 @@ abstract class TwvEntityProvider<T extends Entity>
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.init( (SimpleFeatureType)schema );
 
-        // assoziationen ergÃ¤nzen
         // alle mit einem Type der ein Property Name hat
         EntityType entityType = getEntityType();
         Collection<EntityType.Property> p = entityType.getProperties();
@@ -117,22 +114,13 @@ abstract class TwvEntityProvider<T extends Entity>
                     if (property != null) {
                         EntityType associationType = repo.entityType( association.getType() );
                         Property nameProperty = associationType.getProperty( "name" );
-                        Property schlProperty = associationType.getProperty( "schl" );
                         if (nameProperty != null) {
                             Object associationValue = association.getValue( entity );
                             StringBuffer associatedCompositeName = new StringBuffer( "" );
                             if (associationValue != null) {
                                 String name = (String)nameProperty
                                         .getValue( (Composite)associationValue );
-                                String schl = (String)schlProperty
-                                        .getValue( (Composite)associationValue );
-                                if (schl != null) {
-                                    associatedCompositeName.append( schl );
-                                }
                                 if (name != null && !name.isEmpty()) {
-                                    if (associatedCompositeName.length() > 0) {
-                                        associatedCompositeName.append( "  -  " );
-                                    }
                                     associatedCompositeName.append( name );
                                 }
                             }

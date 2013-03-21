@@ -12,23 +12,17 @@
  */
 package org.polymap.twv.model;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.grammar.BooleanExpression;
-import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -52,6 +46,17 @@ import org.polymap.rhei.data.entityfeature.EntityProvider.FidsQueryProvider;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
 import org.polymap.rhei.data.entitystore.lucene.LuceneQueryProvider;
 
+import org.polymap.twv.model.data.AusweisungComposite;
+import org.polymap.twv.model.data.MarkierungComposite;
+import org.polymap.twv.model.data.SchildComposite;
+import org.polymap.twv.model.data.SchildmaterialComposite;
+import org.polymap.twv.model.data.VermarkterComposite;
+import org.polymap.twv.model.data.WegComposite;
+import org.polymap.twv.model.data.WegbeschaffenheitComposite;
+import org.polymap.twv.model.data.WegobjektComposite;
+import org.polymap.twv.model.data.WegobjektNameComposite;
+import org.polymap.twv.model.data.WidmungComposite;
+
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
@@ -74,22 +79,14 @@ public class TwvRepository
 
     private IOperationSaveListener operationListener = new OperationSaveListener();
 
-    // private Map<String,VertragsArtComposite> btNamen;
-
-    // private Map<String,VertragsArtComposite> btNummern;
-
     /** Allow direct access for operations. */
-    protected TwvService          twvService;
+    protected TwvService           twvService;
 
 
-    // private Map<String, VertragsArtComposite> vertragsArtNamen;
-
-    // public ServiceReference<BiotopnummerGeneratorService> biotopnummern;
-
-    public static class ArtEntityProvider<T extends Entity>
+    public static class SimpleEntityProvider<T extends Entity>
             extends TwvEntityProvider<T> {
 
-        public ArtEntityProvider( QiModule repo, Class entityClass, Name entityName,
+        public SimpleEntityProvider( QiModule repo, Class<T> entityClass, Name entityName,
                 FidsQueryProvider queryProvider ) {
             super( repo, entityClass, entityName, queryProvider );
         }
@@ -100,14 +97,9 @@ public class TwvRepository
         super( assembler );
         log.debug( "Initializing Twv module..." );
 
-        // for the global instance of the module
-        // (Qi4jPlugin.Session.globalInstance()) there
-        // is no request context
         if (Polymap.getSessionDisplay() != null) {
             OperationSupport.instance().addOperationSaveListener( operationListener );
         }
-        // biotopnummern = assembler.getModule().serviceFinder().findService(
-        // BiotopnummerGeneratorService.class );
     }
 
 
@@ -120,64 +112,37 @@ public class TwvRepository
             FidsQueryProvider queryProvider = new LuceneQueryProvider( luceneStore.getStore() );
 
             twvService = new TwvService(
-                    // BiotopComposite
-                    new KaufvertragEntityProvider( this, queryProvider ),
-                    // Arten...
-                    new ArtEntityProvider<VertragsArtComposite>( this, VertragsArtComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Vertragsart" ), queryProvider ),
-                    new ArtEntityProvider<StalaComposite>( this, StalaComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Stala" ), queryProvider ),
-                    new ArtEntityProvider<KaeuferKreisComposite>( this,
-                            KaeuferKreisComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Käuferkreis" ), queryProvider ),
-                    new ArtEntityProvider<NutzungComposite>( this, NutzungComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Nutzung" ), queryProvider ),
-                    new ArtEntityProvider<GebaeudeArtComposite>( this, GebaeudeArtComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Gebäudeart" ), queryProvider ),
-                    new ArtEntityProvider<GemeindeComposite>( this, GemeindeComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Gemeinde" ), queryProvider ),
-                    new ArtEntityProvider<StrasseComposite>( this, StrasseComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Strasse" ), queryProvider ),
-                    new ArtEntityProvider<GemarkungComposite>( this, GemarkungComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Gemarkung" ), queryProvider ),
-                    new ArtEntityProvider<FlurComposite>( this, FlurComposite.class, new NameImpl(
-                            TwvRepository.NAMESPACE, "Flur" ), queryProvider ),
-                    new ArtEntityProvider<BodennutzungComposite>( this,
-                            BodennutzungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Bodennutzung" ), queryProvider )
-
-            // new ArtEntityProvider( this, PflanzenArtComposite.class,
-            // new NameImpl( KapsRepository.NAMESPACE, "Pflanzenart" ),
-            // queryProvider ),
-            // new ArtEntityProvider( this, PilzArtComposite.class,
-            // new NameImpl( KapsRepository.NAMESPACE, "Pilzart" ),
-            // queryProvider ),
-            // new ArtEntityProvider( this, TierArtComposite.class,
-            // new NameImpl( KapsRepository.NAMESPACE, "Tierart" ),
-            // queryProvider ),
-            // new ArtEntityProvider( this, StoerungsArtComposite.class,
-            // new NameImpl( KapsRepository.NAMESPACE, "Beeintr�chtigungen" ),
-            // queryProvider ),
-            // new ArtEntityProvider( this, WertArtComposite.class,
-            // new NameImpl( KapsRepository.NAMESPACE, "Wertbestimmend" ),
-            // queryProvider )
-            );
+                    new SimpleEntityProvider<AusweisungComposite>( this, AusweisungComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ), queryProvider ),
+                    new SimpleEntityProvider<MarkierungComposite>( this, MarkierungComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Markierung" ), queryProvider ),
+                    new SimpleEntityProvider<SchildComposite>( this, SchildComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Schildart" ), queryProvider ),
+                    new SimpleEntityProvider<SchildComposite>( this, SchildComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Schild" ), queryProvider ),
+                    new SimpleEntityProvider<SchildmaterialComposite>( this,
+                            SchildmaterialComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Schildmaterial" ), queryProvider ),
+                    new SimpleEntityProvider<VermarkterComposite>( this, VermarkterComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ), queryProvider ),
+                    new SimpleEntityProvider<WegbeschaffenheitComposite>( this,
+                            WegbeschaffenheitComposite.class, new NameImpl(
+                                    TwvRepository.NAMESPACE, "Wegbeschaffenheit" ), queryProvider ),
+                    new SimpleEntityProvider<WegComposite>( this, WegComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Weg" ), queryProvider ),
+                    new SimpleEntityProvider<WegobjektComposite>( this, WegobjektComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Wegobjekt" ), queryProvider ),
+                    new SimpleEntityProvider<WegobjektNameComposite>( this,
+                            WegobjektNameComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Wegobjektname" ), queryProvider ),
+                    new SimpleEntityProvider<WidmungComposite>( this, WidmungComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Widmung" ), queryProvider ) );
         }
         catch (Exception e) {
             throw new RuntimeException( e );
         }
-
-        // register with catalog
-        // if (Polymap.getSessionDisplay() != null) {
-        // Polymap.getSessionDisplay().asyncExec( new Runnable() {
-        // public void run() {
         CatalogRepository catalogRepo = session.module( CatalogRepository.class );
         catalogRepo.getCatalog().addTransient( twvService );
-        // CatalogPluginSession.instance().getLocalCatalog().add( biotopService
-        // );
-        // }
-        // });
-        // }
     }
 
 
@@ -197,7 +162,6 @@ public class TwvRepository
             int firstResult, int maxResults ) {
         // Lucene does not like Integer.MAX_VALUE!?
         maxResults = Math.min( maxResults, 1000000 );
-
         return super.findEntities( compositeType, expression, firstResult, maxResults );
     }
 
@@ -205,7 +169,6 @@ public class TwvRepository
     public void applyChanges()
             throws ConcurrentModificationException, CompletionException {
         try {
-            // save changes
             uow.apply();
         }
         catch (ConcurrentEntityModificationException e) {
@@ -215,76 +178,24 @@ public class TwvRepository
             throw new CompletionException( e );
         }
     }
-
-
-    public KaufvertragComposite newKaufvertrag( final EntityCreator<KaufvertragComposite> creator )
-            throws Exception {
-        return newEntity( KaufvertragComposite.class, null,
-                new EntityCreator<KaufvertragComposite>() {
-
-                    public void create( KaufvertragComposite prototype )
-                            throws Exception {
-                        prototype.eingangsDatum().set( new Date() );
-                        prototype.kaufpreisAnteilZaehler().set( 1 );
-                        prototype.kaufpreisAnteilNenner().set( 1 );
-                        prototype.fuerGewosGeeignet().set( Boolean.TRUE );
-                        prototype.fuerAuswertungGeeignet().set( Boolean.TRUE );
-
-                        // eingangsnummer erst beim Speichern setzen!
-
-                        if (creator != null) {
-                            creator.create( prototype );
-                        }
-                    }
-                } );
-    }
-
-
-    public int highestEingangsNummer() {
-        Query<KaufvertragComposite> entities = findEntities( KaufvertragComposite.class, null, 0, 1 );
-        KaufvertragComposite template = templateFor( KaufvertragComposite.class );
-        entities.orderBy( orderBy( template.eingangsNr(), OrderBy.Order.DESCENDING ) );
-        // return 1;
-        KaufvertragComposite highest = entities.iterator().next();
-        int highestEingangsNr = highest != null ? highest.eingangsNr().get() : 0;
-
-        // minimum aktuelles Jahr * 100000 + 1
-        int currentYear = new GregorianCalendar().get( Calendar.YEAR );
-        int currentMinimumNumber = currentYear * 100000;
-
-        return Math.max( highestEingangsNr, currentMinimumNumber ) + 1;
-    }
-
-
-    public <T extends Entity> Map<String, T> entitiesWithNames( Class<T> entityClass ) {
-        // if (vertragsArtNamen == null) {
-
-        // TODO sortieren bei schl
-        Property nameProperty = entityType( entityClass ).getProperty( "name" );
-        Property schlProperty = entityType( entityClass ).getProperty( "schl" );
-        if (nameProperty == null) {
-            throw new IllegalStateException( entityClass + " doesnt have an 'name' Property" );
-        }
-
-        Query<T> entities = findEntities( entityClass, null, 0, 1000 );
-        // if (schlProperty != null) {
-        // T template = templateFor( entityClass );
-        // entities.orderBy( orderBy(template.schl(), OrderBy.Order.ASCENDING) );
-        // }
-        Map<String, T> vertragsArtNamen = new TreeMap<String, T>();
-        for (T entity : entities) {
-            try {
-                String key = (String)nameProperty.getValue( entity );
-                if (schlProperty != null) {
-                    key = (String)schlProperty.getValue( entity ) + "  -  " + key;
-                }
-                vertragsArtNamen.put( key, entity );
-            }
-            catch (Exception e) {
-                throw new IllegalStateException( "Exception on name() on entity " + entity.id(), e );
-            }
-        }
-        // }
-        return vertragsArtNamen;
-    }
+//
+//    public <T extends Entity> Map<String, T> entitiesWithNames( Class<T> entityClass ) {
+//        Property nameProperty = entityType( entityClass ).getProperty( "name" );
+//        if (nameProperty == null) {
+//            throw new IllegalStateException( entityClass + " doesnt have an 'name' Property" );
+//        }
+//
+//        Query<T> entities = findEntities( entityClass, null, 0, 1000 );
+//        Map<String, T> namen = new TreeMap<String, T>();
+//        for (T entity : entities) {
+//            try {
+//                String key = (String)nameProperty.getValue( entity );
+//                namen.put( key, entity );
+//            }
+//            catch (Exception e) {
+//                throw new IllegalStateException( "Exception on name() on entity " + entity.id(), e );
+//            }
+//        }
+//        return namen;
+//    }
 }

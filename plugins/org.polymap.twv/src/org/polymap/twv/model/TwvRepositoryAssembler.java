@@ -25,6 +25,17 @@ import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreQueryService;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
 
 import org.polymap.twv.TwvPlugin;
+import org.polymap.twv.model.data.AusweisungComposite;
+import org.polymap.twv.model.data.MarkierungComposite;
+import org.polymap.twv.model.data.SchildComposite;
+import org.polymap.twv.model.data.SchildartComposite;
+import org.polymap.twv.model.data.SchildmaterialComposite;
+import org.polymap.twv.model.data.VermarkterComposite;
+import org.polymap.twv.model.data.WegComposite;
+import org.polymap.twv.model.data.WegbeschaffenheitComposite;
+import org.polymap.twv.model.data.WegobjektComposite;
+import org.polymap.twv.model.data.WegobjektNameComposite;
+import org.polymap.twv.model.data.WidmungComposite;
 
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
@@ -43,13 +54,13 @@ public class TwvRepositoryAssembler
     /** TWV_MODULE */
     private static final String TWV_MODULE = "twv-module";
 
-    private static Log        log = LogFactory.getLog( TwvRepositoryAssembler.class );
+    private static Log          log        = LogFactory.getLog( TwvRepositoryAssembler.class );
 
-    private Application       app;
+    private Application         app;
 
-    private UnitOfWorkFactory uowf;
+    private UnitOfWorkFactory   uowf;
 
-    private Module            module;
+    private Module              module;
 
 
     public TwvRepositoryAssembler() {
@@ -80,24 +91,10 @@ public class TwvRepositoryAssembler
         // project layer / module
         LayerAssembly domainLayer = _app.layerAssembly( "application-layer" );
         ModuleAssembly domainModule = domainLayer.moduleAssembly( TWV_MODULE );
-        domainModule.addEntities( KaufvertragComposite.class, VertragsArtComposite.class,
-                KaeuferKreisComposite.class, StalaComposite.class, GemeindeComposite.class,
-                GebaeudeArtComposite.class, NutzungComposite.class, StrasseComposite.class, BodennutzungComposite.class, FlurComposite.class, GemarkungComposite.class
-                );
-        // domainModule.addTransients(
-        // PflanzeComposite.class,
-        // TierComposite.class
-        // );
-        // domainModule.addValues(
-        // AktivitaetValue.class,
-        // BiotoptypValue.class,
-        // PflanzeValue.class,
-        // PilzValue.class,
-        // TierValue.class,
-        // GefahrValue.class,
-        // StoerungValue.class,
-        // WertValue.class
-        // );
+        domainModule.addEntities( AusweisungComposite.class, MarkierungComposite.class,
+                SchildartComposite.class, SchildComposite.class, SchildmaterialComposite.class,
+                VermarkterComposite.class, WegbeschaffenheitComposite.class, WegComposite.class,
+                WegobjektComposite.class, WegobjektNameComposite.class, WidmungComposite.class );
 
         // persistence: workspace/Lucene
         File root = new File( Polymap.getWorkspacePath().toFile(), "data" );
@@ -116,15 +113,13 @@ public class TwvRepositoryAssembler
                 .instantiateOnStartup();
 
         domainModule.addServices( HRIdentityGeneratorService.class );
-
-        // additional services
-        // domainModule.addServices( BiotopnummerGeneratorService.class )
-        // .identifiedBy( "biotopnummer" );
     }
 
 
     public void createInitData()
             throws Exception {
+        // create the composites
+        
     }
 
 }

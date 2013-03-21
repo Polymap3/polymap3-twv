@@ -27,7 +27,7 @@ public class TwvService
         implements ITransientResolve {
 
     public TwvService( EntityProvider... providers ) {
-        super( "Kaps", TwvRepository.NAMESPACE, providers );
+        super( "Twv", TwvRepository.NAMESPACE, providers );
     }
 
 
