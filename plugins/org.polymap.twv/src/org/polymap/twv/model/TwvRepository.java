@@ -37,6 +37,7 @@ import org.polymap.core.operation.IOperationSaveListener;
 import org.polymap.core.operation.OperationSupport;
 import org.polymap.core.qi4j.Qi4jPlugin;
 import org.polymap.core.qi4j.Qi4jPlugin.Session;
+import org.polymap.core.qi4j.QiModule.EntityCreator;
 import org.polymap.core.qi4j.QiModule;
 import org.polymap.core.qi4j.QiModuleAssembler;
 import org.polymap.core.runtime.Polymap;
@@ -49,6 +50,7 @@ import org.polymap.rhei.data.entitystore.lucene.LuceneQueryProvider;
 import org.polymap.twv.model.data.AusweisungComposite;
 import org.polymap.twv.model.data.MarkierungComposite;
 import org.polymap.twv.model.data.SchildComposite;
+import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.VermarkterComposite;
 import org.polymap.twv.model.data.WegComposite;
@@ -178,24 +180,32 @@ public class TwvRepository
             throw new CompletionException( e );
         }
     }
-//
-//    public <T extends Entity> Map<String, T> entitiesWithNames( Class<T> entityClass ) {
-//        Property nameProperty = entityType( entityClass ).getProperty( "name" );
-//        if (nameProperty == null) {
-//            throw new IllegalStateException( entityClass + " doesnt have an 'name' Property" );
-//        }
-//
-//        Query<T> entities = findEntities( entityClass, null, 0, 1000 );
-//        Map<String, T> namen = new TreeMap<String, T>();
-//        for (T entity : entities) {
-//            try {
-//                String key = (String)nameProperty.getValue( entity );
-//                namen.put( key, entity );
-//            }
-//            catch (Exception e) {
-//                throw new IllegalStateException( "Exception on name() on entity " + entity.id(), e );
-//            }
-//        }
-//        return namen;
-//    }
+
+
+    public <T extends Named> Map<String, T> entitiesWithNames( Class<T> entityClass ) {
+
+        Query<T> entities = findEntities( entityClass, null, 0, 1000 );
+        Map<String, T> names = new TreeMap<String, T>();
+        for (T entity : entities) {
+            try {
+                String key = (String)entity.name().get();
+                names.put( key, entity );
+            }
+            catch (Exception e) {
+                throw new IllegalStateException( "Exception on name() on entity " + entity, e );
+            }
+        }
+        return names;
+    }
+
+    public <T extends Named> T newNamedEntity( final Class<T> type, final String name )
+            throws Exception  {
+        return newEntity( type, null, new EntityCreator<T>() {
+
+            @Override
+            public void create( T prototype ) {
+                prototype.name().set( name );
+            }
+        } );
+    }
 }

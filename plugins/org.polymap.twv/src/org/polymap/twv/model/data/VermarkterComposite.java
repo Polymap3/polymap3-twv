@@ -18,15 +18,15 @@ import org.apache.commons.logging.LogFactory;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
+
+import org.polymap.twv.model.Named;
 
 /**
  * 
@@ -38,7 +38,7 @@ import org.polymap.core.qi4j.event.PropertyChangeSupport;
 // JsonState.Mixin.class
 })
 public interface VermarkterComposite
-        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite {
+        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Optional
     Property<String> name();

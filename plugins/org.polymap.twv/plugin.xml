@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <!--extension
+   <extension
          point="org.polymap.rhei.form.pageProviders">
       <pageProvider
-            class="org.polymap.kaps.FormPageProvider"
-            id="org.polymap.kaps.pageProvider"
-            name="KAPS Page">
+            class="org.polymap.twv.ui.FormPageProvider"
+            id="org.polymap.twv.pageProvider"
+            name="TWV Page">
       </pageProvider>
-   </extension-->
+   </extension>
    <extension
          point="org.polymap.core.model.moduleAssemblers">
       <assembler

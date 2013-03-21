@@ -29,6 +29,7 @@ import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
+import org.polymap.twv.model.Named;
 import org.polymap.twv.model.constants.Pfeilrichtung;
 
 /**
@@ -41,7 +42,7 @@ import org.polymap.twv.model.constants.Pfeilrichtung;
 // JsonState.Mixin.class
 })
 public interface SchildComposite
-        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite {
+        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Computed
     Property<String> name();

@@ -62,6 +62,7 @@ public interface WegComposite
     @UseDefaults
     Property<Integer> unterkategorie();
     
+    @Optional
     Association<AusweisungComposite> ausweisung();
 
     /** @see Prioritaet */
@@ -83,8 +84,10 @@ public interface WegComposite
     @Optional
     Property<String> beschreibung();
     
+    /** @see WegbeschaffenheitComposite als Textbausteine */
     @Optional
-    Association<WegbeschaffenheitComposite> beschaffenheit();
+    //Association<WegbeschaffenheitComposite> beschaffenheit();
+    Property<String> beschaffenheit();
     
     @Optional
     Association<WidmungComposite> widmung();

@@ -28,6 +28,8 @@ import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
+import org.polymap.twv.model.Named;
+
 /**
  * 
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
@@ -38,7 +40,7 @@ import org.polymap.core.qi4j.event.PropertyChangeSupport;
 // JsonState.Mixin.class
 })
 public interface WegobjektComposite
-        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite {
+        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Computed
     Property<String> name();

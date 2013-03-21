@@ -24,7 +24,6 @@ import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import org.polymap.core.data.util.Geometries;
-import org.polymap.core.model.Composite;
 import org.polymap.core.model.Entity;
 import org.polymap.core.model.EntityType;
 import org.polymap.core.model.EntityType.Association;
@@ -84,8 +83,7 @@ abstract class TwvEntityProvider<T extends Entity>
             Class propType = prop.getType();
             if (prop instanceof Association) {
                 Association association = (Association)prop;
-                EntityType associationType = repo.entityType( association.getType() );
-                if (associationType.getProperty( "name" ) != null) {
+                if (Named.class.isAssignableFrom( association.getType() )) {
                     builder.add( association.getName(), String.class );
                 }
             }
@@ -105,26 +103,18 @@ abstract class TwvEntityProvider<T extends Entity>
             EntityType entityType = getEntityType();
             Collection<EntityType.Property> p = entityType.getProperties();
             for (EntityType.Property prop : p) {
-                Class propType = prop.getType();
                 if (prop instanceof Association) {
                     Association association = (Association)prop;
-
                     org.opengis.feature.Property property = feature.getProperty( association
                             .getName() );
                     if (property != null) {
-                        EntityType associationType = repo.entityType( association.getType() );
-                        Property nameProperty = associationType.getProperty( "name" );
-                        if (nameProperty != null) {
-                            Object associationValue = association.getValue( entity );
-                            StringBuffer associatedCompositeName = new StringBuffer( "" );
+                        if (Named.class.isAssignableFrom( association.getType() )) {
+                            Named associationValue = (Named)association.getValue( entity );
+                            String name = null;
                             if (associationValue != null) {
-                                String name = (String)nameProperty
-                                        .getValue( (Composite)associationValue );
-                                if (name != null && !name.isEmpty()) {
-                                    associatedCompositeName.append( name );
-                                }
+                                name = associationValue.name().get();
                             }
-                            property.setValue( associatedCompositeName.toString() );
+                            property.setValue( (name == null) ? "" : name );
                         }
                     }
                 }

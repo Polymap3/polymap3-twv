@@ -17,6 +17,7 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.polymap.core.qi4j.QiModule;
+import org.polymap.core.qi4j.QiModule.EntityCreator;
 import org.polymap.core.qi4j.QiModuleAssembler;
 import org.polymap.core.qi4j.idgen.HRIdentityGeneratorService;
 import org.polymap.core.runtime.Polymap;
@@ -118,8 +119,79 @@ public class TwvRepositoryAssembler
 
     public void createInitData()
             throws Exception {
-        // create the composites
-        
+//        // create the composites
+//        TwvRepository twv = TwvRepository.instance();
+//
+//        // Ausweisung
+//        twv.newNamedEntity( AusweisungComposite.class, "Pilgerweg" );
+//        twv.newNamedEntity( AusweisungComposite.class, "Sportwanderweg" );
+//        twv.newNamedEntity( AusweisungComposite.class, "Themenwanderweg" );
+//        twv.newNamedEntity( AusweisungComposite.class, "Nordic-Walking" );
+//        twv.newNamedEntity( AusweisungComposite.class, "Inlineskating" );
+//        twv.newNamedEntity( AusweisungComposite.class, "Mountainbike-Strecke" );
+//        twv.newNamedEntity( AusweisungComposite.class, "Themenradweg" );
+//
+//        // Markierung
+//        twv.newNamedEntity( MarkierungComposite.class, "Blau-Strich" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Rot-Strich" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Gelb-Strich" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Grün-Strich" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Blau-Punkt" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Rot-Punkt" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Gelb-Punkt" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Grün-Punkt" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Grün - diagonal (Lehrpfad)" );
+//        twv.newNamedEntity( MarkierungComposite.class, "individuelles Logo" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Fahrradsymbol grün" );
+//        twv.newNamedEntity( MarkierungComposite.class, "individuelles Logo" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Pferdekopf Fern" );
+//        twv.newNamedEntity( MarkierungComposite.class, "individuelles Logo" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Pferdekopf Regioinal" );
+//        twv.newNamedEntity( MarkierungComposite.class, "Pferdekopf Lokal" );
+//
+//        // Wegbeschaffenheit
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "naturnah" );
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "fein" );
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "schlecht" );
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Verbund/sandgeschlämmt" );
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Asphalt" );
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Ökopflaster" );
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Entfernungsangabe von bis" );
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "straßenbegleitend" );
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "öffentliche Straßen" );
+//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Waldweg" );
+//
+//        // Widmung
+//        twv.newNamedEntity( WidmungComposite.class, "öffentlich gewidmet auf Basis Eigentum" );
+//        twv.newNamedEntity( WidmungComposite.class,
+//                "öffentlich gewidmet auf Basis Gestattungsvertrag" );
+//        twv.newNamedEntity( WidmungComposite.class, "nicht öffentlich gewidmet" );
+//
+//        // Wegobjektname
+//        twv.newNamedEntity( WegobjektNameComposite.class, "Überblickskarte/Informationstafel" );
+//        twv.newNamedEntity( WegobjektNameComposite.class, "Thementafel" );
+//        twv.newNamedEntity( WegobjektNameComposite.class, "Aussichtstafel" );
+//        twv.newNamedEntity( WegobjektNameComposite.class, "Bank/Sitzgruppe/Rastplatz" );
+//        twv.newNamedEntity( WegobjektNameComposite.class, "Unterstand/Schutzhütte" );
+//        twv.newNamedEntity( WegobjektNameComposite.class, "Papierkorb" );
+//        twv.newNamedEntity( WegobjektNameComposite.class, "Skulptur/ Denkmal" );
+//        twv.newNamedEntity( WegobjektNameComposite.class, "Sonstiges" );
+//
+//        // Schildart
+//        twv.newNamedEntity( SchildartComposite.class, "Wegweiser lang" );
+//        twv.newNamedEntity( SchildartComposite.class, "Tabellenwegweiser" );
+//        twv.newNamedEntity( SchildartComposite.class, "Pfeilwegweiser" );
+//        twv.newNamedEntity( SchildartComposite.class, "Zwischenwegweiser" );
+//        twv.newNamedEntity( SchildartComposite.class, "Ortseingangsschilder" );
+//        twv.newNamedEntity( SchildartComposite.class, "Vorwegweiser" );
+//        twv.newNamedEntity( SchildartComposite.class, "Hauptwegweiser" );
+//        twv.newNamedEntity( SchildartComposite.class, "Wegmarke/Richtungszeichen" );
+//
+//        // Schildmaterial
+//        twv.newNamedEntity( SchildmaterialComposite.class, "Holz" );
+//        twv.newNamedEntity( SchildmaterialComposite.class, "Aludibond" );
+//        twv.newNamedEntity( SchildmaterialComposite.class, "PVC-Hartschaum" );
+//        twv.newNamedEntity( SchildmaterialComposite.class, "PVC-Hartschaum" );
+//        twv.newNamedEntity( SchildmaterialComposite.class, "sonstige" );
     }
-
 }

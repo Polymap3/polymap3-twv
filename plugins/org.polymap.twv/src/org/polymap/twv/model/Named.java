@@ -12,30 +12,12 @@
  */
 package org.polymap.twv.model;
 
-import net.refractions.udig.catalog.ITransientResolve;
-
-import org.polymap.rhei.data.entityfeature.EntityProvider;
-import org.polymap.rhei.data.entityfeature.catalog.EntityServiceImpl;
+import org.qi4j.api.property.Property;
 
 /**
- * The catalog service for the biotop related features.
- * 
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
-public class TwvService
-        extends EntityServiceImpl
-        implements ITransientResolve {
+public interface Named {
 
-    public TwvService( EntityProvider... providers ) {
-        super( "Tourismuswegeverwaltung", TwvRepository.NAMESPACE, providers );
-    }
-
-
-    public <T> boolean canResolve( Class<T> adaptee ) {
-        if (adaptee.equals( ITransientResolve.class )) {
-            return true;
-        }
-        return super.canResolve( adaptee );
-    }
-
+    Property<String> name();
 }
