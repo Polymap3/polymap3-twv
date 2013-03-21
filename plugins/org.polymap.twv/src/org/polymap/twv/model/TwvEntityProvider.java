@@ -38,10 +38,10 @@ import org.polymap.rhei.data.entityfeature.EntityProvider3;
 import org.polymap.kaps.form.EingangsNummerFormatter;
 
 /**
- * Basisklasse fÃ¼r alle KAPS {@link EntityProvider}. Die Klasse liefert einfache
- * Implementationen fÃ¼r Methoden. Die Geometrie muss immer im Property "geom" liegen.
+ * Basisklasse für alle TWV {@link EntityProvider}. Die Klasse liefert einfache
+ * Implementationen für Methoden. Die Geometrie muss immer im Property "geom" liegen.
  * 
- * @author <a href="http://www.polymap.de">Falko BrÃ¤utigam</a>
+ * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 abstract class TwvEntityProvider<T extends Entity>
         extends DefaultEntityProvider<T>
