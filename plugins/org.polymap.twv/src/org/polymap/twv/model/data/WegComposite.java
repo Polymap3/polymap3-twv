@@ -25,10 +25,15 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.runtime.entity.EntityInstance;
+import org.qi4j.spi.entity.EntityState;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
+
+import org.polymap.twv.model.Named;
+import org.polymap.twv.model.TwvRepository;
 
 /**
  * 
@@ -40,7 +45,7 @@ import org.polymap.core.qi4j.event.PropertyChangeSupport;
 // JsonState.Mixin.class
 })
 public interface WegComposite
-        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite {
+        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Optional
     Property<String> name();
@@ -110,6 +115,10 @@ public interface WegComposite
 
 
     @Optional
+    Property<String> wegewart();
+
+
+    @Optional
     Property<Date> begehungAm();
 
 
@@ -141,8 +150,40 @@ public interface WegComposite
         @Override
         public void beforeCompletion()
                 throws UnitOfWorkCompletionException {
+            EntityState entityState = EntityInstance.getEntityInstance( this ).entityState();
+
+            // kaskadierendes löschen
+            switch (entityState.status()) {
+                case NEW:
+                case UPDATED:
+
+                    break;
+
+                case REMOVED: {
+                    TwvRepository repo = TwvRepository.instance();
+                    int count = schilder().count();
+                    if (count > 0) {
+                        for (int i=0; i<count; i++) {
+                            repo.removeEntity( schilder().get(i) );
+                        }
+                    }
+                    count = wegobjekte().count();
+                    if (count > 0) {
+                        for (int i=0; i<count; i++) {
+                            repo.removeEntity( wegobjekte().get(i) );
+                        }
+                    }
+                    count = vermarkter().count();
+                    if (count > 0) {
+                        for (int i=0; i<count; i++) {
+                            repo.removeEntity( vermarkter().get(i) );
+                        }
+                    }
+                    break;
+                }
+                default:
+                    throw new IllegalStateException( "unknwon entity state " + entityState.status() );
+            }
         }
-
     }
-
 }

@@ -41,7 +41,7 @@ public class WegFormEditorPage
     private final WegComposite weg;
 
     public WegFormEditorPage( Feature feature, FeatureStore featureStore ) {
-        super( WegFormEditorPage.class.getName(), "Vertragsdaten", feature, featureStore );
+        super( WegFormEditorPage.class.getName(), "Basisdaten", feature, featureStore );
 
         weg = twvRepository.findEntity( WegComposite.class, feature.getIdentifier().getID() );
     }

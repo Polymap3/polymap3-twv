@@ -51,7 +51,6 @@ public abstract class TwvDefaultFormEditorPage
     protected int           RIGHT   = 100;
 
 
-
     public TwvDefaultFormEditorPage( String id, String title, Feature feature,
             FeatureStore featureStore ) {
         super( id, title, feature, featureStore );
@@ -84,7 +83,6 @@ public abstract class TwvDefaultFormEditorPage
     }
 
 
-
     protected SimpleFormData right() {
         return new SimpleFormData( SPACING ).left( MIDDLE ).right( RIGHT );
     }
@@ -93,10 +91,17 @@ public abstract class TwvDefaultFormEditorPage
     protected SimpleFormData left() {
         return new SimpleFormData( SPACING ).left( LEFT ).right( MIDDLE );
     }
-    
+
 
     protected <T extends Named> IFormField namedAssocationsPicklist( Class<T> type ) {
+        return namedAssocationsPicklist( type, false );
+    }
+
+
+    protected <T extends Named> IFormField namedAssocationsPicklist( Class<T> type, boolean editable ) {
         PicklistFormField picklist = new PicklistFormField( twvRepository.entitiesWithNames( type ) );
+        picklist.setTextEditable( editable );
+
         return picklist;
     }
 }

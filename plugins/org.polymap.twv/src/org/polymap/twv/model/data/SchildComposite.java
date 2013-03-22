@@ -26,6 +26,8 @@ import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.PropertyInfo;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.runtime.entity.EntityInstance;
+import org.qi4j.spi.entity.EntityState;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -85,6 +87,11 @@ public interface SchildComposite
     Property<String> bild();
 
 
+    /** bidrectional navigierbar */
+    @Optional
+    Association<WegComposite> weg();
+
+
     /**
      * Methods and transient fields.
      */
@@ -97,6 +104,26 @@ public interface SchildComposite
         @Override
         public void beforeCompletion()
                 throws UnitOfWorkCompletionException {
+            EntityState entityState = EntityInstance.getEntityInstance( this ).entityState();
+
+            switch (entityState.status()) {
+                case NEW:
+                case UPDATED: {
+                    if (weg().get() != null && !weg().get().schilder().contains( this )) {
+                        weg().get().schilder().add( this );
+                    }
+
+                    break;
+                }
+                case REMOVED: {
+                    if (weg().get() != null) {
+                        weg().get().schilder().remove( this );
+                    }
+
+                    break;
+                }
+                default: throw new IllegalStateException("unknwon entity state " + entityState.status());
+            }
         }
 
         private PropertyInfo nameProperty = new GenericPropertyInfo( SchildComposite.class, "name" );
@@ -105,6 +132,7 @@ public interface SchildComposite
         @Override
         public Property<String> name() {
             return new ComputedPropertyInstance<String>( nameProperty ) {
+
                 public String get() {
                     if (schildart().get() != null) {
                         return schildart().get().name().get();
