@@ -32,12 +32,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.polymap.core.catalog.model.CatalogRepository;
 import org.polymap.core.model.CompletionException;
 import org.polymap.core.model.Entity;
-import org.polymap.core.model.EntityType.Property;
 import org.polymap.core.operation.IOperationSaveListener;
 import org.polymap.core.operation.OperationSupport;
 import org.polymap.core.qi4j.Qi4jPlugin;
 import org.polymap.core.qi4j.Qi4jPlugin.Session;
-import org.polymap.core.qi4j.QiModule.EntityCreator;
 import org.polymap.core.qi4j.QiModule;
 import org.polymap.core.qi4j.QiModuleAssembler;
 import org.polymap.core.runtime.Polymap;
@@ -48,10 +46,15 @@ import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
 import org.polymap.rhei.data.entitystore.lucene.LuceneQueryProvider;
 
 import org.polymap.twv.model.data.AusweisungComposite;
+import org.polymap.twv.model.data.EntfernungskontrolleComposite;
+import org.polymap.twv.model.data.FoerderregionComposite;
+import org.polymap.twv.model.data.KategorieComposite;
 import org.polymap.twv.model.data.MarkierungComposite;
+import org.polymap.twv.model.data.PfeilrichtungComposite;
 import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
+import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.VermarkterComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
@@ -118,8 +121,12 @@ public class TwvRepository
                             new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ), queryProvider ),
                     new SimpleEntityProvider<MarkierungComposite>( this, MarkierungComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Markierung" ), queryProvider ),
-                    new SimpleEntityProvider<SchildComposite>( this, SchildComposite.class,
+                    new SimpleEntityProvider<SchildartComposite>( this, SchildartComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Schildart" ), queryProvider ),
+                    new SimpleEntityProvider<EntfernungskontrolleComposite>( this,
+                            EntfernungskontrolleComposite.class, new NameImpl(
+                                    TwvRepository.NAMESPACE, "Entfernungskontrolle" ),
+                            queryProvider ),
                     new SimpleEntityProvider<SchildComposite>( this, SchildComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Schild" ), queryProvider ),
                     new SimpleEntityProvider<SchildmaterialComposite>( this,
@@ -137,6 +144,17 @@ public class TwvRepository
                     new SimpleEntityProvider<WegobjektNameComposite>( this,
                             WegobjektNameComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Wegobjektname" ), queryProvider ),
+                    new SimpleEntityProvider<FoerderregionComposite>( this,
+                            FoerderregionComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Förderregion" ), queryProvider ),
+                    new SimpleEntityProvider<PfeilrichtungComposite>( this,
+                            PfeilrichtungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Pfeilrichtung" ), queryProvider ),
+                    new SimpleEntityProvider<KategorieComposite>( this, KategorieComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Kategorie" ), queryProvider ),
+                    new SimpleEntityProvider<UnterkategorieComposite>( this,
+                            UnterkategorieComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Unterkategorie" ), queryProvider ),
                     new SimpleEntityProvider<WidmungComposite>( this, WidmungComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Widmung" ), queryProvider ) );
         }
@@ -196,16 +214,5 @@ public class TwvRepository
             }
         }
         return names;
-    }
-
-    public <T extends Named> T newNamedEntity( final Class<T> type, final String name )
-            throws Exception  {
-        return newEntity( type, null, new EntityCreator<T>() {
-
-            @Override
-            public void create( T prototype ) {
-                prototype.name().set( name );
-            }
-        } );
     }
 }

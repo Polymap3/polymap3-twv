@@ -26,25 +26,35 @@ import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
 import org.polymap.twv.model.Named;
+import org.polymap.twv.model.NamedCreatorCallback;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 @Concerns({ PropertyChangeSupport.Concern.class })
-@Mixins({ SchildartComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
+@Mixins({ EntfernungskontrolleComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
         ModelChangeSupport.Mixin.class, QiEntity.Mixin.class
 // JsonState.Mixin.class
 })
-public interface SchildartComposite
+public interface EntfernungskontrolleComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
+
+    @Optional
+    Property<String> name();
+
 
     /**
      * Methods and transient fields.
      */
     public static abstract class Mixin
-            implements SchildartComposite {
+            implements EntfernungskontrolleComposite {
 
         private static Log log = LogFactory.getLog( Mixin.class );
 
+        public static void createInitData(NamedCreatorCallback cb) {
+            cb.create(EntfernungskontrolleComposite.class, "erfolgt - Angaben richtig" );
+            cb.create(EntfernungskontrolleComposite.class, "erfolgt - Angaben falsch" );
+            cb.create(EntfernungskontrolleComposite.class, "nicht erfolgt" );
+        }
     }
 }

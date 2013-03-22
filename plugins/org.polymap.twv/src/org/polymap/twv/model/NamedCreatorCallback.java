@@ -12,14 +12,34 @@
  */
 package org.polymap.twv.model;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.property.Property;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.unitofwork.UnitOfWork;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
-public interface Named {
+public interface NamedCreatorCallback {
 
-    @Optional
-    Property<String> name();
+    <T extends Named> T create( Class<T> type, String name );
+
+
+    public class Impl
+            implements NamedCreatorCallback {
+
+        private final UnitOfWork uow;
+
+
+        public Impl( UnitOfWork uow ) {
+            this.uow = uow;
+        }
+
+
+        public <T extends Named> T create( Class<T> type, String name ) {
+            EntityBuilder<T> builder = uow.newEntityBuilder( type );
+            builder.instance().name().set( name );
+            return builder.newInstance();
+
+        }
+    }
+
 }

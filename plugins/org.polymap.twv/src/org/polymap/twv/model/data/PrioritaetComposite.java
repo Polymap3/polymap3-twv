@@ -26,25 +26,31 @@ import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
 import org.polymap.twv.model.Named;
+import org.polymap.twv.model.NamedCreatorCallback;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 @Concerns({ PropertyChangeSupport.Concern.class })
-@Mixins({ SchildartComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
+@Mixins({ PrioritaetComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
         ModelChangeSupport.Mixin.class, QiEntity.Mixin.class
 // JsonState.Mixin.class
 })
-public interface SchildartComposite
+public interface PrioritaetComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
-    /**
-     * Methods and transient fields.
-     */
     public static abstract class Mixin
-            implements SchildartComposite {
+            implements PrioritaetComposite {
 
         private static Log log = LogFactory.getLog( Mixin.class );
+
+        public static void createInitData( NamedCreatorCallback cb ) {
+            cb.create( PrioritaetComposite.class, "1 - landesweite Bedeutung" );
+            cb.create( PrioritaetComposite.class, "2 - überregionale Bedeutung" );
+            cb.create( PrioritaetComposite.class, "3 - regionale Bedeutung" );
+            cb.create( PrioritaetComposite.class, "4 - örtliche Bedeutung" );
+            cb.create( PrioritaetComposite.class, "5 - geringe Bedeutung" );
+        }
 
     }
 }

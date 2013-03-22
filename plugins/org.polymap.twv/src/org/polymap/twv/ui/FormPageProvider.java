@@ -28,13 +28,11 @@ public class FormPageProvider
         implements IFormPageProvider {
 
     public FormPageProvider() {
-        // TODO Auto-generated constructor stub
     }
 
 
     @Override
     public List<IFormEditorPage> addPages( FormEditor formEditor, Feature feature ) {
-        // log.debug("addPages(): feature= " + feature);
         List<IFormEditorPage> result = new ArrayList();
         if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "weg" )) {
             result.add( new WegFormEditorPage( feature, formEditor.getFeatureStore() ) );

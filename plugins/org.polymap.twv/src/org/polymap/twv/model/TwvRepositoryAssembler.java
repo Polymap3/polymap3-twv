@@ -16,34 +16,45 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.structure.Application;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
+
 import org.polymap.core.qi4j.QiModule;
-import org.polymap.core.qi4j.QiModule.EntityCreator;
 import org.polymap.core.qi4j.QiModuleAssembler;
 import org.polymap.core.qi4j.idgen.HRIdentityGeneratorService;
 import org.polymap.core.runtime.Polymap;
+
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreInfo;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreQueryService;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
 
 import org.polymap.twv.TwvPlugin;
+import org.polymap.twv.model.NamedCreatorCallback.Impl;
 import org.polymap.twv.model.data.AusweisungComposite;
+import org.polymap.twv.model.data.EntfernungskontrolleComposite;
+import org.polymap.twv.model.data.FoerderregionComposite;
+import org.polymap.twv.model.data.KategorieComposite;
 import org.polymap.twv.model.data.MarkierungComposite;
+import org.polymap.twv.model.data.PfeilrichtungComposite;
+import org.polymap.twv.model.data.PrioritaetComposite;
 import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
+import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.VermarkterComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
 import org.polymap.twv.model.data.WegobjektNameComposite;
 import org.polymap.twv.model.data.WidmungComposite;
-
-import org.qi4j.api.structure.Application;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.bootstrap.ApplicationAssembly;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * 
@@ -95,7 +106,10 @@ public class TwvRepositoryAssembler
         domainModule.addEntities( AusweisungComposite.class, MarkierungComposite.class,
                 SchildartComposite.class, SchildComposite.class, SchildmaterialComposite.class,
                 VermarkterComposite.class, WegbeschaffenheitComposite.class, WegComposite.class,
-                WegobjektComposite.class, WegobjektNameComposite.class, WidmungComposite.class );
+                WegobjektComposite.class, WegobjektNameComposite.class, WidmungComposite.class,
+                EntfernungskontrolleComposite.class, FoerderregionComposite.class,
+                PfeilrichtungComposite.class, KategorieComposite.class,
+                UnterkategorieComposite.class, PrioritaetComposite.class );
 
         // persistence: workspace/Lucene
         File root = new File( Polymap.getWorkspacePath().toFile(), "data" );
@@ -119,79 +133,108 @@ public class TwvRepositoryAssembler
 
     public void createInitData()
             throws Exception {
-//        // create the composites
-//        TwvRepository twv = TwvRepository.instance();
-//
-//        // Ausweisung
-//        twv.newNamedEntity( AusweisungComposite.class, "Pilgerweg" );
-//        twv.newNamedEntity( AusweisungComposite.class, "Sportwanderweg" );
-//        twv.newNamedEntity( AusweisungComposite.class, "Themenwanderweg" );
-//        twv.newNamedEntity( AusweisungComposite.class, "Nordic-Walking" );
-//        twv.newNamedEntity( AusweisungComposite.class, "Inlineskating" );
-//        twv.newNamedEntity( AusweisungComposite.class, "Mountainbike-Strecke" );
-//        twv.newNamedEntity( AusweisungComposite.class, "Themenradweg" );
-//
-//        // Markierung
-//        twv.newNamedEntity( MarkierungComposite.class, "Blau-Strich" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Rot-Strich" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Gelb-Strich" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Grün-Strich" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Blau-Punkt" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Rot-Punkt" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Gelb-Punkt" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Grün-Punkt" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Grün - diagonal (Lehrpfad)" );
-//        twv.newNamedEntity( MarkierungComposite.class, "individuelles Logo" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Fahrradsymbol grün" );
-//        twv.newNamedEntity( MarkierungComposite.class, "individuelles Logo" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Pferdekopf Fern" );
-//        twv.newNamedEntity( MarkierungComposite.class, "individuelles Logo" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Pferdekopf Regioinal" );
-//        twv.newNamedEntity( MarkierungComposite.class, "Pferdekopf Lokal" );
-//
-//        // Wegbeschaffenheit
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "naturnah" );
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "fein" );
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "schlecht" );
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Verbund/sandgeschlämmt" );
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Asphalt" );
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Ökopflaster" );
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Entfernungsangabe von bis" );
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "straßenbegleitend" );
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "öffentliche Straßen" );
-//        twv.newNamedEntity( WegbeschaffenheitComposite.class, "Waldweg" );
-//
-//        // Widmung
-//        twv.newNamedEntity( WidmungComposite.class, "öffentlich gewidmet auf Basis Eigentum" );
-//        twv.newNamedEntity( WidmungComposite.class,
-//                "öffentlich gewidmet auf Basis Gestattungsvertrag" );
-//        twv.newNamedEntity( WidmungComposite.class, "nicht öffentlich gewidmet" );
-//
-//        // Wegobjektname
-//        twv.newNamedEntity( WegobjektNameComposite.class, "Überblickskarte/Informationstafel" );
-//        twv.newNamedEntity( WegobjektNameComposite.class, "Thementafel" );
-//        twv.newNamedEntity( WegobjektNameComposite.class, "Aussichtstafel" );
-//        twv.newNamedEntity( WegobjektNameComposite.class, "Bank/Sitzgruppe/Rastplatz" );
-//        twv.newNamedEntity( WegobjektNameComposite.class, "Unterstand/Schutzhütte" );
-//        twv.newNamedEntity( WegobjektNameComposite.class, "Papierkorb" );
-//        twv.newNamedEntity( WegobjektNameComposite.class, "Skulptur/ Denkmal" );
-//        twv.newNamedEntity( WegobjektNameComposite.class, "Sonstiges" );
-//
-//        // Schildart
-//        twv.newNamedEntity( SchildartComposite.class, "Wegweiser lang" );
-//        twv.newNamedEntity( SchildartComposite.class, "Tabellenwegweiser" );
-//        twv.newNamedEntity( SchildartComposite.class, "Pfeilwegweiser" );
-//        twv.newNamedEntity( SchildartComposite.class, "Zwischenwegweiser" );
-//        twv.newNamedEntity( SchildartComposite.class, "Ortseingangsschilder" );
-//        twv.newNamedEntity( SchildartComposite.class, "Vorwegweiser" );
-//        twv.newNamedEntity( SchildartComposite.class, "Hauptwegweiser" );
-//        twv.newNamedEntity( SchildartComposite.class, "Wegmarke/Richtungszeichen" );
-//
-//        // Schildmaterial
-//        twv.newNamedEntity( SchildmaterialComposite.class, "Holz" );
-//        twv.newNamedEntity( SchildmaterialComposite.class, "Aludibond" );
-//        twv.newNamedEntity( SchildmaterialComposite.class, "PVC-Hartschaum" );
-//        twv.newNamedEntity( SchildmaterialComposite.class, "PVC-Hartschaum" );
-//        twv.newNamedEntity( SchildmaterialComposite.class, "sonstige" );
+
+        // create the composites
+        final UnitOfWork uow = uowf.newUnitOfWork();
+
+        if (!isDBInitialized( uow )) {
+
+            log.info( "Create Init Data" );
+
+            final Impl creator = new NamedCreatorCallback.Impl( uow );
+            EntfernungskontrolleComposite.Mixin.createInitData( creator );
+            FoerderregionComposite.Mixin.createInitData( creator );
+            PfeilrichtungComposite.Mixin.createInitData( creator );
+            KategorieComposite.Mixin.createInitData( creator );
+            PrioritaetComposite.Mixin.createInitData( creator );
+
+            // Ausweisung
+            creator.create( AusweisungComposite.class, "Pilgerweg" );
+            creator.create( AusweisungComposite.class, "Sportwanderweg" );
+            creator.create( AusweisungComposite.class, "Themenwanderweg" );
+            creator.create( AusweisungComposite.class, "Nordic-Walking" );
+            creator.create( AusweisungComposite.class, "Inlineskating" );
+            creator.create( AusweisungComposite.class, "Mountainbike-Strecke" );
+            creator.create( AusweisungComposite.class, "Themenradweg" );
+
+            // Markierung
+            creator.create( MarkierungComposite.class, "Blau-Strich" );
+            creator.create( MarkierungComposite.class, "Rot-Strich" );
+            creator.create( MarkierungComposite.class, "Gelb-Strich" );
+            creator.create( MarkierungComposite.class, "Grün-Strich" );
+            creator.create( MarkierungComposite.class, "Blau-Punkt" );
+            creator.create( MarkierungComposite.class, "Rot-Punkt" );
+            creator.create( MarkierungComposite.class, "Gelb-Punkt" );
+            creator.create( MarkierungComposite.class, "Grün-Punkt" );
+            creator.create( MarkierungComposite.class, "Grün - diagonal (Lehrpfad)" );
+            creator.create( MarkierungComposite.class, "individuelles Logo" );
+            creator.create( MarkierungComposite.class, "Fahrradsymbol grün" );
+            creator.create( MarkierungComposite.class, "individuelles Logo" );
+            creator.create( MarkierungComposite.class, "Pferdekopf Fern" );
+            creator.create( MarkierungComposite.class, "individuelles Logo" );
+            creator.create( MarkierungComposite.class, "Pferdekopf Regioinal" );
+            creator.create( MarkierungComposite.class, "Pferdekopf Lokal" );
+
+            // Wegbeschaffenheit
+            creator.create( WegbeschaffenheitComposite.class, "naturnah" );
+            creator.create( WegbeschaffenheitComposite.class, "fein" );
+            creator.create( WegbeschaffenheitComposite.class, "schlecht" );
+            creator.create( WegbeschaffenheitComposite.class, "Verbund/sandgeschlämmt" );
+            creator.create( WegbeschaffenheitComposite.class, "Asphalt" );
+            creator.create( WegbeschaffenheitComposite.class, "Ökopflaster" );
+            creator.create( WegbeschaffenheitComposite.class, "Entfernungsangabe von bis" );
+            creator.create( WegbeschaffenheitComposite.class, "straßenbegleitend" );
+            creator.create( WegbeschaffenheitComposite.class, "öffentliche Straßen" );
+            creator.create( WegbeschaffenheitComposite.class, "Waldweg" );
+
+            // Widmung
+            creator.create( WidmungComposite.class, "öffentlich gewidmet auf Basis Eigentum" );
+            creator.create( WidmungComposite.class,
+                    "öffentlich gewidmet auf Basis Gestattungsvertrag" );
+            creator.create( WidmungComposite.class, "nicht öffentlich gewidmet" );
+
+            // Wegobjektname
+            creator.create( WegobjektNameComposite.class, "Überblickskarte/Informationstafel" );
+            creator.create( WegobjektNameComposite.class, "Thementafel" );
+            creator.create( WegobjektNameComposite.class, "Aussichtstafel" );
+            creator.create( WegobjektNameComposite.class, "Bank/Sitzgruppe/Rastplatz" );
+            creator.create( WegobjektNameComposite.class, "Unterstand/Schutzhütte" );
+            creator.create( WegobjektNameComposite.class, "Papierkorb" );
+            creator.create( WegobjektNameComposite.class, "Skulptur/ Denkmal" );
+            creator.create( WegobjektNameComposite.class, "Sonstiges" );
+
+            // Schildart
+            creator.create( SchildartComposite.class, "Wegweiser lang" );
+            creator.create( SchildartComposite.class, "Tabellenwegweiser" );
+            creator.create( SchildartComposite.class, "Pfeilwegweiser" );
+            creator.create( SchildartComposite.class, "Zwischenwegweiser" );
+            creator.create( SchildartComposite.class, "Ortseingangsschilder" );
+            creator.create( SchildartComposite.class, "Vorwegweiser" );
+            creator.create( SchildartComposite.class, "Hauptwegweiser" );
+            creator.create( SchildartComposite.class, "Wegmarke/Richtungszeichen" );
+
+            // Schildmaterial
+            creator.create( SchildmaterialComposite.class, "Holz" );
+            creator.create( SchildmaterialComposite.class, "Aludibond" );
+            creator.create( SchildmaterialComposite.class, "PVC-Hartschaum" );
+            creator.create( SchildmaterialComposite.class, "PVC-Hartschaum" );
+            creator.create( SchildmaterialComposite.class, "sonstige" );
+
+            uow.complete();
+            log.info( "Create Init Data Completed" );
+        }
+    }
+
+
+    /**
+     * 
+     * @param uow
+     * @return
+     */
+    private boolean isDBInitialized( UnitOfWork uow ) {
+        QueryBuilder<AusweisungComposite> builder = getModule().queryBuilderFactory()
+                .newQueryBuilder( AusweisungComposite.class );
+        Query<AusweisungComposite> query = builder.newQuery( uow ).maxResults( 1 ).firstResult( 0 );
+        return query.iterator().hasNext();
     }
 }

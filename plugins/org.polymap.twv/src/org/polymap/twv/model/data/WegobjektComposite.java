@@ -24,6 +24,8 @@ import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
+import com.vividsolutions.jts.geom.Point;
+
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
@@ -52,8 +54,7 @@ public interface WegobjektComposite
     Property<String> beschreibung();
     
     @Optional
-    // TODO geometrie
-    Property<String> standort();
+    Property<Point> standort();
     
     @Optional
     // TODO Bild wie speichern?

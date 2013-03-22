@@ -23,11 +23,14 @@ import org.eclipse.ui.forms.widgets.Section;
 
 import org.polymap.core.project.ui.util.SimpleFormData;
 
+import org.polymap.rhei.field.IFormField;
+import org.polymap.rhei.field.PicklistFormField;
 import org.polymap.rhei.form.DefaultFormEditorPage;
 import org.polymap.rhei.form.IFormEditorPage;
 import org.polymap.rhei.form.IFormEditorPageSite;
 import org.polymap.rhei.form.IFormEditorToolkit;
 
+import org.polymap.twv.model.Named;
 import org.polymap.twv.model.TwvRepository;
 
 /**
@@ -47,11 +50,6 @@ public abstract class TwvDefaultFormEditorPage
 
     protected int           RIGHT   = 100;
 
-    protected FormData      left    = new SimpleFormData( SPACING ).left( LEFT ).right( MIDDLE )
-                                            .create();
-
-    protected FormData      right   = new SimpleFormData( SPACING ).left( MIDDLE ).right( RIGHT )
-                                            .create();
 
 
     public TwvDefaultFormEditorPage( String id, String title, Feature feature,
@@ -85,4 +83,20 @@ public abstract class TwvDefaultFormEditorPage
         return section;
     }
 
+
+
+    protected SimpleFormData right() {
+        return new SimpleFormData( SPACING ).left( MIDDLE ).right( RIGHT );
+    }
+
+
+    protected SimpleFormData left() {
+        return new SimpleFormData( SPACING ).left( LEFT ).right( MIDDLE );
+    }
+    
+
+    protected <T extends Named> IFormField namedAssocationsPicklist( Class<T> type ) {
+        PicklistFormField picklist = new PicklistFormField( twvRepository.entitiesWithNames( type ) );
+        return picklist;
+    }
 }

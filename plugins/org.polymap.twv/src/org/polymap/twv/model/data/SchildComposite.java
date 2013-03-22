@@ -16,21 +16,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Computed;
+import org.qi4j.api.property.ComputedPropertyInstance;
+import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.property.PropertyInfo;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+
+import com.vividsolutions.jts.geom.Point;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
 import org.polymap.twv.model.Named;
-import org.polymap.twv.model.constants.Pfeilrichtung;
 
 /**
  * 
@@ -44,9 +47,11 @@ import org.polymap.twv.model.constants.Pfeilrichtung;
 public interface SchildComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
+    @Optional
     @Computed
     Property<String> name();
-    
+
+
     @Optional
     Association<SchildartComposite> schildart();
 
@@ -56,14 +61,11 @@ public interface SchildComposite
 
 
     @Optional
-    // TODO geometrie
-    Property<String> standort();
+    Property<Point> standort();
 
 
-    /** @see Pfeilrichtung */
     @Optional
-    @UseDefaults
-    Property<Integer> pfeilrichtung();
+    Association<PfeilrichtungComposite> pfeilrichtung();
 
 
     @Optional
@@ -96,13 +98,20 @@ public interface SchildComposite
         public void beforeCompletion()
                 throws UnitOfWorkCompletionException {
         }
-        
+
+        private PropertyInfo nameProperty = new GenericPropertyInfo( SchildComposite.class, "name" );
+
+
         @Override
         public Property<String> name() {
-            if (schildart().get() != null) {
-                return schildart().get().name();
-            }
-            return null;
+            return new ComputedPropertyInstance<String>( nameProperty ) {
+                public String get() {
+                    if (schildart().get() != null) {
+                        return schildart().get().name().get();
+                    }
+                    return "";
+                }
+            };
         }
     }
 }

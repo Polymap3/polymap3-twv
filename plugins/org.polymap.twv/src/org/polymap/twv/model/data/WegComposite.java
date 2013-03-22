@@ -18,7 +18,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.Association;
@@ -30,12 +29,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
-
-import org.polymap.twv.model.constants.Entfernungskontrolle;
-import org.polymap.twv.model.constants.Foerderregion;
-import org.polymap.twv.model.constants.Kategorie;
-import org.polymap.twv.model.constants.Prioritaet;
-import org.polymap.twv.model.constants.Unterkategorie;
 
 /**
  * 
@@ -52,80 +45,90 @@ public interface WegComposite
     @Optional
     Property<String> name();
 
-    /** @see Kategorie */
-    @Optional
-    @UseDefaults
-    Property<Integer> kategorie();
 
-    /** @see Unterkategorie */
     @Optional
-    @UseDefaults
-    Property<Integer> unterkategorie();
-    
+    Association<KategorieComposite> kategorie();
+
+
+    @Optional
+    Association<UnterkategorieComposite> unterkategorie();
+
+
     @Optional
     Association<AusweisungComposite> ausweisung();
 
-    /** @see Prioritaet */
-    @Optional
-    @UseDefaults
-    Property<Integer> prioritaet(); 
 
     @Optional
-    // TODO
-    Property<String> gemeinde();
-    
-    @Optional
-    // TODO Länge im LAndkreis
-    Property<String> laengeImLandkreis();
-    
+    Association<PrioritaetComposite> prioritaet();
+
+
+    // wird nur im Formular angezeigt
+    // @Optional
+    // // TODO geometrie wie?
+    // Property<String> gemeinde();
+    //
+    // @Optional
+    // // TODO Länge im LAndkreis
+    // Property<String> laengeImLandkreis();
+
     @Optional
     Property<String> laengeUeberregional();
-    
+
+
     @Optional
     Property<String> beschreibung();
-    
+
+
     /** @see WegbeschaffenheitComposite als Textbausteine */
     @Optional
-    //Association<WegbeschaffenheitComposite> beschaffenheit();
+    // Association<WegbeschaffenheitComposite> beschaffenheit();
     Property<String> beschaffenheit();
-    
+
+
     @Optional
     Association<WidmungComposite> widmung();
 
+
     @Optional
     Association<MarkierungComposite> markierung();
-    
+
+
     @Optional
     ManyAssociation<WegobjektComposite> wegobjekte();
-    
+
+
     @Optional
     ManyAssociation<SchildComposite> schilder();
 
-    /** @see Foerderregion */
+
     @Optional
-    @UseDefaults
-    Property<Integer> foerderregion();
-    
+    ManyAssociation<FoerderregionComposite> foerderregionen();
+
+
     @Optional
     Property<String> erfasser();
-    
+
+
     @Optional
     Property<Date> begehungAm();
- 
-    /** @see Entfernungskontrolle */
+
+
     @Optional
-    @UseDefaults
-    Property<Integer> entfernungskontrolle();
-    
+    Association<EntfernungskontrolleComposite> entfernungskontrolle();
+
+
     @Optional
     Property<String> bemerkung();
-    
+
+
     @Optional
     Property<String> maengel();
 
+
     @Optional
     ManyAssociation<VermarkterComposite> vermarkter();
-    
+
+
     /**
      * Methods and transient fields.
      */
@@ -133,7 +136,8 @@ public interface WegComposite
             implements WegComposite {
 
         private static Log log = LogFactory.getLog( Mixin.class );
-        
+
+
         @Override
         public void beforeCompletion()
                 throws UnitOfWorkCompletionException {

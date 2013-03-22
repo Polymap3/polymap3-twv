@@ -15,27 +15,20 @@ package org.polymap.twv.ui;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import org.polymap.core.project.ui.util.SimpleFormData;
-
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
-import org.polymap.rhei.field.IFormField;
-import org.polymap.rhei.field.IFormFieldListener;
-import org.polymap.rhei.field.PicklistFormField;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
-import org.polymap.twv.model.Named;
-import org.polymap.twv.model.constants.Kategorie;
-import org.polymap.twv.model.constants.Prioritaet;
-import org.polymap.twv.model.constants.Unterkategorie;
 import org.polymap.twv.model.data.AusweisungComposite;
+import org.polymap.twv.model.data.KategorieComposite;
 import org.polymap.twv.model.data.MarkierungComposite;
+import org.polymap.twv.model.data.PrioritaetComposite;
+import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WidmungComposite;
 
@@ -45,10 +38,7 @@ import org.polymap.twv.model.data.WidmungComposite;
 public class WegFormEditorPage
         extends TwvDefaultFormEditorPage {
 
-    private IFormFieldListener vollpreisRefresher;
-
     private final WegComposite weg;
-
 
     public WegFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( WegFormEditorPage.class.getName(), "Vertragsdaten", feature, featureStore );
@@ -72,15 +62,15 @@ public class WegFormEditorPage
                 .create();
 
         Composite line2 = newFormField( "Kategorie" )
-                .setProperty( new PropertyAdapter( weg.kategorie() ) )
-                .setField( new PicklistFormField( Kategorie.all ) )
+                .setProperty( new AssociationAdapter<KategorieComposite>("kategorie", weg.kategorie() ) )
+                .setField( namedAssocationsPicklist( KategorieComposite.class ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
 
         // TODO beim Wechsel von Kategorie auch die Unterkategorie-Auswahlwerte
         // anpassen
         // und den Wert der Unterkategorie() auf die kleinste ID der Auswahl setzen
-        newFormField( "Unterkategorie" ).setProperty( new PropertyAdapter( weg.unterkategorie() ) )
-                .setField( new PicklistFormField( Unterkategorie.all ) )
+        newFormField( "Unterkategorie" ).setProperty( new AssociationAdapter<UnterkategorieComposite>( "unterkategorie", weg.unterkategorie() ) )
+                .setField( namedAssocationsPicklist( UnterkategorieComposite.class ) )
                 .setLayoutData( right().top( line1 ).create() ).create();
 
         Composite line3 = newFormField( "Ausweisung" )
@@ -89,17 +79,19 @@ public class WegFormEditorPage
                 .setField( namedAssocationsPicklist( AusweisungComposite.class ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
-        newFormField( "Priorität" ).setProperty( new PropertyAdapter( weg.prioritaet() ) )
-                .setField( new PicklistFormField( Prioritaet.all ) )
+        newFormField( "Priorität" ).setProperty( new AssociationAdapter<PrioritaetComposite>("prioritaet", weg.prioritaet() ) )
+                .setField( namedAssocationsPicklist(PrioritaetComposite.class ) )
                 .setLayoutData( right().top( line2 ).create() ).create();
 
-        // TODO Gemeinde GEOMETRIE?
-        Composite line4 = newFormField( "Länge Landkreis" )
-                .setProperty( new PropertyAdapter( weg.laengeImLandkreis() ) )
-                .setField( new StringFormField() ).setLayoutData( left().top( line3 ).create() )
-                .setToolTipText( "Länge im Landkreis Mittelsachsen" ).create();
+        // TODO falko Gemeinde wird über Berechnung eingeblendet
+        // TODO falko laengeImLandkreis wird über Berechnung eingeblendet
+        
+//        Composite line4 = newFormField( "Länge Landkreis" )
+//                .setProperty( new PropertyAdapter( weg.laengeImLandkreis() ) )
+//                .setField( new StringFormField() ).setLayoutData( left().top( line3 ).create() )
+//                .setToolTipText( "Länge im Landkreis Mittelsachsen" ).create();
 
-        newFormField( "Gesamtlänge" )
+        Composite line4 = newFormField( "Gesamtlänge" )
                 .setProperty( new PropertyAdapter( weg.laengeUeberregional() ) )
                 .setField( new StringFormField() ).setLayoutData( right().top( line3 ).create() )
                 .setToolTipText( "überregionale Gesamtlänge" ).create();
@@ -125,23 +117,5 @@ public class WegFormEditorPage
                 .setField( namedAssocationsPicklist( MarkierungComposite.class ) )
                 .setLayoutData( right().top( line6 ).create() ).create();
 
-    }
-
-
-    private SimpleFormData right() {
-        return new SimpleFormData( SPACING ).left( MIDDLE ).right( RIGHT );
-    }
-
-
-    private SimpleFormData left() {
-        return new SimpleFormData( SPACING ).left( LEFT ).right( MIDDLE );
-    }
-
-
-    // IFormEditorPage2 *******************************
-
-    private <T extends Named> IFormField namedAssocationsPicklist( Class<T> type ) {
-        PicklistFormField picklist = new PicklistFormField( twvRepository.entitiesWithNames( type ) );
-        return picklist;
     }
 }
