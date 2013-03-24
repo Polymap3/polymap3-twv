@@ -27,6 +27,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.runtime.entity.EntityInstance;
 import org.qi4j.spi.entity.EntityState;
+import org.qi4j.spi.entity.EntityStatus;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
@@ -150,15 +151,21 @@ public interface WegComposite
         @Override
         public void beforeCompletion()
                 throws UnitOfWorkCompletionException {
-            EntityState entityState = EntityInstance.getEntityInstance( this ).entityState();
+            EntityStatus entityState = EntityStatus.NEW;
+            try {
+                entityState = EntityInstance.getEntityInstance( this ).entityState().status();
+            } catch (Exception e) {
+                // bei neuen Objekten gibts hier ne IllegalArgumentException
+            }    
 
             // kaskadierendes löschen
-            switch (entityState.status()) {
+            switch (entityState) {
                 case NEW:
                 case UPDATED:
 
                     break;
 
+                    // TODO REMOVED kommt hier nicht an
                 case REMOVED: {
                     TwvRepository repo = TwvRepository.instance();
                     int count = schilder().count();
@@ -182,7 +189,7 @@ public interface WegComposite
                     break;
                 }
                 default:
-                    throw new IllegalStateException( "unknwon entity state " + entityState.status() );
+                    throw new IllegalStateException( "unknwon entity state " + entityState );
             }
         }
     }

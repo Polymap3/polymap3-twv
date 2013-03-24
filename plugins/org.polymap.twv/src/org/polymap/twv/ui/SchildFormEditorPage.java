@@ -42,13 +42,8 @@ import org.polymap.twv.model.data.WidmungComposite;
 public class SchildFormEditorPage
         extends TwvDefaultFormEditorPage {
 
-    private final SchildComposite schild;
-
-
     public SchildFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( SchildFormEditorPage.class.getName(), "Schild", feature, featureStore );
-
-        schild = twvRepository.findEntity( SchildComposite.class, feature.getIdentifier().getID() );
     }
 
 
@@ -56,55 +51,70 @@ public class SchildFormEditorPage
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
 
+        SchildComposite schild = twvRepository.findEntity( SchildComposite.class, feature
+                .getIdentifier().getID() );
         site.setEditorTitle( "Schild"
                 + ((schild.laufendeNr().get() != null) ? " - " + schild.laufendeNr().get() : "") );
 
         Composite parent = site.getPageBody();
         parent.setLayout( new FormLayout() );
+        
+        Composite schildForm = createSchildForm( parent, schild );
+        
+        // wegauswahl nur wenn schild komplett bearbeitet wird
+        Composite line5 = newFormField( "Weg" ).setParent( parent )
+                .setProperty( new AssociationAdapter<WegComposite>( "weg", schild.weg() ) )
+                .setValidator( new NotNullValidator() )
+                .setField( namedAssocationsPicklist( WegComposite.class ) )
+                .setLayoutData( left().top( schildForm ).create() ).create();
+    }
+
+
+    public Composite createSchildForm( Composite parent, SchildComposite schild ) {
 
         Composite line1 = newFormField( "Schildart" )
+                .setParent( parent )
                 .setProperty(
                         new AssociationAdapter<SchildartComposite>( "schildart", schild.schildart() ) )
                 .setField( namedAssocationsPicklist( SchildartComposite.class, true ) )
                 .setLayoutData( left().create() ).create();
 
-        newFormField( "Nummer" ).setProperty( new PropertyAdapter( schild.laufendeNr() ) )
-                .setField( new StringFormField() ).setLayoutData( right().create() )
-                .setToolTipText( "laufende Schild Nummer" ).create();
+        newFormField( "Nummer"  ).setParent( parent )
+                .setProperty( new PropertyAdapter( schild.laufendeNr() ) )
+                .setValidator( new NotNullValidator() ).setField( new StringFormField() )
+                .setLayoutData( right().create() ).setToolTipText( "laufende Schild Nummer" )
+                .create();
 
-        Composite line2 = newFormField( "Pfeilrichtung" )
+        Composite line2 = newFormField( "Pfeilrichtung"  )
+                .setParent( parent )
                 .setProperty(
                         new AssociationAdapter<PfeilrichtungComposite>( "pfeilrichtung", schild
                                 .pfeilrichtung() ) )
                 .setField( namedAssocationsPicklist( PfeilrichtungComposite.class ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
 
-        newFormField( "Material" )
+        newFormField( "Material"  )
+                .setParent( parent )
                 .setProperty(
                         new AssociationAdapter<SchildmaterialComposite>( "material", schild
                                 .material() ) )
                 .setField( namedAssocationsPicklist( SchildmaterialComposite.class ) )
-                .setLayoutData( right().top( line2 ).create() ).create();
+                .setLayoutData( right().top( line1 ).create() ).create();
 
-        Composite line3 = newFormField( "Beschriftung" )
+        Composite line3 = newFormField( "Beschriftung"  ).setParent( parent )
                 .setProperty( new PropertyAdapter( schild.beschriftung() ) )
                 .setField( new TextFormField() )
                 .setLayoutData( left().top( line2 ).height( 50 ).right( RIGHT ).create() )
                 .setToolTipText( "Schildbeschriftung mit Entfernungsangabe und Zusatzinfo" )
                 .create();
 
-        Composite line4 = newFormField( "Befestigung" )
+        Composite line4 = newFormField( "Befestigung"  ).setParent( parent )
                 .setProperty( new PropertyAdapter( schild.beschriftung() ) )
                 .setField( new TextFormField() )
                 .setLayoutData( left().top( line3 ).height( 50 ).create() ).create();
 
         // TODO Schildbild fehlt noch
 
-        // TODO und Auswahlbox für Weg fehlt noch
-        Composite line5 = newFormField( "Weg" )
-                .setProperty( new AssociationAdapter<WegComposite>( "weg", schild.weg() ) )
-                .setField( namedAssocationsPicklist( WegComposite.class ) )
-                .setLayoutData( left().top( line4 ).create() ).create();
-
+        return line4;
     }
 }

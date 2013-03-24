@@ -33,9 +33,13 @@ public class FormPageProvider
 
     @Override
     public List<IFormEditorPage> addPages( FormEditor formEditor, Feature feature ) {
-        List<IFormEditorPage> result = new ArrayList();
+        List<IFormEditorPage> result = new ArrayList<IFormEditorPage>();
         if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "weg" )) {
             result.add( new WegFormEditorPage( feature, formEditor.getFeatureStore() ) );
+            result.add( new WegSchilderFormEditorPage( feature, formEditor.getFeatureStore() ) );
+        }
+        if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schild" )) {
+            result.add( new SchildFormEditorPage( feature, formEditor.getFeatureStore() ) );
         }
 
         return result;

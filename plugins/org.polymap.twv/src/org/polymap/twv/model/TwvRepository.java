@@ -13,6 +13,7 @@
 package org.polymap.twv.model;
 
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.geotools.feature.NameImpl;
@@ -200,13 +201,16 @@ public class TwvRepository
     }
 
 
-    public <T extends Named> Map<String, T> entitiesWithNames( Class<T> entityClass ) {
+    public <T extends Named> SortedMap<String, T> entitiesWithNames( Class<T> entityClass ) {
 
         Query<T> entities = findEntities( entityClass, null, 0, 1000 );
-        Map<String, T> names = new TreeMap<String, T>();
+        SortedMap<String, T> names = new TreeMap<String, T>();
         for (T entity : entities) {
             try {
                 String key = (String)entity.name().get();
+                if (key == null) {
+                    key = "";
+                }
                 names.put( key, entity );
             }
             catch (Exception e) {

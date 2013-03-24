@@ -12,6 +12,8 @@
  */
 package org.polymap.twv.model.data;
 
+import java.util.Iterator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,17 +27,16 @@ import org.qi4j.api.property.ComputedPropertyInstance;
 import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.PropertyInfo;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.runtime.entity.EntityInstance;
-import org.qi4j.spi.entity.EntityState;
-
-import com.vividsolutions.jts.geom.Point;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.query.grammar.BooleanExpression;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
 import org.polymap.twv.model.Named;
+import org.polymap.twv.model.TwvRepository;
 
 /**
  * 
@@ -62,9 +63,8 @@ public interface SchildComposite
     Property<String> laufendeNr();
 
 
-    @Optional
-    Property<Point> standort();
-
+    // @Optional
+    // Property<Point> standort();
 
     @Optional
     Association<PfeilrichtungComposite> pfeilrichtung();
@@ -98,33 +98,49 @@ public interface SchildComposite
     public static abstract class Mixin
             implements SchildComposite {
 
-        private static Log log = LogFactory.getLog( Mixin.class );
+        private static Log   log          = LogFactory.getLog( Mixin.class );
 
-
-        @Override
-        public void beforeCompletion()
-                throws UnitOfWorkCompletionException {
-            EntityState entityState = EntityInstance.getEntityInstance( this ).entityState();
-
-            switch (entityState.status()) {
-                case NEW:
-                case UPDATED: {
-                    if (weg().get() != null && !weg().get().schilder().contains( this )) {
-                        weg().get().schilder().add( this );
-                    }
-
-                    break;
-                }
-                case REMOVED: {
-                    if (weg().get() != null) {
-                        weg().get().schilder().remove( this );
-                    }
-
-                    break;
-                }
-                default: throw new IllegalStateException("unknwon entity state " + entityState.status());
-            }
-        }
+        // @Override
+        // public void beforeCompletion()
+        // throws UnitOfWorkCompletionException {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        // @Override
+        // public void afterCompletion(EntityStatus entityState)
+        // throws UnitOfWorkCompletionException {
+        // // EntityStatus entityState = EntityStatus.NEW;
+        // // try {
+        // // entityState = EntityInstance.getEntityInstance( this
+        // ).entityState().status();
+        // // }
+        // // catch (Exception e) {
+        // // // bei neuen Objekten gibts hier ne IllegalArgumentException
+        // // }
+        // switch (entityState) {
+        // case NEW:
+        // if (weg().get() != null) {
+        // weg().get().schilder().add( this );
+        // }
+        // break;
+        // case UPDATED: {
+        // if (weg().get() != null && !weg().get().schilder().contains( this )) {
+        // weg().get().schilder().add( this );
+        // }
+        //
+        // break;
+        // }
+        // case REMOVED: {
+        // if (weg().get() != null) {
+        // weg().get().schilder().remove( this );
+        // }
+        //
+        // break;
+        // }
+        // default:
+        // throw new IllegalStateException( "unknwon entity state " + entityState );
+        // }
+        // }
 
         private PropertyInfo nameProperty = new GenericPropertyInfo( SchildComposite.class, "name" );
 
@@ -140,6 +156,17 @@ public interface SchildComposite
                     return "";
                 }
             };
+        }
+
+
+        public static Iterable<SchildComposite> forEntity( WegComposite weg ) {
+            SchildComposite template = QueryExpressions.templateFor( SchildComposite.class );
+            BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
+//            Query<SchildComposite> matches = TwvRepository.instance().findEntities( SchildComposite.class,
+//                    expr, 0, -1 );
+            Query<SchildComposite> matches = TwvRepository.instance().findEntities( SchildComposite.class,
+                    null, 0, -1 );
+            return matches;
         }
     }
 }

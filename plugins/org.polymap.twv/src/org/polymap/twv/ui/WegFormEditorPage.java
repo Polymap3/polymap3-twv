@@ -12,6 +12,9 @@
  */
 package org.polymap.twv.ui;
 
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 
@@ -20,6 +23,9 @@ import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
+import org.polymap.rhei.field.FormFieldEvent;
+import org.polymap.rhei.field.IFormFieldListener;
+import org.polymap.rhei.field.PicklistFormField;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.form.IFormEditorPageSite;
@@ -40,6 +46,13 @@ public class WegFormEditorPage
 
     private final WegComposite weg;
 
+    // private UnterkategorieReloader unterkategorieReloader;
+
+    private KategorieComposite selectedKategorie = null;
+
+    private IFormFieldListener kategorieSelectionListener;
+
+
     public WegFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( WegFormEditorPage.class.getName(), "Basisdaten", feature, featureStore );
 
@@ -58,19 +71,37 @@ public class WegFormEditorPage
 
         // readonly
         Composite line1 = newFormField( "Name" ).setProperty( new PropertyAdapter( weg.name() ) )
-                .setField( new StringFormField() ).setLayoutData( left().right( 100 ).create() )
-                .create();
+                .setValidator( new NotNullValidator() ).setField( new StringFormField() )
+                .setLayoutData( left().right( 100 ).create() ).create();
 
         Composite line2 = newFormField( "Kategorie" )
-                .setProperty( new AssociationAdapter<KategorieComposite>("kategorie", weg.kategorie() ) )
+                .setProperty(
+                        new AssociationAdapter<KategorieComposite>( "kategorie", weg.kategorie() ) )
                 .setField( namedAssocationsPicklist( KategorieComposite.class ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
+        selectedKategorie = weg.kategorie().get();
 
-        // TODO beim Wechsel von Kategorie auch die Unterkategorie-Auswahlwerte
-        // anpassen
-        // und den Wert der Unterkategorie() auf die kleinste ID der Auswahl setzen
-        newFormField( "Unterkategorie" ).setProperty( new AssociationAdapter<UnterkategorieComposite>( "unterkategorie", weg.unterkategorie() ) )
-                .setField( namedAssocationsPicklist( UnterkategorieComposite.class ) )
+        final PicklistFormField unterkategorieList = new PicklistFormField(
+                new PicklistFormField.ValueProvider() {
+
+                    @Override
+                    public SortedMap<String, Object> get() {
+                        SortedMap<String, Object> unterkategories = new TreeMap<String, Object>();
+                        if (selectedKategorie != null) {
+                            int unterkategorieCount = selectedKategorie.unterkategories().count();
+                            for (int i = 0; i < unterkategorieCount; i++) {
+                                UnterkategorieComposite uk = selectedKategorie.unterkategories()
+                                        .get( i );
+                                unterkategories.put( uk.name().get(), uk );
+                            }
+                        }
+                        return unterkategories;
+                    }
+                } );
+        newFormField( "Unterkategorie" )
+                .setProperty(
+                        new AssociationAdapter<UnterkategorieComposite>( "unterkategorie", weg
+                                .unterkategorie() ) ).setField( unterkategorieList )
                 .setLayoutData( right().top( line1 ).create() ).create();
 
         Composite line3 = newFormField( "Ausweisung" )
@@ -79,17 +110,20 @@ public class WegFormEditorPage
                 .setField( namedAssocationsPicklist( AusweisungComposite.class ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
-        newFormField( "Priorität" ).setProperty( new AssociationAdapter<PrioritaetComposite>("prioritaet", weg.prioritaet() ) )
-                .setField( namedAssocationsPicklist(PrioritaetComposite.class ) )
+        newFormField( "Priorität" )
+                .setProperty(
+                        new AssociationAdapter<PrioritaetComposite>( "prioritaet", weg.prioritaet() ) )
+                .setField( namedAssocationsPicklist( PrioritaetComposite.class ) )
                 .setLayoutData( right().top( line2 ).create() ).create();
 
         // TODO falko Gemeinde wird über Berechnung eingeblendet
         // TODO falko laengeImLandkreis wird über Berechnung eingeblendet
-        
-//        Composite line4 = newFormField( "Länge Landkreis" )
-//                .setProperty( new PropertyAdapter( weg.laengeImLandkreis() ) )
-//                .setField( new StringFormField() ).setLayoutData( left().top( line3 ).create() )
-//                .setToolTipText( "Länge im Landkreis Mittelsachsen" ).create();
+
+        // Composite line4 = newFormField( "Länge Landkreis" )
+        // .setProperty( new PropertyAdapter( weg.laengeImLandkreis() ) )
+        // .setField( new StringFormField() ).setLayoutData( left().top( line3
+        // ).create() )
+        // .setToolTipText( "Länge im Landkreis Mittelsachsen" ).create();
 
         Composite line4 = newFormField( "Gesamtlänge" )
                 .setProperty( new PropertyAdapter( weg.laengeUeberregional() ) )
@@ -105,7 +139,7 @@ public class WegFormEditorPage
                 .setProperty( new PropertyAdapter( weg.beschaffenheit() ) )
                 .setField( new TextFormField() )
                 .setLayoutData( left().right( 100 ).height( 50 ).top( line5 ).create() ).create();
-        // TODO Picklist mit Textvorlagen ergänzen  
+        // TODO Picklist mit Textvorlagen ergänzen
 
         Composite line7 = newFormField( "Widmung" )
                 .setProperty( new AssociationAdapter<WidmungComposite>( "widmung", weg.widmung() ) )
@@ -117,5 +151,22 @@ public class WegFormEditorPage
                 .setField( namedAssocationsPicklist( MarkierungComposite.class ) )
                 .setLayoutData( right().top( line6 ).create() ).create();
 
+        // unterkategorieReloader
+        // site.addFieldListener( unterkategorieReloader = new
+        // UnterkategorieReloader( site, unterkategorieList ) );
+        site.addFieldListener( kategorieSelectionListener = new IFormFieldListener() {
+
+            @Override
+            public void fieldChange( FormFieldEvent ev ) {
+                if (ev.getEventCode() == VALUE_CHANGE
+                        && ev.getFieldName().equalsIgnoreCase( "kategorie" )) {
+                    if ((ev.getNewValue() == null && selectedKategorie != null)
+                            || !ev.getNewValue().equals( selectedKategorie )) {
+                        selectedKategorie = ev.getNewValue();
+                        unterkategorieList.reloadValues();
+                    }
+                }
+            }
+        } );
     }
 }
