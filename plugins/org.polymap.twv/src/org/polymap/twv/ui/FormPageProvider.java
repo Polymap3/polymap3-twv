@@ -36,12 +36,17 @@ public class FormPageProvider
         List<IFormEditorPage> result = new ArrayList<IFormEditorPage>();
         if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "weg" )) {
             result.add( new WegFormEditorPage( feature, formEditor.getFeatureStore() ) );
+            result.add( new WegErfassungFormEditorPage( feature, formEditor.getFeatureStore() ) );
+            result.add( new WegVermarkterFormEditorPage( feature, formEditor.getFeatureStore() ) );
+            result.add( new WegWegobjektFormEditorPage( feature, formEditor.getFeatureStore() ) );
             result.add( new WegSchilderFormEditorPage( feature, formEditor.getFeatureStore() ) );
         }
         if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schild" )) {
             result.add( new SchildFormEditorPage( feature, formEditor.getFeatureStore() ) );
         }
-
+        if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "wegobjekt" )) {
+            result.add( new WegobjektFormEditorPage( feature, formEditor.getFeatureStore() ) );
+        }
         return result;
     }
 

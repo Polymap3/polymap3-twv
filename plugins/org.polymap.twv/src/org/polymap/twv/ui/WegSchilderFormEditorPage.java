@@ -12,8 +12,6 @@
  */
 package org.polymap.twv.ui;
 
-
-
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -24,7 +22,7 @@ import org.qi4j.api.property.Property;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
-
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import org.polymap.core.data.ui.featuretable.DefaultFeatureTableColumn;
 import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
@@ -50,12 +48,10 @@ import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.PropertyCallback;
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 public class WegSchilderFormEditorPage
-        extends 
-TwvDefaultFormEditorPageWithFeatureTable {
+        extends TwvDefaultFormEditorPageWithFeatureTable<SchildComposite> {
 
+    private WegComposite weg;
 
-
-    private WegComposite                       weg;
 
     public WegSchilderFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( WegSchilderFormEditorPage.class.getName(), "Schilder", feature, featureStore );
@@ -68,33 +64,56 @@ TwvDefaultFormEditorPageWithFeatureTable {
     @Override
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
-    
+
         Composite parent = site.getPageBody();
         parent.setLayout( new FormLayout() );
-    
-        // TODO erstes Schild selektieren, falls vorhanden
-        // falls nicht vorhanden leeren Prototyp reintun
-        // TODO das sollte nur ein Prototyp sein, der nicht gespeichert wird
-        // TODO, dann sollten aber auch alle Felder readonly sein und nach Auswahl
-        // auf readwrite
+
         Composite schildForm = createSchildForm( parent );
-    
-        // TODO FeatureTabelle mit allen Schilder, per Klick auf ein Schild
-        // aktualisieren der schildform
-        // selectionListener an table the schildForm neu läd
         createTableForm( parent, schildForm );
+        refreshFieldEnablement();
     }
 
+
+    @Override
+    public void doLoad( IProgressMonitor monitor )
+            throws Exception {
+        super.doLoad( monitor );
+        // enable all Fields
+        if (pageSite != null) {
+            refreshFieldEnablement();
+        }
+    }
+
+
+    /**
+     *
+     */
+    private void refreshFieldEnablement() {
+        boolean enabled = selectedComposite.get() != null;
+        pageSite.setFieldEnabled( "schildart", enabled );
+        pageSite.setFieldEnabled( "laufendeNr", enabled );
+        pageSite.setFieldEnabled( "pfeilrichtung", enabled );
+        pageSite.setFieldEnabled( "material", enabled );
+        pageSite.setFieldEnabled( "beschriftung", enabled );
+        pageSite.setFieldEnabled( "befestigung", enabled );
+        
+        // TODO validator not null an der Number
+    }
+
+
+    public boolean isValid() {
+        return true;
+    }
+
+
     // kopiert von SchildFormEditorPage
-    // TODO benutzt irgendwelche Variablen der anderen Page, weshalb
-    // SelectionListener nicht funktionieren
     public Composite createSchildForm( Composite parent ) {
 
         Composite line1 = newFormField( "Schildart" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, "schildart",
-                                new AssociationCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
+                                "schildart", new AssociationCallback<SchildComposite>() {
 
                                     public Association get( SchildComposite entity ) {
                                         return entity.schildart();
@@ -106,21 +125,21 @@ TwvDefaultFormEditorPageWithFeatureTable {
         newFormField( "Nummer" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, "laufendeNr",
-                                new PropertyCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
+                                "laufendeNr", new PropertyCallback<SchildComposite>() {
 
                                     public Property get( SchildComposite entity ) {
                                         return entity.laufendeNr();
                                     }
-                                } ) ).setValidator( new NotNullValidator() )
+                                } ) )
                 .setField( new StringFormField() ).setLayoutData( right().create() )
                 .setToolTipText( "laufende Schild Nummer" ).create();
 
         Composite line2 = newFormField( "Pfeilrichtung" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, "pfeilrichtung",
-                                new AssociationCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
+                                "pfeilrichtung", new AssociationCallback<SchildComposite>() {
 
                                     public Association get( SchildComposite entity ) {
                                         return entity.pfeilrichtung();
@@ -132,8 +151,8 @@ TwvDefaultFormEditorPageWithFeatureTable {
         newFormField( "Material" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, "material",
-                                new AssociationCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
+                                "material", new AssociationCallback<SchildComposite>() {
 
                                     public Association get( SchildComposite entity ) {
                                         return entity.material();
@@ -145,8 +164,8 @@ TwvDefaultFormEditorPageWithFeatureTable {
         Composite line3 = newFormField( "Beschriftung" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, "beschriftung",
-                                new PropertyCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
+                                "beschriftung", new PropertyCallback<SchildComposite>() {
 
                                     public Property get( SchildComposite entity ) {
                                         return entity.beschriftung();
@@ -159,8 +178,8 @@ TwvDefaultFormEditorPageWithFeatureTable {
         Composite line4 = newFormField( "Befestigung" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, "befestigung",
-                                new PropertyCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
+                                "befestigung", new PropertyCallback<SchildComposite>() {
 
                                     public Property get( SchildComposite entity ) {
                                         return entity.befestigung();

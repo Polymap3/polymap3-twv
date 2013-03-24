@@ -35,25 +35,34 @@ import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.Entity;
 import org.polymap.core.model.EntityType;
 import org.polymap.core.project.ui.util.SimpleFormData;
+import org.polymap.core.runtime.Polymap;
 
 import org.polymap.rhei.data.entityfeature.CompositesFeatureContentProvider;
 import org.polymap.rhei.data.entityfeature.CompositesFeatureContentProvider.FeatureTableElement;
 import org.polymap.rhei.field.IFormFieldListener;
+import org.polymap.rhei.form.IFormEditorPage2;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
+import org.polymap.twv.model.TwvRepository;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.CompositeProvider;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
-        extends TwvDefaultFormEditorPage {
+        extends TwvDefaultFormEditorPage
+        implements IFormEditorPage2 {
 
-    protected FeatureStore featureStore;
-    private FeatureTableViewer viewer;
-    private boolean dirty;
-    private Map<String, T> model;
+    protected FeatureStore         featureStore;
+
+    private FeatureTableViewer     viewer;
+
+    private boolean                dirty;
+
+    private Map<String, T>         model;
+
     protected CompositeProvider<T> selectedComposite = new CompositeProvider<T>();
+
 
     /**
      * 
@@ -67,24 +76,34 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
         super( id, title, feature, featureStore );
     }
 
+
     @Override
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
     }
 
+
     protected abstract EntityType addViewerColumns( FeatureTableViewer viewer );
-    
+
+
     /**
      * 
      * @param parent
      */
     protected Composite createTableForm( Composite parent, Composite top ) {
+        return createTableForm( parent, top, false );
+    }
+
+
+    protected Composite createTableForm( Composite parent, Composite top, boolean addAllowed ) {
         viewer = new FeatureTableViewer( parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL );
-        viewer.getTable().setLayoutData( new SimpleFormData().fill().top( top, 20 ).create() );
-    
+        viewer.getTable().setLayoutData(
+                new SimpleFormData().fill().left( 2 ).right( addAllowed ? 90 : 100 )
+                        .top( top, 30 ).create() );
+
         // columns
         EntityType<T> type = addViewerColumns( viewer );
-    
+
         // model/content
         viewer.setContent( new CompositesFeatureContentProvider( null, type ) );
         try {
@@ -93,63 +112,113 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
         catch (Exception e) {
             throw new RuntimeException( e );
         }
+        if (addAllowed) {
+            AddCompositeAction<T> addAction = new AddCompositeAction<T>() {
+
+                protected void execute()
+                        throws Exception {
+
+                    dirty = true;
+                    selectedComposite.set( createNewComposite() );
+                    pageSite.reloadEditor();
+//                    Polymap.getSessionDisplay().asyncExec( new Runnable() {
+//
+//                        public void run() {
+//                            // update dirty/valid flags of the editor
+//                            pageSite.fireEvent( this, getClass().getSimpleName(),
+//                                    IFormFieldListener.VALUE_CHANGE, null );
+//                            
+//                            viewer.refresh( true );
+//                            viewer.getTable().layout( true );
+//                        }
+//
+//                    } );
+                }
+            };
+            ActionButton addBtn = new ActionButton( parent, addAction );
+            addBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING )
+                    .top( top, 30 ).right( 100 ).height( 30 ).create() );
+        }
         parent.layout( true );
-    
+
         viewer.addSelectionChangedListener( new ISelectionChangedListener() {
-    
+
             @Override
             public void selectionChanged( SelectionChangedEvent event ) {
                 StructuredSelection selection = (StructuredSelection)event.getSelection();
                 FeatureTableElement tableRow = (FeatureTableElement)selection.getFirstElement();
-                selectedComposite.set( (T)tableRow.getComposite() );
-                try {
-                    pageSite.reloadEditor();
-                }
-                catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (tableRow != null) {
+                    selectedComposite.set( (T)tableRow.getComposite() );
+                    try {
+                        pageSite.reloadEditor();
+                    }
+                    catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
             }
         } );
         return viewer.getTable();
     }
 
+
+    /**
+     * 
+     * @return
+     */
+    protected T createNewComposite() {
+        // must only be implemented if add-action on table is enabled
+        throw new RuntimeException( "not yet implemented." );
+    }
+
+
     public void updateElements( Collection<T> coll ) {
         // SchildComposite.updateEntity( weg, coll );
     }
 
+
     protected abstract Iterable<T> getElements();
-    
+
+
     public void doLoad( IProgressMonitor monitor )
             throws Exception {
-                if (viewer != null) {
-                    model = new HashMap();
-                    for (T elm : getElements()) {
-                        // TODO wie wird der EventHandler registriert?
-                        // elm.addPropertyChangeListener( this );
-                        model.put( elm.id(), elm );
-                    }
-                    viewer.setInput( model.values() );
-                    viewer.refresh();
-                }
-                dirty = false;
+        if (viewer != null) {
+            model = new HashMap();
+            for (T elm : getElements()) {
+                // TODO wie wird der EventHandler registriert?
+                // elm.addPropertyChangeListener( this );
+                model.put( elm.id(), elm );
             }
+            viewer.setInput( model.values() );
+            viewer.refresh();
+        }
+        dirty = false;
+    }
+
 
     public void doSubmit( IProgressMonitor monitor )
             throws Exception {
-                if (model != null) {
-                    updateElements( model.values() );
-                }
-                dirty = false;
-            }
+        if (model != null) {
+            updateElements( model.values() );
+        }
+        dirty = false;
+    }
+
 
     public boolean isDirty() {
         return dirty;
     }
 
+
     public boolean isValid() {
         return true;
     }
+
+
+    public void dispose() {
+    }
+
 
     /**
      * Handles Value property changes.
@@ -158,8 +227,8 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
         try {
             dirty = true;
             // update dirty/valid flags of the editor
-            pageSite.fireEvent( this, this.getClass().getSimpleName(), IFormFieldListener.VALUE_CHANGE,
-                    null );
+            pageSite.fireEvent( this, this.getClass().getSimpleName(),
+                    IFormFieldListener.VALUE_CHANGE, null );
             viewer.refresh( true );
         }
         catch (Exception e) {

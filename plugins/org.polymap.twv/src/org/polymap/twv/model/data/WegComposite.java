@@ -100,10 +100,12 @@ public interface WegComposite
 
 
     @Optional
+    // TODO implement bi directional
     ManyAssociation<WegobjektComposite> wegobjekte();
 
 
     @Optional
+    // TODO implement bi directional
     ManyAssociation<SchildComposite> schilder();
 
 
@@ -136,6 +138,7 @@ public interface WegComposite
 
 
     @Optional
+    // TODO implement bi directional
     ManyAssociation<VermarkterComposite> vermarkter();
 
 

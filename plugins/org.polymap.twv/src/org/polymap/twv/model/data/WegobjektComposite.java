@@ -22,6 +22,9 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.query.grammar.BooleanExpression;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
 import com.vividsolutions.jts.geom.Point;
@@ -31,6 +34,7 @@ import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
 import org.polymap.twv.model.Named;
+import org.polymap.twv.model.TwvRepository;
 
 /**
  * 
@@ -47,18 +51,28 @@ public interface WegobjektComposite
     @Computed
     Property<String> name();
 
+
     @Optional
     Association<WegobjektNameComposite> wegobjektName();
-    
+
+
     @Optional
     Property<String> beschreibung();
-    
+
+
     @Optional
     Property<Point> standort();
-    
+
+
     @Optional
     // TODO Bild wie speichern?
     Property<String> bild();
+
+
+    /** bidrectional navigierbar? */
+    @Optional
+    Association<WegComposite> weg();
+
 
     /**
      * Methods and transient fields.
@@ -67,17 +81,32 @@ public interface WegobjektComposite
             implements WegobjektComposite {
 
         private static Log log = LogFactory.getLog( Mixin.class );
-        
+
+
         @Override
         public void beforeCompletion()
                 throws UnitOfWorkCompletionException {
         }
-        
+
+
         public Property<String> name() {
             if (wegobjektName().get() != null) {
                 return wegobjektName().get().name();
             }
             return null;
+        }
+
+
+        // TODO Wegobjekte filtern
+        public static Iterable<WegobjektComposite> forEntity( WegComposite weg ) {
+            WegobjektComposite template = QueryExpressions.templateFor( WegobjektComposite.class );
+            BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
+            // Query<SchildComposite> matches =
+            // TwvRepository.instance().findEntities( SchildComposite.class,
+            // expr, 0, -1 );
+            Query<WegobjektComposite> matches = TwvRepository.instance().findEntities(
+                    WegobjektComposite.class, null, 0, -1 );
+            return matches;
         }
     }
 

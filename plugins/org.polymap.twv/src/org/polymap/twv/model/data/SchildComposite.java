@@ -87,7 +87,7 @@ public interface SchildComposite
     Property<String> bild();
 
 
-    /** bidrectional navigierbar */
+    /** bidrectional navigierbar? */
     @Optional
     Association<WegComposite> weg();
 
@@ -103,7 +103,6 @@ public interface SchildComposite
         // @Override
         // public void beforeCompletion()
         // throws UnitOfWorkCompletionException {
-        // // TODO Auto-generated method stub
         // throw new RuntimeException( "not yet implemented." );
         // }
         // @Override
@@ -159,6 +158,7 @@ public interface SchildComposite
         }
 
 
+        // TODO Schilder filtern
         public static Iterable<SchildComposite> forEntity( WegComposite weg ) {
             SchildComposite template = QueryExpressions.templateFor( SchildComposite.class );
             BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );

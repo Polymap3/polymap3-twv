@@ -127,7 +127,7 @@ public class ReloadablePropertyAdapter<T extends Entity>
         private T composite;
 
 
-        T get() {
+        public T get() {
             return composite;
         }
 
