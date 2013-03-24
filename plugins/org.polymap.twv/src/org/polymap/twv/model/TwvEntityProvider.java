@@ -64,13 +64,6 @@ abstract class TwvEntityProvider<T extends Entity>
         return "geom";
     }
 
-
-    public ReferencedEnvelope getBounds() {
-        return new ReferencedEnvelope( 4000000, 5000000, 5000000, 6000000,
-                getCoordinateReferenceSystem( null ) );
-    }
-
-
     @Override
     public FeatureType buildFeatureType( FeatureType schema ) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();

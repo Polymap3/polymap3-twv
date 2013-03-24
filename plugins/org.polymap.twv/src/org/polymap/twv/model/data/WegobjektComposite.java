@@ -61,7 +61,7 @@ public interface WegobjektComposite
 
 
     @Optional
-    Property<Point> standort();
+    Property<Point> geom();
 
 
     @Optional

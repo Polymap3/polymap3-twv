@@ -12,8 +12,6 @@
  */
 package org.polymap.twv.model.data;
 
-import java.util.Iterator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,6 +28,8 @@ import org.qi4j.api.property.PropertyInfo;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.BooleanExpression;
+
+import com.vividsolutions.jts.geom.Point;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
@@ -63,8 +63,8 @@ public interface SchildComposite
     Property<String> laufendeNr();
 
 
-    // @Optional
-    // Property<Point> standort();
+     @Optional
+     Property<Point> geom();
 
     @Optional
     Association<PfeilrichtungComposite> pfeilrichtung();
