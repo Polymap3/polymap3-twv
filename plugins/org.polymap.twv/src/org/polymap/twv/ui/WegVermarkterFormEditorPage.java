@@ -253,6 +253,8 @@ public class WegVermarkterFormEditorPage
     
     @Override
     protected VermarkterComposite createNewComposite() {
-        return TwvRepository.instance().newEntity( VermarkterComposite.class, null );
+        VermarkterComposite composite = TwvRepository.instance().newEntity( VermarkterComposite.class, null );
+        composite.weg().set( weg );
+        return composite;
     }
 }

@@ -21,6 +21,15 @@ import org.polymap.rhei.form.FormEditor;
 import org.polymap.rhei.form.IFormEditorPage;
 import org.polymap.rhei.form.IFormPageProvider;
 
+import org.polymap.twv.model.data.AusweisungComposite;
+import org.polymap.twv.model.data.EntfernungskontrolleComposite;
+import org.polymap.twv.model.data.FoerderregionComposite;
+import org.polymap.twv.model.data.SchildartComposite;
+import org.polymap.twv.model.data.SchildmaterialComposite;
+import org.polymap.twv.model.data.WegbeschaffenheitComposite;
+import org.polymap.twv.model.data.WegobjektNameComposite;
+import org.polymap.twv.model.data.WidmungComposite;
+
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
@@ -41,11 +50,43 @@ public class FormPageProvider
             result.add( new WegWegobjektFormEditorPage( feature, formEditor.getFeatureStore() ) );
             result.add( new WegSchilderFormEditorPage( feature, formEditor.getFeatureStore() ) );
         }
-        if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schild" )) {
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schild" )) {
             result.add( new SchildFormEditorPage( feature, formEditor.getFeatureStore() ) );
         }
-        if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "wegobjekt" )) {
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "wegobjekt" )) {
             result.add( new WegobjektFormEditorPage( feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "ausweisung" )) {
+            result.add( new NamedFormEditorPage<AusweisungComposite>( AusweisungComposite.class,
+                    "Ausweisung", feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "entfernungskontrolle" )) {
+            result.add( new NamedFormEditorPage<EntfernungskontrolleComposite>( EntfernungskontrolleComposite.class,
+                    "Entfernungskontrolle", feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "foerderregion" )) {
+            result.add( new NamedFormEditorPage<FoerderregionComposite>( FoerderregionComposite.class,
+                    "Förderregion", feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "wegbeschaffenheit" )) {
+            result.add( new NamedFormEditorPage<WegbeschaffenheitComposite>( WegbeschaffenheitComposite.class,
+                    "Wegbeschaffenheit", feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "widmung" )) {
+            result.add( new NamedFormEditorPage<WidmungComposite>( WidmungComposite.class,
+                    "Widmung", feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "wegobjektname" )) {
+            result.add( new NamedFormEditorPage<WegobjektNameComposite>( WegobjektNameComposite.class,
+                    "Wegobjektname", feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schildart" )) {
+            result.add( new NamedFormEditorPage<SchildartComposite>( SchildartComposite.class,
+                    "Schildart", feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schildmaterial" )) {
+            result.add( new NamedFormEditorPage<SchildmaterialComposite>( SchildmaterialComposite.class,
+                    "Schildmaterial", feature, formEditor.getFeatureStore() ) );
         }
         return result;
     }
