@@ -15,32 +15,63 @@ package org.polymap.twv.ui;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
+import org.polymap.rhei.data.entityfeature.ValuePropertyAdapter;
+import org.polymap.rhei.field.IFormFieldValidator;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
+import org.polymap.rhei.field.UploadFormField;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
-import org.polymap.twv.model.data.AusweisungComposite;
-import org.polymap.twv.model.data.KategorieComposite;
-import org.polymap.twv.model.data.MarkierungComposite;
+import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.data.PfeilrichtungComposite;
-import org.polymap.twv.model.data.PrioritaetComposite;
 import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
-import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.WegComposite;
-import org.polymap.twv.model.data.WidmungComposite;
+import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 public class SchildFormEditorPage
         extends TwvDefaultFormEditorPage {
+
+    
+    /**
+     * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
+     */
+    public class UploadedImageToImageValueTransformer
+            implements IFormFieldValidator {
+
+
+        @Override
+        public String validate( Object fieldValue ) {
+            return null;
+        }
+
+
+        @Override
+        public Object transform2Model( Object fieldValue )
+                throws Exception {
+            return fieldValue;
+        }
+
+
+        @Override
+        public Object transform2Field( Object modelValue )
+                throws Exception {
+            return modelValue;
+        }
+    }
+
 
     public SchildFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( SchildFormEditorPage.class.getName(), "Schild", feature, featureStore );
@@ -58,63 +89,57 @@ public class SchildFormEditorPage
 
         Composite parent = site.getPageBody();
         parent.setLayout( new FormLayout() );
-        
-        Composite schildForm = createSchildForm( parent, schild );
-        
-        // wegauswahl nur wenn schild komplett bearbeitet wird
-        Composite line5 = newFormField( "Weg" ).setParent( parent )
-                .setProperty( new AssociationAdapter<WegComposite>( "weg", schild.weg() ) )
-                .setValidator( new NotNullValidator() )
-                .setField( namedAssocationsPicklist( WegComposite.class ) )
-                .setLayoutData( left().top( schildForm ).create() ).create();
-    }
-
-
-    public Composite createSchildForm( Composite parent, SchildComposite schild ) {
 
         Composite line1 = newFormField( "Schildart" )
-                .setParent( parent )
+                
                 .setProperty(
                         new AssociationAdapter<SchildartComposite>( "schildart", schild.schildart() ) )
                 .setField( namedAssocationsPicklist( SchildartComposite.class, true ) )
                 .setLayoutData( left().create() ).create();
 
-        newFormField( "Nummer"  ).setParent( parent )
+        newFormField( "Nummer" )
                 .setProperty( new PropertyAdapter( schild.laufendeNr() ) )
                 .setValidator( new NotNullValidator() ).setField( new StringFormField() )
                 .setLayoutData( right().create() ).setToolTipText( "laufende Schild Nummer" )
                 .create();
 
-        Composite line2 = newFormField( "Pfeilrichtung"  )
-                .setParent( parent )
+        Composite line2 = newFormField( "Pfeilrichtung" )
+                
                 .setProperty(
                         new AssociationAdapter<PfeilrichtungComposite>( "pfeilrichtung", schild
                                 .pfeilrichtung() ) )
                 .setField( namedAssocationsPicklist( PfeilrichtungComposite.class ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
 
-        newFormField( "Material"  )
-                .setParent( parent )
+        newFormField( "Material" )
+                
                 .setProperty(
                         new AssociationAdapter<SchildmaterialComposite>( "material", schild
                                 .material() ) )
                 .setField( namedAssocationsPicklist( SchildmaterialComposite.class ) )
                 .setLayoutData( right().top( line1 ).create() ).create();
 
-        Composite line3 = newFormField( "Beschriftung"  ).setParent( parent )
+        Composite line3 = newFormField( "Beschriftung" )
                 .setProperty( new PropertyAdapter( schild.beschriftung() ) )
                 .setField( new TextFormField() )
                 .setLayoutData( left().top( line2 ).height( 50 ).right( RIGHT ).create() )
                 .setToolTipText( "Schildbeschriftung mit Entfernungsangabe und Zusatzinfo" )
                 .create();
 
-        Composite line4 = newFormField( "Befestigung"  ).setParent( parent )
+        Composite line4 = newFormField( "Befestigung" )
                 .setProperty( new PropertyAdapter( schild.beschriftung() ) )
                 .setField( new TextFormField() )
                 .setLayoutData( left().top( line3 ).height( 50 ).create() ).create();
 
-        // TODO Schildbild fehlt noch
-
-        return line4;
+        Composite line5 = newFormField( "Weg" )
+                .setProperty( new AssociationAdapter<WegComposite>( "weg", schild.weg() ) )
+                .setValidator( new NotNullValidator() )
+                .setField( namedAssocationsPicklist( WegComposite.class ) )
+                .setLayoutData( left().top( line4 ).create() ).create();
+        
+        Composite line6 = newFormField( "Bild" )
+                .setProperty( new ImageValuePropertyAdapter( "bild", schild.bild() ) )
+                .setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
+                .setLayoutData( left().top( line5 ).create() ).create();
     }
 }

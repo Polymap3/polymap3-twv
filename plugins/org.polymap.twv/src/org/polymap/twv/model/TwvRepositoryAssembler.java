@@ -41,6 +41,7 @@ import org.polymap.twv.model.NamedCreatorCallback.Impl;
 import org.polymap.twv.model.data.AusweisungComposite;
 import org.polymap.twv.model.data.EntfernungskontrolleComposite;
 import org.polymap.twv.model.data.FoerderregionComposite;
+import org.polymap.twv.model.data.ImageValue;
 import org.polymap.twv.model.data.KategorieComposite;
 import org.polymap.twv.model.data.MarkierungComposite;
 import org.polymap.twv.model.data.PfeilrichtungComposite;
@@ -112,14 +113,11 @@ public class TwvRepositoryAssembler
                 UnterkategorieComposite.class, PrioritaetComposite.class );
 
         // persistence: workspace/Lucene
-        File root = new File( Polymap.getWorkspacePath().toFile(), "data" );
-
-        File moduleRoot = new File( root, TwvPlugin.PLUGIN_ID );
-        moduleRoot.mkdir();
+        domainModule.addValues( ImageValue.class );
 
         domainModule.addServices( LuceneEntityStoreService.class )
-                .setMetaInfo( new LuceneEntityStoreInfo( moduleRoot ) ).instantiateOnStartup()
-                .identifiedBy( "lucene-repository" );
+                .setMetaInfo( new LuceneEntityStoreInfo( TwvPlugin.getModuleRoot() ) )
+                .instantiateOnStartup().identifiedBy( "lucene-repository" );
 
         // indexer
         domainModule.addServices( LuceneEntityStoreQueryService.class )

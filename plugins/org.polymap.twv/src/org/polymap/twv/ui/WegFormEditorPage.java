@@ -151,9 +151,6 @@ public class WegFormEditorPage
                 .setField( namedAssocationsPicklist( MarkierungComposite.class ) )
                 .setLayoutData( right().top( line6 ).create() ).create();
 
-        // unterkategorieReloader
-        // site.addFieldListener( unterkategorieReloader = new
-        // UnterkategorieReloader( site, unterkategorieList ) );
         site.addFieldListener( kategorieSelectionListener = new IFormFieldListener() {
 
             @Override

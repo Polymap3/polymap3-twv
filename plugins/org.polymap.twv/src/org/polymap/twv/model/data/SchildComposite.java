@@ -63,8 +63,9 @@ public interface SchildComposite
     Property<String> laufendeNr();
 
 
-     @Optional
-     Property<Point> geom();
+    @Optional
+    Property<Point> geom();
+
 
     @Optional
     Association<PfeilrichtungComposite> pfeilrichtung();
@@ -83,8 +84,12 @@ public interface SchildComposite
 
 
     @Optional
-    // TODO Bild wie speichern?
-    Property<String> bild();
+    Property<ImageValue> bild();
+
+
+    @Optional
+    @Computed
+    Property<String> bilddatei();
 
 
     /** bidrectional navigierbar? */
@@ -98,7 +103,7 @@ public interface SchildComposite
     public static abstract class Mixin
             implements SchildComposite {
 
-        private static Log   log          = LogFactory.getLog( Mixin.class );
+        private static Log   log               = LogFactory.getLog( Mixin.class );
 
         // @Override
         // public void beforeCompletion()
@@ -141,7 +146,11 @@ public interface SchildComposite
         // }
         // }
 
-        private PropertyInfo nameProperty = new GenericPropertyInfo( SchildComposite.class, "name" );
+        private PropertyInfo nameProperty      = new GenericPropertyInfo( SchildComposite.class,
+                                                       "name" );
+
+        private PropertyInfo bilddateiProperty = new GenericPropertyInfo( SchildComposite.class,
+                                                       "bilddatei" );
 
 
         @Override
@@ -158,14 +167,29 @@ public interface SchildComposite
         }
 
 
+        @Override
+        public Property<String> bilddatei() {
+            return new ComputedPropertyInstance<String>( bilddateiProperty ) {
+
+                public String get() {
+                    if (bild().get() != null) {
+                        return bild().get().originalFileName().get();
+                    }
+                    return "";
+                }
+            };
+        }
+
+
         // TODO Schilder filtern
         public static Iterable<SchildComposite> forEntity( WegComposite weg ) {
             SchildComposite template = QueryExpressions.templateFor( SchildComposite.class );
             BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
-//            Query<SchildComposite> matches = TwvRepository.instance().findEntities( SchildComposite.class,
-//                    expr, 0, -1 );
-            Query<SchildComposite> matches = TwvRepository.instance().findEntities( SchildComposite.class,
-                    null, 0, -1 );
+            // Query<SchildComposite> matches =
+            // TwvRepository.instance().findEntities( SchildComposite.class,
+            // expr, 0, -1 );
+            Query<SchildComposite> matches = TwvRepository.instance().findEntities(
+                    SchildComposite.class, null, 0, -1 );
             return matches;
         }
     }

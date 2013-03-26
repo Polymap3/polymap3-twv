@@ -31,17 +31,20 @@ import org.polymap.core.model.EntityType;
 import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
+import org.polymap.rhei.field.UploadFormField;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
+import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.TwvRepository;
+import org.polymap.twv.model.data.ImageValue;
 import org.polymap.twv.model.data.PfeilrichtungComposite;
 import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.WegComposite;
+import org.polymap.twv.ui.rhei.ReloadableImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.AssociationCallback;
-import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.CompositeProvider;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.PropertyCallback;
 
 /**
@@ -96,6 +99,7 @@ public class WegSchilderFormEditorPage
         pageSite.setFieldEnabled( "material", enabled );
         pageSite.setFieldEnabled( "beschriftung", enabled );
         pageSite.setFieldEnabled( "befestigung", enabled );
+        pageSite.setFieldEnabled( "bild", enabled );
         
         // TODO validator not null an der Number
     }
@@ -131,9 +135,9 @@ public class WegSchilderFormEditorPage
                                     public Property get( SchildComposite entity ) {
                                         return entity.laufendeNr();
                                     }
-                                } ) )
-                .setField( new StringFormField() ).setLayoutData( right().create() )
-                .setToolTipText( "laufende Schild Nummer" ).create();
+                                } ) ).setField( new StringFormField() )
+                .setLayoutData( right().create() ).setToolTipText( "laufende Schild Nummer" )
+                .create();
 
         Composite line2 = newFormField( "Pfeilrichtung" )
                 .setParent( parent )
@@ -187,9 +191,21 @@ public class WegSchilderFormEditorPage
                                 } ) ).setField( new TextFormField() )
                 .setLayoutData( left().top( line3 ).height( 50 ).create() ).create();
 
-        // TODO Schildbild fehlt noch
+        Composite line5 = newFormField( "Bild" )
+                .setParent( parent )
+                .setProperty(
+                        new ReloadableImageValuePropertyAdapter<SchildComposite>(
+                                selectedComposite,
+                                "bild",
+                                new ReloadableImageValuePropertyAdapter.PropertyCallback<SchildComposite>() {
 
-        return line4;
+                                    public Property<ImageValue> get( SchildComposite entity ) {
+                                        return entity.bild();
+                                    }
+                                } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
+                .setLayoutData( left().top( line4 ).create() ).create();
+
+        return line5;
     }
 
 

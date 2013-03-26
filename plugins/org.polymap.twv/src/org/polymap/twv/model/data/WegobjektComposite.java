@@ -65,8 +65,7 @@ public interface WegobjektComposite
 
 
     @Optional
-    // TODO Bild wie speichern?
-    Property<String> bild();
+    Property<ImageValue> bild();
 
 
     /** bidrectional navigierbar? */

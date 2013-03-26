@@ -30,12 +30,16 @@ import org.polymap.core.model.EntityType;
 
 import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
 import org.polymap.rhei.field.TextFormField;
+import org.polymap.rhei.field.UploadFormField;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
+import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.TwvRepository;
+import org.polymap.twv.model.data.ImageValue;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
+import org.polymap.twv.ui.rhei.ReloadableImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.AssociationCallback;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.PropertyCallback;
@@ -88,6 +92,7 @@ public class WegWegobjektFormEditorPage
         boolean enabled = selectedComposite.get() != null;
         pageSite.setFieldEnabled( "wegobjektName", enabled );
         pageSite.setFieldEnabled( "beschreibung", enabled );
+        pageSite.setFieldEnabled( "bild", enabled );
     }
 
 
@@ -125,9 +130,21 @@ public class WegWegobjektFormEditorPage
                 .setLayoutData( left().top( line1 ).height( 80 ).right( RIGHT ).create() )
                 .setToolTipText( "Beschreibung des Wegobjektes" ).create();
 
-        // TODO Schildbild fehlt noch
+        Composite line3 = newFormField( "Bild" )
+                .setParent( parent )
+                .setProperty(
+                        new ReloadableImageValuePropertyAdapter<WegobjektComposite>(
+                                selectedComposite,
+                                "bild",
+                                new ReloadableImageValuePropertyAdapter.PropertyCallback<WegobjektComposite>() {
 
-        return line2;
+                                    public Property<ImageValue> get( WegobjektComposite entity ) {
+                                        return entity.bild();
+                                    }
+                                } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
+                .setLayoutData( left().top( line2 ).create() ).create();
+        
+        return line3;
     }
 
 
