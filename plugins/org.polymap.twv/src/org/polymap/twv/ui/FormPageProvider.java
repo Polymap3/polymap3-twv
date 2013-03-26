@@ -60,33 +60,43 @@ public class FormPageProvider
             result.add( new NamedFormEditorPage<AusweisungComposite>( AusweisungComposite.class,
                     "Ausweisung", feature, formEditor.getFeatureStore() ) );
         }
-        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "entfernungskontrolle" )) {
-            result.add( new NamedFormEditorPage<EntfernungskontrolleComposite>( EntfernungskontrolleComposite.class,
-                    "Entfernungskontrolle", feature, formEditor.getFeatureStore() ) );
+        else if (feature.getType().getName().getLocalPart()
+                .equalsIgnoreCase( "entfernungskontrolle" )) {
+            result.add( new NamedFormEditorPage<EntfernungskontrolleComposite>(
+                    EntfernungskontrolleComposite.class, "Entfernungskontrolle", feature,
+                    formEditor.getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "foerderregion" )) {
-            result.add( new NamedFormEditorPage<FoerderregionComposite>( FoerderregionComposite.class,
-                    "Förderregion", feature, formEditor.getFeatureStore() ) );
+            result.add( new NamedFormEditorPage<FoerderregionComposite>(
+                    FoerderregionComposite.class, "Förderregion", feature, formEditor
+                            .getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "wegbeschaffenheit" )) {
-            result.add( new NamedFormEditorPage<WegbeschaffenheitComposite>( WegbeschaffenheitComposite.class,
-                    "Wegbeschaffenheit", feature, formEditor.getFeatureStore() ) );
+            result.add( new NamedFormEditorPage<WegbeschaffenheitComposite>(
+                    WegbeschaffenheitComposite.class, "Wegbeschaffenheit", feature, formEditor
+                            .getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "widmung" )) {
             result.add( new NamedFormEditorPage<WidmungComposite>( WidmungComposite.class,
                     "Widmung", feature, formEditor.getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "wegobjektname" )) {
-            result.add( new NamedFormEditorPage<WegobjektNameComposite>( WegobjektNameComposite.class,
-                    "Wegobjektname", feature, formEditor.getFeatureStore() ) );
+            result.add( new NamedFormEditorPage<WegobjektNameComposite>(
+                    WegobjektNameComposite.class, "Wegobjektname", feature, formEditor
+                            .getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schildart" )) {
             result.add( new NamedFormEditorPage<SchildartComposite>( SchildartComposite.class,
                     "Schildart", feature, formEditor.getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schildmaterial" )) {
-            result.add( new NamedFormEditorPage<SchildmaterialComposite>( SchildmaterialComposite.class,
-                    "Schildmaterial", feature, formEditor.getFeatureStore() ) );
+            result.add( new NamedFormEditorPage<SchildmaterialComposite>(
+                    SchildmaterialComposite.class, "Schildmaterial", feature, formEditor
+                            .getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "markierung" )) {
+            result.add( new MarkierungFormEditorPage( "Markierung", feature, formEditor
+                    .getFeatureStore() ) );
         }
         return result;
     }

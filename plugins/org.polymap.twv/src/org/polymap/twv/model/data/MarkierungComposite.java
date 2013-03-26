@@ -19,7 +19,11 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Computed;
+import org.qi4j.api.property.ComputedPropertyInstance;
+import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.property.PropertyInfo;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
@@ -41,9 +45,15 @@ public interface MarkierungComposite
     @Optional
     Property<String> name();
 
+
     @Optional
-    // TODO
+    Property<ImageValue> bild();
+
+
+    @Optional
+    @Computed
     Property<String> bildName();
+
 
     /**
      * Methods and transient fields.
@@ -51,7 +61,23 @@ public interface MarkierungComposite
     public static abstract class Mixin
             implements MarkierungComposite {
 
-        private static Log log = LogFactory.getLog( Mixin.class );
+        private static Log   log              = LogFactory.getLog( Mixin.class );
 
+        private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class,
+                                                      "bildName" );
+
+
+        @Override
+        public Property<String> bildName() {
+            return new ComputedPropertyInstance<String>( bildNameProperty ) {
+
+                public String get() {
+                    if (bild().get() != null) {
+                        return bild().get().originalFileName().get();
+                    }
+                    return "";
+                }
+            };
+        }
     }
 }

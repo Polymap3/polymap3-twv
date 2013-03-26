@@ -89,7 +89,7 @@ public interface SchildComposite
 
     @Optional
     @Computed
-    Property<String> bilddatei();
+    Property<String> bildName();
 
 
     /** bidrectional navigierbar? */
@@ -103,7 +103,7 @@ public interface SchildComposite
     public static abstract class Mixin
             implements SchildComposite {
 
-        private static Log   log               = LogFactory.getLog( Mixin.class );
+        private static Log   log          = LogFactory.getLog( Mixin.class );
 
         // @Override
         // public void beforeCompletion()
@@ -146,11 +146,7 @@ public interface SchildComposite
         // }
         // }
 
-        private PropertyInfo nameProperty      = new GenericPropertyInfo( SchildComposite.class,
-                                                       "name" );
-
-        private PropertyInfo bilddateiProperty = new GenericPropertyInfo( SchildComposite.class,
-                                                       "bilddatei" );
+        private PropertyInfo nameProperty = new GenericPropertyInfo( SchildComposite.class, "name" );
 
 
         @Override
@@ -166,10 +162,13 @@ public interface SchildComposite
             };
         }
 
+        private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class,
+                                                      "bildName" );
+
 
         @Override
-        public Property<String> bilddatei() {
-            return new ComputedPropertyInstance<String>( bilddateiProperty ) {
+        public Property<String> bildName() {
+            return new ComputedPropertyInstance<String>( bildNameProperty ) {
 
                 public String get() {
                     if (bild().get() != null) {

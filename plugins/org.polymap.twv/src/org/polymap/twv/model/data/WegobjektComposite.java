@@ -21,7 +21,10 @@ import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Computed;
+import org.qi4j.api.property.ComputedPropertyInstance;
+import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.property.PropertyInfo;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.BooleanExpression;
@@ -68,6 +71,11 @@ public interface WegobjektComposite
     Property<ImageValue> bild();
 
 
+    @Optional
+    @Computed
+    Property<String> bildName();
+
+
     /** bidrectional navigierbar? */
     @Optional
     Association<WegComposite> weg();
@@ -93,6 +101,23 @@ public interface WegobjektComposite
                 return wegobjektName().get().name();
             }
             return null;
+        }
+
+        private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class,
+                                                      "bildName" );
+
+
+        @Override
+        public Property<String> bildName() {
+            return new ComputedPropertyInstance<String>( bildNameProperty ) {
+
+                public String get() {
+                    if (bild().get() != null) {
+                        return bild().get().originalFileName().get();
+                    }
+                    return "";
+                }
+            };
         }
 
 
