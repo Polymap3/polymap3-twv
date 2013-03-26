@@ -14,9 +14,9 @@ import org.qi4j.api.property.Property;
 public class ReloadablePropertyAdapter<T extends Entity>
         implements org.opengis.feature.Property {
 
-    private Property            delegate;
+    private Property               delegate;
 
-    private String              name;
+    private String                 name;
 
     private CompositeProvider<T>   provider;
 
@@ -42,15 +42,7 @@ public class ReloadablePropertyAdapter<T extends Entity>
 
 
     public Name getName() {
-        if (pcb != null) {
-            Property p = getCurrentProperty();
-            return new NameImpl( p == null ? name : p.qualifiedName().name() );
-        }
-        else {
-            Association p = getCurrentAssociation();
-            return new NameImpl( p == null ? name : p.qualifiedName().name() );
-
-        }
+        return new NameImpl( name );
     }
 
 

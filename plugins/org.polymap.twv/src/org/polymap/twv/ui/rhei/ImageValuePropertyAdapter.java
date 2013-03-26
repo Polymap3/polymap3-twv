@@ -16,6 +16,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 
 import org.polymap.rhei.data.entityfeature.ValuePropertyAdapter;
+import org.polymap.rhei.field.UploadFormField.DefaultUploadedImage;
 import org.polymap.rhei.field.UploadFormField.UploadedImage;
 
 import org.polymap.twv.model.TwvRepository;
@@ -30,6 +31,8 @@ public class ImageValuePropertyAdapter
     private final Property<ImageValue> imageValueProperty;
 
 
+    // private UploadedImage currentUploadedImage;
+
     public ImageValuePropertyAdapter( String name, Property<ImageValue> imageValueProperty ) {
         super( name, imageValueProperty );
         this.imageValueProperty = imageValueProperty;
@@ -37,11 +40,14 @@ public class ImageValuePropertyAdapter
 
 
     public Object getValue() {
+        // if (currentUploadedImage == null) {
         final ImageValue image = imageValueProperty.get();
         if (image != null) {
             return convertToUploadedImage( image );
         }
         return null;
+        // }
+        // return currentUploadedImage;
     }
 
 
@@ -51,40 +57,21 @@ public class ImageValuePropertyAdapter
      * @return
      */
     public static UploadedImage convertToUploadedImage( final ImageValue image ) {
-        return new UploadedImage() {
-
-            public String originalFilePath() {
-                return image.originalFilePath().get();
-            }
-
-
-            public String originalFileName() {
-                return image.originalFileName().get();
-            }
-
-
-            public String internalFileName() {
-                return image.internalFileName().get();
-            }
-
-
-            public Long fileSize() {
-                return image.fileSize().get();
-            }
-
-
-            public String contentType() {
-                return image.contentType().get();
-            }
-        };
+        return new DefaultUploadedImage( image.originalFileName().get(), image.originalFilePath()
+                .get(), image.contentType().get(), image.internalFileName().get(), image.fileSize()
+                .get() );
     }
 
 
     public void setValue( Object newValue ) {
-        if (newValue != null) {
-            UploadedImage newImage = (UploadedImage)newValue;
-            ImageValue newInstance = convertToImageValue( newImage );
+        UploadedImage currentUploadedImage = (UploadedImage)newValue;
+        if (currentUploadedImage != null) {
+
+            ImageValue newInstance = convertToImageValue( currentUploadedImage );
             imageValueProperty.set( newInstance );
+        }
+        else {
+            imageValueProperty.set( null );
         }
     }
 
@@ -95,7 +82,7 @@ public class ImageValuePropertyAdapter
      * @param imageValueProperty
      * @return
      */
-    public static ImageValue convertToImageValue( UploadedImage newImage) {
+    public static ImageValue convertToImageValue( UploadedImage newImage ) {
 
         ValueBuilder<ImageValue> imageBuilder = TwvRepository.instance().newValueBuilder(
                 ImageValue.class );

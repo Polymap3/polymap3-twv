@@ -50,7 +50,9 @@ import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.PropertyCallback;
 public class WegWegobjektFormEditorPage
         extends TwvDefaultFormEditorPageWithFeatureTable<WegobjektComposite> {
 
-    private WegComposite weg;
+    private WegComposite        weg;
+
+    private final static String prefix = WegWegobjektFormEditorPage.class.getSimpleName();
 
 
     public WegWegobjektFormEditorPage( Feature feature, FeatureStore featureStore ) {
@@ -90,9 +92,9 @@ public class WegWegobjektFormEditorPage
      */
     private void refreshFieldEnablement() {
         boolean enabled = selectedComposite.get() != null;
-        pageSite.setFieldEnabled( "wegobjektName", enabled );
-        pageSite.setFieldEnabled( "beschreibung", enabled );
-        pageSite.setFieldEnabled( "bild", enabled );
+        pageSite.setFieldEnabled( prefix + "wegobjektName", enabled );
+        pageSite.setFieldEnabled( prefix + "beschreibung", enabled );
+        pageSite.setFieldEnabled( prefix + "bild", enabled );
     }
 
 
@@ -108,7 +110,7 @@ public class WegWegobjektFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<WegobjektComposite>( selectedComposite,
-                                "wegobjektName", new AssociationCallback<WegobjektComposite>() {
+                                prefix + "wegobjektName", new AssociationCallback<WegobjektComposite>() {
 
                                     public Association get( WegobjektComposite entity ) {
                                         return entity.wegobjektName();
@@ -121,7 +123,7 @@ public class WegWegobjektFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<WegobjektComposite>( selectedComposite,
-                                "beschreibung", new PropertyCallback<WegobjektComposite>() {
+                                prefix + "beschreibung", new PropertyCallback<WegobjektComposite>() {
 
                                     public Property get( WegobjektComposite entity ) {
                                         return entity.beschreibung();
@@ -135,7 +137,7 @@ public class WegWegobjektFormEditorPage
                 .setProperty(
                         new ReloadableImageValuePropertyAdapter<WegobjektComposite>(
                                 selectedComposite,
-                                "bild",
+                                prefix + "bild",
                                 new ReloadableImageValuePropertyAdapter.PropertyCallback<WegobjektComposite>() {
 
                                     public Property<ImageValue> get( WegobjektComposite entity ) {
@@ -143,7 +145,7 @@ public class WegWegobjektFormEditorPage
                                     }
                                 } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
-        
+
         return line3;
     }
 

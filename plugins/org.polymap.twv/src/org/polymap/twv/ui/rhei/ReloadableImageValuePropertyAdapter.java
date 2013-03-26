@@ -36,8 +36,7 @@ public class ReloadableImageValuePropertyAdapter<T extends Entity>
 
 
     public Name getName() {
-        Property<ImageValue> p = getCurrentProperty();
-        return new NameImpl( p == null ? name : p.qualifiedName().name() );
+        return new NameImpl( name );
     }
 
 

@@ -53,7 +53,9 @@ import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.PropertyCallback;
 public class WegSchilderFormEditorPage
         extends TwvDefaultFormEditorPageWithFeatureTable<SchildComposite> {
 
-    private WegComposite weg;
+    private WegComposite        weg;
+
+    private final static String prefix = WegSchilderFormEditorPage.class.getSimpleName();
 
 
     public WegSchilderFormEditorPage( Feature feature, FeatureStore featureStore ) {
@@ -93,14 +95,14 @@ public class WegSchilderFormEditorPage
      */
     private void refreshFieldEnablement() {
         boolean enabled = selectedComposite.get() != null;
-        pageSite.setFieldEnabled( "schildart", enabled );
-        pageSite.setFieldEnabled( "laufendeNr", enabled );
-        pageSite.setFieldEnabled( "pfeilrichtung", enabled );
-        pageSite.setFieldEnabled( "material", enabled );
-        pageSite.setFieldEnabled( "beschriftung", enabled );
-        pageSite.setFieldEnabled( "befestigung", enabled );
-        pageSite.setFieldEnabled( "bild", enabled );
-        
+        pageSite.setFieldEnabled( prefix + "schildart", enabled );
+        pageSite.setFieldEnabled( prefix + "laufendeNr", enabled );
+        pageSite.setFieldEnabled( prefix + "pfeilrichtung", enabled );
+        pageSite.setFieldEnabled( prefix + "material", enabled );
+        pageSite.setFieldEnabled( prefix + "beschriftung", enabled );
+        pageSite.setFieldEnabled( prefix + "befestigung", enabled );
+        pageSite.setFieldEnabled( prefix + "bild", enabled );
+
         // TODO validator not null an der Number
     }
 
@@ -117,7 +119,7 @@ public class WegSchilderFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                "schildart", new AssociationCallback<SchildComposite>() {
+                                prefix + "schildart", new AssociationCallback<SchildComposite>() {
 
                                     public Association get( SchildComposite entity ) {
                                         return entity.schildart();
@@ -130,7 +132,7 @@ public class WegSchilderFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                "laufendeNr", new PropertyCallback<SchildComposite>() {
+                                prefix + "laufendeNr", new PropertyCallback<SchildComposite>() {
 
                                     public Property get( SchildComposite entity ) {
                                         return entity.laufendeNr();
@@ -143,7 +145,7 @@ public class WegSchilderFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                "pfeilrichtung", new AssociationCallback<SchildComposite>() {
+                                prefix + "pfeilrichtung", new AssociationCallback<SchildComposite>() {
 
                                     public Association get( SchildComposite entity ) {
                                         return entity.pfeilrichtung();
@@ -156,7 +158,7 @@ public class WegSchilderFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                "material", new AssociationCallback<SchildComposite>() {
+                                prefix + "material", new AssociationCallback<SchildComposite>() {
 
                                     public Association get( SchildComposite entity ) {
                                         return entity.material();
@@ -169,7 +171,7 @@ public class WegSchilderFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                "beschriftung", new PropertyCallback<SchildComposite>() {
+                                prefix + "beschriftung", new PropertyCallback<SchildComposite>() {
 
                                     public Property get( SchildComposite entity ) {
                                         return entity.beschriftung();
@@ -183,7 +185,7 @@ public class WegSchilderFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                "befestigung", new PropertyCallback<SchildComposite>() {
+                                prefix + "befestigung", new PropertyCallback<SchildComposite>() {
 
                                     public Property get( SchildComposite entity ) {
                                         return entity.befestigung();
@@ -196,7 +198,7 @@ public class WegSchilderFormEditorPage
                 .setProperty(
                         new ReloadableImageValuePropertyAdapter<SchildComposite>(
                                 selectedComposite,
-                                "bild",
+                                prefix + "bild",
                                 new ReloadableImageValuePropertyAdapter.PropertyCallback<SchildComposite>() {
 
                                     public Property<ImageValue> get( SchildComposite entity ) {
