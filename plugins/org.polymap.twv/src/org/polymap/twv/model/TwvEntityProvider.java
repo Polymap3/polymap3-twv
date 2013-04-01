@@ -16,7 +16,6 @@ import java.util.Collection;
 
 import org.geotools.data.Query;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -27,7 +26,6 @@ import org.polymap.core.data.util.Geometries;
 import org.polymap.core.model.Entity;
 import org.polymap.core.model.EntityType;
 import org.polymap.core.model.EntityType.Association;
-import org.polymap.core.model.EntityType.Property;
 import org.polymap.core.qi4j.QiModule;
 
 import org.polymap.rhei.data.entityfeature.DefaultEntityProvider;
@@ -40,16 +38,16 @@ import org.polymap.rhei.data.entityfeature.EntityProvider3;
  * 
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
-abstract class TwvEntityProvider<T extends Entity>
+class TwvEntityProvider<T extends Entity>
         extends DefaultEntityProvider<T>
         implements EntityProvider<T>, EntityProvider3<T> {
 
-    public TwvEntityProvider( QiModule repo, Class<T> entityClass, Name entityName,
-            FidsQueryProvider queryProvider ) {
-        super( repo, entityClass, entityName, queryProvider );
+    public TwvEntityProvider( QiModule repo, Class<T> entityClass, Name entityName ) {
+        super( repo, entityClass, entityName );
     }
 
-
+    
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem( String propName ) {
         try {
             return Geometries.crs( "EPSG:31468" );
@@ -59,10 +57,12 @@ abstract class TwvEntityProvider<T extends Entity>
         }
     }
 
-
+    
+    @Override
     public String getDefaultGeometry() {
         return "geom";
     }
+
 
     @Override
     public FeatureType buildFeatureType( FeatureType schema ) {
