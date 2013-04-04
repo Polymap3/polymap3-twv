@@ -44,9 +44,8 @@ abstract class TwvEntityProvider<T extends Entity>
         extends DefaultEntityProvider<T>
         implements EntityProvider<T>, EntityProvider3<T> {
 
-    public TwvEntityProvider( QiModule repo, Class<T> entityClass, Name entityName,
-            FidsQueryProvider queryProvider ) {
-        super( repo, entityClass, entityName, queryProvider );
+    public TwvEntityProvider( QiModule repo, Class<T> entityClass, Name entityName) {
+        super( repo, entityClass, entityName );
     }
 
 

@@ -12,7 +12,6 @@
  */
 package org.polymap.twv.model;
 
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -42,9 +41,7 @@ import org.polymap.core.qi4j.QiModuleAssembler;
 import org.polymap.core.runtime.Polymap;
 import org.polymap.core.runtime.entity.ConcurrentModificationException;
 
-import org.polymap.rhei.data.entityfeature.EntityProvider.FidsQueryProvider;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
-import org.polymap.rhei.data.entitystore.lucene.LuceneQueryProvider;
 
 import org.polymap.twv.model.data.AusweisungComposite;
 import org.polymap.twv.model.data.EntfernungskontrolleComposite;
@@ -92,9 +89,8 @@ public class TwvRepository
     public static class SimpleEntityProvider<T extends Entity>
             extends TwvEntityProvider<T> {
 
-        public SimpleEntityProvider( QiModule repo, Class<T> entityClass, Name entityName,
-                FidsQueryProvider queryProvider ) {
-            super( repo, entityClass, entityName, queryProvider );
+        public SimpleEntityProvider( QiModule repo, Class<T> entityClass, Name entityName ) {
+            super( repo, entityClass, entityName );
         }
     };
 
@@ -111,53 +107,46 @@ public class TwvRepository
 
     public void init( final Session session ) {
         try {
-            // build the queryProvider
-            ServiceReference<LuceneEntityStoreService> storeService = assembler.getModule()
-                    .serviceFinder().findService( LuceneEntityStoreService.class );
-            LuceneEntityStoreService luceneStore = storeService.get();
-            FidsQueryProvider queryProvider = new LuceneQueryProvider( luceneStore.getStore() );
-
             twvService = new TwvService(
                     new SimpleEntityProvider<AusweisungComposite>( this, AusweisungComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ), queryProvider ),
+                            new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ) ),
                     new SimpleEntityProvider<MarkierungComposite>( this, MarkierungComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Markierung" ), queryProvider ),
+                            new NameImpl( TwvRepository.NAMESPACE, "Markierung" ) ),
                     new SimpleEntityProvider<SchildartComposite>( this, SchildartComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Schildart" ), queryProvider ),
+                            new NameImpl( TwvRepository.NAMESPACE, "Schildart" ) ),
                     new SimpleEntityProvider<EntfernungskontrolleComposite>( this,
                             EntfernungskontrolleComposite.class, new NameImpl(
-                                    TwvRepository.NAMESPACE, "Entfernungskontrolle" ),
-                            queryProvider ),
+                                    TwvRepository.NAMESPACE, "Entfernungskontrolle" ) ),
                     new SimpleEntityProvider<SchildComposite>( this, SchildComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Schild" ), queryProvider ),
+                            new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),
                     new SimpleEntityProvider<SchildmaterialComposite>( this,
                             SchildmaterialComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Schildmaterial" ), queryProvider ),
+                                    "Schildmaterial" ) ),
                     new SimpleEntityProvider<VermarkterComposite>( this, VermarkterComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ), queryProvider ),
+                            new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ) ),
                     new SimpleEntityProvider<WegbeschaffenheitComposite>( this,
                             WegbeschaffenheitComposite.class, new NameImpl(
-                                    TwvRepository.NAMESPACE, "Wegbeschaffenheit" ), queryProvider ),
+                                    TwvRepository.NAMESPACE, "Wegbeschaffenheit" ) ),
                     new SimpleEntityProvider<WegComposite>( this, WegComposite.class, new NameImpl(
-                            TwvRepository.NAMESPACE, "Weg" ), queryProvider ),
+                            TwvRepository.NAMESPACE, "Weg" ) ),
                     new SimpleEntityProvider<WegobjektComposite>( this, WegobjektComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Wegobjekt" ), queryProvider ),
+                            new NameImpl( TwvRepository.NAMESPACE, "Wegobjekt" ) ),
                     new SimpleEntityProvider<WegobjektNameComposite>( this,
                             WegobjektNameComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Wegobjektname" ), queryProvider ),
+                                    "Wegobjektname" ) ),
                     new SimpleEntityProvider<FoerderregionComposite>( this,
                             FoerderregionComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Förderregion" ), queryProvider ),
+                                    "Förderregion" ) ),
                     new SimpleEntityProvider<PfeilrichtungComposite>( this,
                             PfeilrichtungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Pfeilrichtung" ), queryProvider ),
+                                    "Pfeilrichtung" ) ),
                     new SimpleEntityProvider<KategorieComposite>( this, KategorieComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Kategorie" ), queryProvider ),
+                            new NameImpl( TwvRepository.NAMESPACE, "Kategorie" ) ),
                     new SimpleEntityProvider<UnterkategorieComposite>( this,
                             UnterkategorieComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Unterkategorie" ), queryProvider ),
+                                    "Unterkategorie" ) ),
                     new SimpleEntityProvider<WidmungComposite>( this, WidmungComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Widmung" ), queryProvider ) );
+                            new NameImpl( TwvRepository.NAMESPACE, "Widmung" ) ) );
         }
         catch (Exception e) {
             throw new RuntimeException( e );
