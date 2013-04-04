@@ -76,7 +76,6 @@ public interface WegobjektComposite
     Property<String> bildName();
 
 
-    /** bidrectional navigierbar? */
     @Optional
     Association<WegComposite> weg();
 
@@ -121,15 +120,11 @@ public interface WegobjektComposite
         }
 
 
-        // TODO Wegobjekte filtern
         public static Iterable<WegobjektComposite> forEntity( WegComposite weg ) {
             WegobjektComposite template = QueryExpressions.templateFor( WegobjektComposite.class );
             BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
-            // Query<SchildComposite> matches =
-            // TwvRepository.instance().findEntities( SchildComposite.class,
-            // expr, 0, -1 );
             Query<WegobjektComposite> matches = TwvRepository.instance().findEntities(
-                    WegobjektComposite.class, null, 0, -1 );
+                    WegobjektComposite.class, expr, 0, -1 );
             return matches;
         }
     }

@@ -85,7 +85,6 @@ public interface VermarkterComposite
     Property<String> angebot();
 
 
-    /** bidrectional navigierbar? */
     @Optional
     Association<WegComposite> weg();
 
@@ -105,15 +104,11 @@ public interface VermarkterComposite
         }
 
 
-        // TODO Vermarkter filtern
         public static Iterable<VermarkterComposite> forEntity( WegComposite weg ) {
             VermarkterComposite template = QueryExpressions.templateFor( VermarkterComposite.class );
             BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
-            // Query<VermarkterComposite> matches =
-            // TwvRepository.instance().findEntities( VermarkterComposite.class,
-            // expr, 0, -1 );
             Query<VermarkterComposite> matches = TwvRepository.instance().findEntities(
-                    VermarkterComposite.class, null, 0, -1 );
+                    VermarkterComposite.class, expr, 0, -1 );
             return matches;
         }
     }

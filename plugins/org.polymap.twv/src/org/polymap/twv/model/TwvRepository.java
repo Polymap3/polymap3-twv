@@ -219,4 +219,13 @@ public class TwvRepository
         }
         return names;
     }
+
+
+    @Override
+    public void removeEntity( Entity entity ) {
+        if (WegComposite.class.isAssignableFrom( entity.getClass() )) {
+            WegComposite.Mixin.beforeRemove( (WegComposite)entity );
+        }
+        super.removeEntity( entity );
+    }
 }

@@ -68,15 +68,6 @@ public interface WegComposite
     Association<PrioritaetComposite> prioritaet();
 
 
-    // wird nur im Formular angezeigt
-    // @Optional
-    // // TODO geometrie wie?
-    // Property<String> gemeinde();
-    //
-    // @Optional
-    // // TODO Länge im LAndkreis
-    // Property<String> laengeImLandkreis();
-
     @Optional
     Property<String> laengeUeberregional();
 
@@ -87,7 +78,6 @@ public interface WegComposite
 
     /** @see WegbeschaffenheitComposite als Textbausteine */
     @Optional
-    // Association<WegbeschaffenheitComposite> beschaffenheit();
     Property<String> beschaffenheit();
 
 
@@ -97,16 +87,6 @@ public interface WegComposite
 
     @Optional
     Association<MarkierungComposite> markierung();
-
-
-    @Optional
-    // TODO implement bi directional
-    ManyAssociation<WegobjektComposite> wegobjekte();
-
-
-    @Optional
-    // TODO implement bi directional
-    ManyAssociation<SchildComposite> schilder();
 
 
     @Optional
@@ -137,11 +117,6 @@ public interface WegComposite
     Property<String> maengel();
 
 
-    @Optional
-    // TODO implement bi directional
-    ManyAssociation<VermarkterComposite> vermarkter();
-
-
     /**
      * Methods and transient fields.
      */
@@ -150,49 +125,16 @@ public interface WegComposite
 
         private static Log log = LogFactory.getLog( Mixin.class );
 
-
-        @Override
-        public void beforeCompletion()
-                throws UnitOfWorkCompletionException {
-            EntityStatus entityState = EntityStatus.NEW;
-            try {
-                entityState = EntityInstance.getEntityInstance( this ).entityState().status();
-            } catch (Exception e) {
-                // bei neuen Objekten gibts hier ne IllegalArgumentException
-            }    
-
-            // kaskadierendes löschen
-            switch (entityState) {
-                case NEW:
-                case UPDATED:
-
-                    break;
-
-                    // TODO REMOVED kommt hier nicht an
-                case REMOVED: {
-                    TwvRepository repo = TwvRepository.instance();
-                    int count = schilder().count();
-                    if (count > 0) {
-                        for (int i=0; i<count; i++) {
-                            repo.removeEntity( schilder().get(i) );
-                        }
-                    }
-                    count = wegobjekte().count();
-                    if (count > 0) {
-                        for (int i=0; i<count; i++) {
-                            repo.removeEntity( wegobjekte().get(i) );
-                        }
-                    }
-                    count = vermarkter().count();
-                    if (count > 0) {
-                        for (int i=0; i<count; i++) {
-                            repo.removeEntity( vermarkter().get(i) );
-                        }
-                    }
-                    break;
-                }
-                default:
-                    throw new IllegalStateException( "unknwon entity state " + entityState );
+        public static void beforeRemove( WegComposite weg ) {
+            TwvRepository repository = TwvRepository.instance();
+            for (SchildComposite schild : SchildComposite.Mixin.forEntity( weg )) {
+                repository.removeEntity( schild );
+            }
+            for (WegobjektComposite wegObjekt : WegobjektComposite.Mixin.forEntity( weg )) {
+                repository.removeEntity( wegObjekt );
+            }
+            for (VermarkterComposite vermarkter : VermarkterComposite.Mixin.forEntity( weg )) {
+                repository.removeEntity( vermarkter );
             }
         }
     }

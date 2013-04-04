@@ -224,7 +224,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                     // TODO wie wird der EventHandler registriert?
                     // elm.addPropertyChangeListener( this );
                     model.put( elm.id(), elm );
-                } // otherwise keep the current loaded object, but whats with
+                } // TODO otherwise keep the current loaded object, but whats with
                   // deletion?
             }
             viewer.setInput( model.values() );
