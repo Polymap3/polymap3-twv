@@ -16,11 +16,24 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.geotools.data.FeatureStore;
+import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
+import org.opengis.feature.FeatureVisitor;
+import org.opengis.feature.Property;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.google.common.collect.Iterables;
 
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import org.polymap.core.data.DataPlugin;
+import org.polymap.core.data.PipelineFeatureSource;
+import org.polymap.core.project.ILayer;
+import org.polymap.core.project.IMap;
+import org.polymap.core.project.Layers;
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
 import org.polymap.rhei.field.FormFieldEvent;
@@ -44,6 +57,8 @@ import org.polymap.twv.model.data.WidmungComposite;
 public class WegFormEditorPage
         extends TwvDefaultFormEditorPage {
 
+    private static Log log = LogFactory.getLog( WegFormEditorPage.class );
+    
     private final WegComposite weg;
 
     // private UnterkategorieReloader unterkategorieReloader;
@@ -65,6 +80,7 @@ public class WegFormEditorPage
         super.createFormContent( site );
 
         site.setEditorTitle( "Weg" + ((weg.name().get() != null) ? " - " + weg.name().get() : "") );
+        site.setFormTitle( "Tourismusweg" + ((weg.name().get() != null) ? " - " + weg.name().get() : "") );
 
         Composite parent = site.getPageBody();
         parent.setLayout( new FormLayout() );
@@ -75,8 +91,7 @@ public class WegFormEditorPage
                 .setLayoutData( left().right( 100 ).create() ).create();
 
         Composite line2 = newFormField( "Kategorie" )
-                .setProperty(
-                        new AssociationAdapter<KategorieComposite>( "kategorie", weg.kategorie() ) )
+                .setProperty( new AssociationAdapter<KategorieComposite>( "kategorie", weg.kategorie() ) )
                 .setField( namedAssocationsPicklist( KategorieComposite.class ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
         selectedKategorie = weg.kategorie().get();
@@ -90,8 +105,7 @@ public class WegFormEditorPage
                         if (selectedKategorie != null) {
                             int unterkategorieCount = selectedKategorie.unterkategories().count();
                             for (int i = 0; i < unterkategorieCount; i++) {
-                                UnterkategorieComposite uk = selectedKategorie.unterkategories()
-                                        .get( i );
+                                UnterkategorieComposite uk = selectedKategorie.unterkategories().get( i );
                                 unterkategories.put( uk.name().get(), uk );
                             }
                         }
@@ -99,24 +113,53 @@ public class WegFormEditorPage
                     }
                 } );
         newFormField( "Unterkategorie" )
-                .setProperty(
-                        new AssociationAdapter<UnterkategorieComposite>( "unterkategorie", weg
-                                .unterkategorie() ) ).setField( unterkategorieList )
+                .setProperty( new AssociationAdapter<UnterkategorieComposite>( "unterkategorie", weg.unterkategorie() ) )
+                .setField( unterkategorieList )
                 .setLayoutData( right().top( line1 ).create() ).create();
 
         Composite line3 = newFormField( "Ausweisung" )
-                .setProperty(
-                        new AssociationAdapter<AusweisungComposite>( "ausweisung", weg.ausweisung() ) )
+                .setProperty( new AssociationAdapter<AusweisungComposite>( "ausweisung", weg.ausweisung() ) )
                 .setField( namedAssocationsPicklist( AusweisungComposite.class ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
-        newFormField( "Priorität" )
-                .setProperty(
-                        new AssociationAdapter<PrioritaetComposite>( "prioritaet", weg.prioritaet() ) )
+        Composite line4 = newFormField( "Priorität" )
+                .setProperty( new AssociationAdapter<PrioritaetComposite>( "prioritaet", weg.prioritaet() ) )
                 .setField( namedAssocationsPicklist( PrioritaetComposite.class ) )
                 .setLayoutData( right().top( line2 ).create() ).create();
 
-        // TODO falko Gemeinde wird über Berechnung eingeblendet
+        // Gemeinden
+        final StringBuilder buf = new StringBuilder( 256 );
+        try {
+            IMap map = ((PipelineFeatureSource)fs).getLayer().getMap();
+            ILayer layer = Iterables.getOnlyElement( Iterables.filter( map.getLayers(), Layers.hasLabel( "Gemeinden" ) ) );
+
+            fs = PipelineFeatureSource.forLayer( layer, false );
+            FeatureCollection gemeinden = fs.getFeatures( DataPlugin.ff.intersects( 
+                    DataPlugin.ff.property( fs.getSchema().getGeometryDescriptor().getLocalName() ), 
+                    DataPlugin.ff.literal( weg.geom().get() ) ) );
+            gemeinden.accepts( new FeatureVisitor() {
+                public void visit( Feature gemeinde ) {
+                    buf.append( buf.length() > 0 ? ", " : "" );
+                    Property nameProp = gemeinde.getProperty( "ORTSNAME" );
+                    buf.append( nameProp != null ? nameProp.getValue().toString() : "-" );
+                }
+            }, null );
+            log.info( "Gemeinden: " + buf.toString() );
+        }
+        catch (Exception e) {
+            log.warn( "", e );
+            buf.append( "-konnten nicht ermittelt werden- (" + e.getLocalizedMessage() + ")" );
+        }
+        Composite line5 = newFormField( "Gemeinden" )
+                .setEnabled( false )
+                .setField( new StringFormField() )
+                .setLayoutData( right().top( line4 ).create() )
+                .setProperty( new PropertyAdapter( weg.geom() ) {
+                    public Object getValue() {
+                        return buf.toString();
+                    }
+                }).create();
+        
         // TODO falko laengeImLandkreis wird über Berechnung eingeblendet
 
         // Composite line4 = newFormField( "Länge Landkreis" )
@@ -125,31 +168,31 @@ public class WegFormEditorPage
         // ).create() )
         // .setToolTipText( "Länge im Landkreis Mittelsachsen" ).create();
 
-        Composite line4 = newFormField( "Gesamtlänge" )
+        Composite line6 = newFormField( "Gesamtlänge" )
                 .setProperty( new PropertyAdapter( weg.laengeUeberregional() ) )
-                .setField( new StringFormField() ).setLayoutData( right().top( line3 ).create() )
+                .setField( new StringFormField() ).setLayoutData( right().top( line5 ).create() )
                 .setToolTipText( "überregionale Gesamtlänge" ).create();
 
-        Composite line5 = newFormField( "Wegbeschreibung" )
+        Composite line7 = newFormField( "Wegbeschreibung" )
                 .setProperty( new PropertyAdapter( weg.beschreibung() ) )
                 .setField( new TextFormField() )
-                .setLayoutData( left().right( 100 ).height( 50 ).top( line4 ).create() ).create();
+                .setLayoutData( left().right( 100 ).height( 50 ).top( line6 ).create() ).create();
 
-        Composite line6 = newFormField( "Wegbeschaffenheit" )
+        Composite line8 = newFormField( "Wegbeschaffenheit" )
                 .setProperty( new PropertyAdapter( weg.beschaffenheit() ) )
                 .setField( new TextFormField() )
-                .setLayoutData( left().right( 100 ).height( 50 ).top( line5 ).create() ).create();
+                .setLayoutData( left().right( 100 ).height( 50 ).top( line7 ).create() ).create();
         // TODO Picklist mit Textvorlagen ergänzen
 
-        Composite line7 = newFormField( "Widmung" )
+        Composite line9 = newFormField( "Widmung" )
                 .setProperty( new AssociationAdapter<WidmungComposite>( "widmung", weg.widmung() ) )
                 .setField( namedAssocationsPicklist( WidmungComposite.class ) )
-                .setLayoutData( left().top( line6 ).create() ).create();
+                .setLayoutData( left().top( line8 ).create() ).create();
 
         newFormField( "Markierung" )
                 .setProperty( new AssociationAdapter<WidmungComposite>( "widmung", weg.widmung() ) )
                 .setField( namedAssocationsPicklist( MarkierungComposite.class ) )
-                .setLayoutData( right().top( line6 ).create() ).create();
+                .setLayoutData( right().top( line8 ).create() ).create();
 
         site.addFieldListener( kategorieSelectionListener = new IFormFieldListener() {
 

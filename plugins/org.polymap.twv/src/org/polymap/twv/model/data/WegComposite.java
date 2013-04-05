@@ -26,8 +26,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.runtime.entity.EntityInstance;
-import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
+
+import com.vividsolutions.jts.geom.MultiLineString;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
@@ -48,6 +49,10 @@ import org.polymap.twv.model.TwvRepository;
 public interface WegComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
+    @Optional
+    Property<MultiLineString> geom();
+
+    
     @Optional
     Property<String> name();
 
