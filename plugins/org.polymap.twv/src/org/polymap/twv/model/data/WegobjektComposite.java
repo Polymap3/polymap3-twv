@@ -66,7 +66,6 @@ public interface WegobjektComposite
     @Optional
     Property<Point> geom();
 
-
     @Optional
     Property<ImageValue> bild();
 
@@ -94,12 +93,20 @@ public interface WegobjektComposite
                 throws UnitOfWorkCompletionException {
         }
 
+        private PropertyInfo nameProperty = new GenericPropertyInfo( SchildComposite.class, "name" );
 
+
+        @Override
         public Property<String> name() {
-            if (wegobjektName().get() != null) {
-                return wegobjektName().get().name();
-            }
-            return null;
+            return new ComputedPropertyInstance<String>( nameProperty ) {
+
+                public String get() {
+                    if (wegobjektName().get() != null) {
+                        return wegobjektName().get().name().get();
+                    }
+                    return null;
+                }
+            };
         }
 
         private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class,
