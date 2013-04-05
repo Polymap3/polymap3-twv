@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.grammar.BooleanExpression;
-import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
@@ -40,9 +39,6 @@ import org.polymap.core.qi4j.QiModule;
 import org.polymap.core.qi4j.QiModuleAssembler;
 import org.polymap.core.runtime.Polymap;
 import org.polymap.core.runtime.entity.ConcurrentModificationException;
-
-import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
-
 import org.polymap.twv.model.data.AusweisungComposite;
 import org.polymap.twv.model.data.EntfernungskontrolleComposite;
 import org.polymap.twv.model.data.FoerderregionComposite;
@@ -107,11 +103,6 @@ public class TwvRepository
 
     public void init( final Session session ) {
         try {
-            // build the queryProvider
-            ServiceReference<LuceneEntityStoreService> storeService = assembler.getModule()
-                    .serviceFinder().findService( LuceneEntityStoreService.class );
-            LuceneEntityStoreService luceneStore = storeService.get();
-
             twvService = new TwvService(
                     new TwvEntityProvider<SchildComposite>( this, SchildComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),
@@ -128,7 +119,8 @@ public class TwvRepository
                     new SimpleEntityProvider<SchildComposite>( this, SchildComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),
                     new SimpleEntityProvider<SchildmaterialComposite>( this,
-                            SchildmaterialComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Schildmaterial" ) ),
+                            SchildmaterialComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Schildmaterial" ) ),
                     new SimpleEntityProvider<VermarkterComposite>( this, VermarkterComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ) ),
                     new SimpleEntityProvider<WegbeschaffenheitComposite>( this,
@@ -214,5 +206,14 @@ public class TwvRepository
             }
         }
         return names;
+    }
+
+
+    @Override
+    public void removeEntity( Entity entity ) {
+        if (WegComposite.class.isAssignableFrom( entity.getClass() )) {
+            WegComposite.Mixin.beforeRemove( (WegComposite)entity );
+        }
+        super.removeEntity( entity );
     }
 }

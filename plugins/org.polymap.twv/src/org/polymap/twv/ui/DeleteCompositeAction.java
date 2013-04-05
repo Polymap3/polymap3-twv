@@ -12,39 +12,15 @@
  */
 package org.polymap.twv.ui;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.window.Window;
 
-import org.eclipse.ui.PlatformUI;
-
-import org.polymap.core.data.ui.featuretable.DefaultFeatureTableColumn;
-import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
-import org.polymap.core.data.ui.featuretable.IFeatureTableElement;
 import org.polymap.core.model.Entity;
-import org.polymap.core.model.EntityType;
-import org.polymap.core.model.EntityType.Property;
 import org.polymap.core.workbench.PolymapWorkbench;
-
-import org.polymap.rhei.data.entityfeature.CompositesFeatureContentProvider;
-import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
 
 import org.polymap.twv.TwvPlugin;
 

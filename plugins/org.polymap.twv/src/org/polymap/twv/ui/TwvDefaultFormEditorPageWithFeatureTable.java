@@ -35,7 +35,6 @@ import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.Entity;
 import org.polymap.core.model.EntityType;
 import org.polymap.core.project.ui.util.SimpleFormData;
-import org.polymap.core.runtime.Polymap;
 
 import org.polymap.rhei.data.entityfeature.CompositesFeatureContentProvider;
 import org.polymap.rhei.data.entityfeature.CompositesFeatureContentProvider.FeatureTableElement;
@@ -43,7 +42,6 @@ import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.form.IFormEditorPage2;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
-import org.polymap.twv.model.TwvRepository;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.CompositeProvider;
 
 /**
@@ -224,7 +222,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                     // TODO wie wird der EventHandler registriert?
                     // elm.addPropertyChangeListener( this );
                     model.put( elm.id(), elm );
-                } // otherwise keep the current loaded object, but whats with
+                } // TODO otherwise keep the current loaded object, but whats with
                   // deletion?
             }
             viewer.setInput( model.values() );

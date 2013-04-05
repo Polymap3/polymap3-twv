@@ -190,7 +190,7 @@ public class WegFormEditorPage
                 .setLayoutData( left().top( line8 ).create() ).create();
 
         newFormField( "Markierung" )
-                .setProperty( new AssociationAdapter<WidmungComposite>( "widmung", weg.widmung() ) )
+                .setProperty( new AssociationAdapter<MarkierungComposite>( "markierung", weg.markierung() ) )
                 .setField( namedAssocationsPicklist( MarkierungComposite.class ) )
                 .setLayoutData( right().top( line8 ).create() ).create();
 
