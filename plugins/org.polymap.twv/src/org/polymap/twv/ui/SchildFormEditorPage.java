@@ -15,15 +15,11 @@ package org.polymap.twv.ui;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
-import org.polymap.rhei.data.entityfeature.ValuePropertyAdapter;
 import org.polymap.rhei.field.IFormFieldValidator;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;

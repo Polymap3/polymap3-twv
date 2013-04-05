@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.grammar.BooleanExpression;
-import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
@@ -40,8 +39,6 @@ import org.polymap.core.qi4j.QiModule;
 import org.polymap.core.qi4j.QiModuleAssembler;
 import org.polymap.core.runtime.Polymap;
 import org.polymap.core.runtime.entity.ConcurrentModificationException;
-
-import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
 
 import org.polymap.twv.model.data.AusweisungComposite;
 import org.polymap.twv.model.data.EntfernungskontrolleComposite;

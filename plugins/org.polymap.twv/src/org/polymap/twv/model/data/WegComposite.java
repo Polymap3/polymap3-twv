@@ -24,10 +24,6 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.runtime.entity.EntityInstance;
-import org.qi4j.spi.entity.EntityState;
-import org.qi4j.spi.entity.EntityStatus;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;

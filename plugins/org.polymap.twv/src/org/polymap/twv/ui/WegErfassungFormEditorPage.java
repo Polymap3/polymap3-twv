@@ -57,8 +57,8 @@ public class WegErfassungFormEditorPage
                 .setProperty(
                         new ManyAssociationAdapter<FoerderregionComposite>( "foerderregion", weg
                                 .foerderregionen() ) )
-                .setField( namedAssocationsPicklist( FoerderregionComposite.class ) )
-                .setLayoutData( left().height( 30 ).create() ).create();
+                .setField( namedAssocationsSelectlist( FoerderregionComposite.class, true ) )
+                .setLayoutData( left().height( 120 ).create() ).create();
 
         Composite line2 = newFormField( "Erfasser" )
                 .setProperty( new PropertyAdapter( "erfasser", weg.erfasser() ) )

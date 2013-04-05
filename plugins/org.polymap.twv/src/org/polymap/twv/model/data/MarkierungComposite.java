@@ -63,7 +63,7 @@ public interface MarkierungComposite
 
         private static Log   log              = LogFactory.getLog( Mixin.class );
 
-        private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class,
+        private PropertyInfo bildNameProperty = new GenericPropertyInfo( MarkierungComposite.class,
                                                       "bildName" );
 
 

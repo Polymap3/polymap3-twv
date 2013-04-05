@@ -15,7 +15,6 @@ package org.polymap.twv.ui;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
@@ -25,6 +24,7 @@ import org.polymap.core.project.ui.util.SimpleFormData;
 
 import org.polymap.rhei.field.IFormField;
 import org.polymap.rhei.field.PicklistFormField;
+import org.polymap.rhei.field.SelectlistFormField;
 import org.polymap.rhei.form.DefaultFormEditorPage;
 import org.polymap.rhei.form.IFormEditorPage;
 import org.polymap.rhei.form.IFormEditorPageSite;
@@ -97,6 +97,13 @@ public abstract class TwvDefaultFormEditorPage
         return namedAssocationsPicklist( type, false );
     }
 
+
+    protected <T extends Named> IFormField namedAssocationsSelectlist( Class<T> type, boolean multiple ) {
+        SelectlistFormField list = new SelectlistFormField( twvRepository.entitiesWithNames( type ) );
+        list.setIsMultiple( multiple );
+        
+        return list;
+    }
 
     protected <T extends Named> IFormField namedAssocationsPicklist( Class<T> type, boolean editable ) {
         PicklistFormField picklist = new PicklistFormField( twvRepository.entitiesWithNames( type ) );

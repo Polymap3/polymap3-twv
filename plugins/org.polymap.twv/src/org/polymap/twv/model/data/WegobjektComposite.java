@@ -93,7 +93,7 @@ public interface WegobjektComposite
                 throws UnitOfWorkCompletionException {
         }
 
-        private PropertyInfo nameProperty = new GenericPropertyInfo( SchildComposite.class, "name" );
+        private PropertyInfo nameProperty = new GenericPropertyInfo( WegobjektComposite.class, "name" );
 
 
         @Override
@@ -109,7 +109,7 @@ public interface WegobjektComposite
             };
         }
 
-        private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class,
+        private PropertyInfo bildNameProperty = new GenericPropertyInfo( WegobjektComposite.class,
                                                       "bildName" );
 
 

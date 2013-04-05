@@ -24,7 +24,6 @@ import org.polymap.rhei.field.UploadFormField;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.TwvPlugin;
-import org.polymap.twv.model.Named;
 import org.polymap.twv.model.data.MarkierungComposite;
 import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
 

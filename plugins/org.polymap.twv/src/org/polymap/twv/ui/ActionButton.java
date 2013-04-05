@@ -27,8 +27,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
-import org.polymap.twv.TwvPlugin;
-
 /**
  * Push button that delegates to a given IAction. 
  *
