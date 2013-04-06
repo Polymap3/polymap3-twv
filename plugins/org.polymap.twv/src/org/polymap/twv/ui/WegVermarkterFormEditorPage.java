@@ -18,7 +18,6 @@ import org.opengis.feature.type.PropertyDescriptor;
 
 import org.qi4j.api.property.Property;
 
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -48,18 +47,16 @@ public class WegVermarkterFormEditorPage
     public WegVermarkterFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( WegVermarkterFormEditorPage.class.getName(), "Vermarkter", feature, featureStore );
         this.featureStore = featureStore;
-
-        weg = twvRepository.findEntity( WegComposite.class, feature.getIdentifier().getID() );
+        this.weg = twvRepository.findEntity( WegComposite.class, feature.getIdentifier().getID() );
     }
 
 
     @Override
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
+        site.setFormTitle( formattedTitle( "Tourismusweg", weg.name().get(), getTitle() ) );
 
         Composite parent = site.getPageBody();
-        parent.setLayout( new FormLayout() );
-
         Composite form = createForm( parent );
         createTableForm( parent, form, true );
         refreshFieldEnablement();

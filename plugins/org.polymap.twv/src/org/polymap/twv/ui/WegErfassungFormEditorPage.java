@@ -15,7 +15,6 @@ package org.polymap.twv.ui;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
@@ -49,9 +48,7 @@ public class WegErfassungFormEditorPage
     @Override
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
-
-        Composite parent = site.getPageBody();
-        parent.setLayout( new FormLayout() );
+        site.setFormTitle( formattedTitle( "Tourismusweg", weg.name().get(), getTitle() ) );
 
         Composite line1 = newFormField( "Förderregionen" )
                 .setProperty(

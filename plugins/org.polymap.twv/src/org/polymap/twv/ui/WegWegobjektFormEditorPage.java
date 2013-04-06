@@ -19,7 +19,6 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
 
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -66,10 +65,9 @@ public class WegWegobjektFormEditorPage
     @Override
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
+        site.setFormTitle( formattedTitle( "Tourismusweg", weg.name().get(), getTitle() ) );
 
         Composite parent = site.getPageBody();
-        parent.setLayout( new FormLayout() );
-
         Composite baseForm = createForm( parent );
         createTableForm( parent, baseForm );
         refreshFieldEnablement();

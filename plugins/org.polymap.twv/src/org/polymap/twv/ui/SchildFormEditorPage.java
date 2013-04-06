@@ -15,7 +15,6 @@ package org.polymap.twv.ui;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
@@ -80,11 +79,9 @@ public class SchildFormEditorPage
 
         SchildComposite schild = twvRepository.findEntity( SchildComposite.class, feature
                 .getIdentifier().getID() );
-        site.setEditorTitle( "Schild"
-                + ((schild.laufendeNr().get() != null) ? " - " + schild.laufendeNr().get() : "") );
 
-        Composite parent = site.getPageBody();
-        parent.setLayout( new FormLayout() );
+        site.setEditorTitle( formattedTitle( "Schild", schild.laufendeNr().get(), null ) );
+        site.setFormTitle( formattedTitle( "Schild", schild.laufendeNr().get(), getTitle() ) );
 
         Composite line1 = newFormField( "Schildart" )
                 
