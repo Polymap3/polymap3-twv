@@ -96,7 +96,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
     protected Composite createTableForm( Composite parent, Composite top, boolean addAllowed ) {
         viewer = new FeatureTableViewer( parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL );
         viewer.getTable().setLayoutData(
-                new SimpleFormData().fill().left( 2 ).right( addAllowed ? 90 : 100 ).top( top, 30 )
+                new SimpleFormData().fill().left( 2 ).height( 100 ).right( addAllowed ? 90 : 100 ).top( top, 30 )
                         .create() );
 
         // columns
@@ -119,20 +119,11 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                         throws Exception {
 
                     dirty = true;
-                    selectedComposite.set( createNewComposite() );
+                    T newComposite = createNewComposite();
+                    selectedComposite.set( newComposite );
+                    model.put( newComposite.id(), newComposite );
+                    
                     pageSite.reloadEditor();
-                    // Polymap.getSessionDisplay().asyncExec( new Runnable() {
-                    //
-                    // public void run() {
-                    // // update dirty/valid flags of the editor
-                    // pageSite.fireEvent( this, getClass().getSimpleName(),
-                    // IFormFieldListener.VALUE_CHANGE, null );
-                    //
-                    // viewer.refresh( true );
-                    // viewer.getTable().layout( true );
-                    // }
-                    //
-                    // } );
                 }
             };
             addBtn = new ActionButton( parent, addAction );
@@ -206,7 +197,19 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
 
 
     public void updateElements( Collection<T> coll ) {
-        // SchildComposite.updateEntity( weg, coll );
+        if (viewer != null && !viewer.isBusy()) {
+//            Polymap.getSessionDisplay().asyncExec( new Runnable() {
+//
+//                public void run() {
+//                    viewer.refresh( true );
+//                    viewer.getTable().layout( true );
+//                    viewer.getTable().getParent().redraw();
+//                }
+//            } );
+            viewer.refresh( true );
+//            viewer.getTable().layout();
+//            viewer.getTable().getParent().redraw();
+        }
     }
 
 
