@@ -39,6 +39,7 @@ import org.polymap.core.qi4j.QiModule;
 import org.polymap.core.qi4j.QiModuleAssembler;
 import org.polymap.core.runtime.Polymap;
 import org.polymap.core.runtime.entity.ConcurrentModificationException;
+
 import org.polymap.twv.model.data.AusweisungComposite;
 import org.polymap.twv.model.data.EntfernungskontrolleComposite;
 import org.polymap.twv.model.data.FoerderregionComposite;
@@ -104,47 +105,46 @@ public class TwvRepository
     public void init( final Session session ) {
         try {
             twvService = new TwvService(
+                    new WegEntityProvider( this, new NameImpl(
+                            TwvRepository.NAMESPACE, "Weg" ) ),
                     new TwvEntityProvider<SchildComposite>( this, SchildComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),
-            
-                    new SimpleEntityProvider<AusweisungComposite>( this, AusweisungComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),            
+                    new TwvEntityProvider<AusweisungComposite>( this, AusweisungComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ) ),
-                    new SimpleEntityProvider<MarkierungComposite>( this, MarkierungComposite.class,
+                    new TwvEntityProvider<MarkierungComposite>( this, MarkierungComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Markierung" ) ),
-                    new SimpleEntityProvider<SchildartComposite>( this, SchildartComposite.class,
+                    new TwvEntityProvider<SchildartComposite>( this, SchildartComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Schildart" ) ),
-                    new SimpleEntityProvider<EntfernungskontrolleComposite>( this,
+                    new TwvEntityProvider<EntfernungskontrolleComposite>( this,
                             EntfernungskontrolleComposite.class, new NameImpl(
                                     TwvRepository.NAMESPACE, "Entfernungskontrolle" ) ),
-                    new SimpleEntityProvider<SchildComposite>( this, SchildComposite.class,
+                    new TwvEntityProvider<SchildComposite>( this, SchildComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),
-                    new SimpleEntityProvider<SchildmaterialComposite>( this,
+                    new TwvEntityProvider<SchildmaterialComposite>( this,
                             SchildmaterialComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Schildmaterial" ) ),
-                    new SimpleEntityProvider<VermarkterComposite>( this, VermarkterComposite.class,
+                    new TwvEntityProvider<VermarkterComposite>( this, VermarkterComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ) ),
-                    new SimpleEntityProvider<WegbeschaffenheitComposite>( this,
+                    new TwvEntityProvider<WegbeschaffenheitComposite>( this,
                             WegbeschaffenheitComposite.class, new NameImpl(
                                     TwvRepository.NAMESPACE, "Wegbeschaffenheit" ) ),
-                    new SimpleEntityProvider<WegComposite>( this, WegComposite.class, new NameImpl(
-                            TwvRepository.NAMESPACE, "Weg" ) ),
-                    new SimpleEntityProvider<WegobjektComposite>( this, WegobjektComposite.class,
+                    new TwvEntityProvider<WegobjektComposite>( this, WegobjektComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Wegobjekt" ) ),
-                    new SimpleEntityProvider<WegobjektNameComposite>( this,
+                    new TwvEntityProvider<WegobjektNameComposite>( this,
                             WegobjektNameComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Wegobjektname" ) ),
-                    new SimpleEntityProvider<FoerderregionComposite>( this,
+                    new TwvEntityProvider<FoerderregionComposite>( this,
                             FoerderregionComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Förderregion" ) ),
-                    new SimpleEntityProvider<PfeilrichtungComposite>( this,
+                    new TwvEntityProvider<PfeilrichtungComposite>( this,
                             PfeilrichtungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Pfeilrichtung" ) ),
-                    new SimpleEntityProvider<KategorieComposite>( this, KategorieComposite.class,
+                    new TwvEntityProvider<KategorieComposite>( this, KategorieComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Kategorie" ) ),
-                    new SimpleEntityProvider<UnterkategorieComposite>( this,
+                    new TwvEntityProvider<UnterkategorieComposite>( this,
                             UnterkategorieComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Unterkategorie" ) ),
-                    new SimpleEntityProvider<WidmungComposite>( this, WidmungComposite.class,
+                    new TwvEntityProvider<WidmungComposite>( this, WidmungComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Widmung" ) ) );
         }
         catch (Exception e) {
