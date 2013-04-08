@@ -158,6 +158,12 @@ public interface SchildComposite
                     }
                     return "";
                 }
+                               
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                        // ignored
+                }
             };
         }
 
@@ -174,6 +180,12 @@ public interface SchildComposite
                         return bild().get().originalFileName().get();
                     }
                     return "";
+                }
+                
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                        // ignored
                 }
             };
         }

@@ -77,6 +77,12 @@ public interface MarkierungComposite
                     }
                     return "";
                 }
+
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                        // ignored
+                }
             };
         }
     }
