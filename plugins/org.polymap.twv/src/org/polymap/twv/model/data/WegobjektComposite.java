@@ -106,6 +106,12 @@ public interface WegobjektComposite
                     }
                     return null;
                 }
+                
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                        // ignored
+                }
             };
         }
 
@@ -122,6 +128,13 @@ public interface WegobjektComposite
                         return bild().get().originalFileName().get();
                     }
                     return "";
+                }
+                
+                
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                        // ignored
                 }
             };
         }
