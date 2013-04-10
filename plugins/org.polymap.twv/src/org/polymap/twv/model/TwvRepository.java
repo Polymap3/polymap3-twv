@@ -22,7 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.BooleanExpression;
+import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
@@ -77,10 +79,12 @@ public class TwvRepository
 
     // instance *******************************************
 
-    private IOperationSaveListener operationListener = new OperationSaveListener();
+    private IOperationSaveListener operationListener   = new OperationSaveListener();
 
     /** Allow direct access for operations. */
     protected TwvService           twvService;
+
+    private Integer                highestSchildNummer = -1;
 
 
     public static class SimpleEntityProvider<T extends Entity>
@@ -104,11 +108,10 @@ public class TwvRepository
 
     public void init( final Session session ) {
         try {
-            twvService = new TwvService(
-                    new WegEntityProvider( this, new NameImpl(
-                            TwvRepository.NAMESPACE, "Weg" ) ),
+            twvService = new TwvService( new WegEntityProvider( this, new NameImpl(
+                    TwvRepository.NAMESPACE, "Weg" ) ),
                     new TwvEntityProvider<SchildComposite>( this, SchildComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),            
+                            new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),
                     new TwvEntityProvider<AusweisungComposite>( this, AusweisungComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ) ),
                     new TwvEntityProvider<MarkierungComposite>( this, MarkierungComposite.class,
@@ -135,17 +138,17 @@ public class TwvRepository
                                     "Wegobjektname" ) ),
                     new TwvEntityProvider<FoerderregionComposite>( this,
                             FoerderregionComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Förderregion" ) ),
+                                    "Fï¿½rderregion" ) ),
                     new TwvEntityProvider<PfeilrichtungComposite>( this,
                             PfeilrichtungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Pfeilrichtung" ) ),
-                    new TwvEntityProvider<KategorieComposite>( this, KategorieComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Kategorie" ) ),
+                                    "Pfeilrichtung" ) ), new TwvEntityProvider<KategorieComposite>(
+                            this, KategorieComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Kategorie" ) ),
                     new TwvEntityProvider<UnterkategorieComposite>( this,
                             UnterkategorieComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Unterkategorie" ) ),
-                    new TwvEntityProvider<WidmungComposite>( this, WidmungComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Widmung" ) ) );
+                                    "Unterkategorie" ) ), new TwvEntityProvider<WidmungComposite>(
+                            this, WidmungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Widmung" ) ) );
         }
         catch (Exception e) {
             throw new RuntimeException( e );
@@ -185,6 +188,23 @@ public class TwvRepository
         }
         catch (UnitOfWorkCompletionException e) {
             throw new CompletionException( e );
+        }
+    }
+
+
+    public Integer nextSchildNummer() {
+        synchronized (highestSchildNummer) {
+            if (highestSchildNummer == -1) {
+                SchildComposite template = QueryExpressions.templateFor( SchildComposite.class );
+                Query<SchildComposite> entities = findEntities( SchildComposite.class, null, 0, 1 );
+                entities.orderBy( QueryExpressions.orderBy( template.laufendeNr(),
+                        OrderBy.Order.DESCENDING ) );
+
+                SchildComposite highest = entities.find();
+                highestSchildNummer = highest != null ? highest.laufendeNr().get() : 0;
+            }
+            highestSchildNummer += 1;
+            return highestSchildNummer;
         }
     }
 

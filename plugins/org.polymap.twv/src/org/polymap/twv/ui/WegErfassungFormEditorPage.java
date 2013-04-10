@@ -22,7 +22,6 @@ import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.ManyAssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
 import org.polymap.rhei.field.DateTimeFormField;
-import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
@@ -62,11 +61,11 @@ public class WegErfassungFormEditorPage
 
         Composite line2 = newFormField( "Erfasser" )
                 .setProperty( new PropertyAdapter( "erfasser", weg.erfasser() ) )
-                .setField( new StringFormField() ).setLayoutData( left().top( line1 ).create() )
+                .setField( new TextFormField() ).setLayoutData( left().top( line1 ).height( 40 ).create() )
                 .create();
 
-        newFormField( "Wegewart" ).setProperty( new PropertyAdapter( "wegewart", weg.wegewart() ) )
-                .setField( new StringFormField() ).setLayoutData( right().top( line1 ).create() )
+        newFormField( "Wegewarte" ).setProperty( new PropertyAdapter( "wegewart", weg.wegewart() ) )
+                .setField( new TextFormField() ).setLayoutData( right().height( 40 ).top( line1 ).create() )
                 .create();
 
         Composite line3 = newFormField( "Begehung am" )

@@ -28,6 +28,7 @@ import org.qi4j.api.property.PropertyInfo;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.BooleanExpression;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -51,8 +52,11 @@ public interface SchildComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Optional
-    @Computed
     Property<String> name();
+
+
+    @Optional
+    Property<String> standort();
 
 
     @Optional
@@ -60,7 +64,7 @@ public interface SchildComposite
 
 
     @Optional
-    Property<String> laufendeNr();
+    Property<Integer> laufendeNr();
 
 
     @Optional
@@ -102,69 +106,16 @@ public interface SchildComposite
     public static abstract class Mixin
             implements SchildComposite {
 
-        private static Log   log          = LogFactory.getLog( Mixin.class );
-
-        // @Override
-        // public void beforeCompletion()
-        // throws UnitOfWorkCompletionException {
-        // throw new RuntimeException( "not yet implemented." );
-        // }
-        // @Override
-        // public void afterCompletion(EntityStatus entityState)
-        // throws UnitOfWorkCompletionException {
-        // // EntityStatus entityState = EntityStatus.NEW;
-        // // try {
-        // // entityState = EntityInstance.getEntityInstance( this
-        // ).entityState().status();
-        // // }
-        // // catch (Exception e) {
-        // // // bei neuen Objekten gibts hier ne IllegalArgumentException
-        // // }
-        // switch (entityState) {
-        // case NEW:
-        // if (weg().get() != null) {
-        // weg().get().schilder().add( this );
-        // }
-        // break;
-        // case UPDATED: {
-        // if (weg().get() != null && !weg().get().schilder().contains( this )) {
-        // weg().get().schilder().add( this );
-        // }
-        //
-        // break;
-        // }
-        // case REMOVED: {
-        // if (weg().get() != null) {
-        // weg().get().schilder().remove( this );
-        // }
-        //
-        // break;
-        // }
-        // default:
-        // throw new IllegalStateException( "unknwon entity state " + entityState );
-        // }
-        // }
-
-        private PropertyInfo nameProperty = new GenericPropertyInfo( SchildComposite.class, "name" );
+        private static Log log = LogFactory.getLog( Mixin.class );
 
 
         @Override
-        public Property<String> name() {
-            return new ComputedPropertyInstance<String>( nameProperty ) {
+        public void beforeCompletion()
+                throws UnitOfWorkCompletionException {
 
-                public String get() {
-                    if (schildart().get() != null) {
-                        return schildart().get().name().get();
-                    }
-                    return "";
-                }
-                               
-                @Override
-                public void set( String anIgnoredValue )
-                        throws IllegalArgumentException, IllegalStateException {
-                        // ignored
-                }
-            };
+            if (laufendeNr().get() == null) {
+                laufendeNr().set( TwvRepository.instance().nextSchildNummer() );
+            }
         }
 
         private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class,
@@ -181,11 +132,12 @@ public interface SchildComposite
                     }
                     return "";
                 }
-                
+
+
                 @Override
                 public void set( String anIgnoredValue )
                         throws IllegalArgumentException, IllegalStateException {
-                        // ignored
+                    // ignored
                 }
             };
         }
