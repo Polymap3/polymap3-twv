@@ -120,7 +120,7 @@ public class SchildFormEditorPage
                 .create();
 
         Composite line4 = newFormField( "Befestigung" )
-                .setProperty( new PropertyAdapter( schild.beschriftung() ) )
+                .setProperty( new PropertyAdapter( schild.befestigung() ) )
                 .setField( new TextFormField() )
                 .setLayoutData( left().top( line3 ).height( 50 ).create() ).create();
 
