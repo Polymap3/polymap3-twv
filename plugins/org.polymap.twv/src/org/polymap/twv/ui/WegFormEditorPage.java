@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.google.common.collect.Iterables;
 
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.core.data.DataPlugin;
@@ -80,12 +79,8 @@ public class WegFormEditorPage
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
 
-        site.setEditorTitle( "Weg" + ((weg.name().get() != null) ? " - " + weg.name().get() : "") );
-        site.setFormTitle( "Tourismusweg"
-                + ((weg.name().get() != null) ? " - " + weg.name().get() : "") );
-
-        Composite parent = site.getPageBody();
-        parent.setLayout( new FormLayout() );
+        site.setEditorTitle( formattedTitle( "Weg", weg.name().get(), null ) );
+        site.setFormTitle( formattedTitle( "Tourismusweg", weg.name().get(), getTitle() ) );
 
         // readonly
         Composite line1 = newFormField( "Name" ).setProperty( new PropertyAdapter( weg.name() ) )

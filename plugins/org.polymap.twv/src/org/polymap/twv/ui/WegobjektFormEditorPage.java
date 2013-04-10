@@ -15,7 +15,6 @@ package org.polymap.twv.ui;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
@@ -47,11 +46,10 @@ public class WegobjektFormEditorPage
 
         WegobjektComposite wegobjekt = twvRepository.findEntity( WegobjektComposite.class, feature
                 .getIdentifier().getID() );
-        site.setEditorTitle( "Wegobjekt" );
+        site.setEditorTitle( formattedTitle( "Wegobjekt", wegobjekt.name().get(), null ) );
+        site.setFormTitle( formattedTitle( "Wegobjekt", wegobjekt.name().get(), getTitle() ) );
 
         Composite parent = site.getPageBody();
-        parent.setLayout( new FormLayout() );
-
         Composite line1 = newFormField( "Wegobjektname" )
                 .setParent( parent )
                 .setProperty(

@@ -40,15 +40,15 @@ public abstract class TwvDefaultFormEditorPage
         extends DefaultFormEditorPage
         implements IFormEditorPage {
 
+    protected static final int  SPACING = 6;
+
+    protected static final int  LEFT    = 0;
+
+    protected static final int  MIDDLE  = 50;
+
+    protected static final int  RIGHT   = 100;
+
     protected TwvRepository twvRepository;
-
-    protected int           SPACING = 6;
-
-    protected int           LEFT    = 0;
-
-    protected int           MIDDLE  = 50;
-
-    protected int           RIGHT   = 100;
 
 
     public TwvDefaultFormEditorPage( String id, String title, Feature feature,
@@ -62,8 +62,23 @@ public abstract class TwvDefaultFormEditorPage
     @Override
     public void createFormContent( IFormEditorPageSite site ) {
         super.createFormContent( site );
+
+        Composite parent = site.getPageBody();
+        parent.setLayout( newPageLayout() );
     }
 
+    
+    protected FormLayout newPageLayout() {
+        FormLayout result = new FormLayout();
+        result.marginHeight = 10;
+        result.marginWidth = 10;
+        return result;
+    }
+    
+    
+    protected String formattedTitle( String type, String name, String pageTitle ) {
+        return type + ": " + (name != null ? name : "-") + (pageTitle != null ? " - " + pageTitle + "" : "");
+    }
 
     protected Composite newSection( final Composite top, final String title ) {
         Composite parent = pageSite.getPageBody();

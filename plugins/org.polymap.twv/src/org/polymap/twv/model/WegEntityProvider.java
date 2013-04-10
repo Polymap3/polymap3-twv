@@ -38,7 +38,7 @@ public class WegEntityProvider
 
         // aussortieren für die Tabelle
         SimpleFeatureType filtered = SimpleFeatureTypeBuilder.retype( (SimpleFeatureType)type,
-                new String[] { "name", "kategorie", "unterkategorie", "erfasser", "ausweisung",
+                new String[] { "geom", "name", "kategorie", "unterkategorie", "erfasser", "ausweisung",
                         "prioritaet", "wegewart" } );
         return filtered;
     }
