@@ -23,6 +23,7 @@ import org.opengis.feature.Feature;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -89,12 +90,12 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
      * 
      * @param parent
      */
-    protected Composite createTableForm( Composite parent, Composite top ) {
+    protected Composite createTableForm( Composite parent, Control top ) {
         return createTableForm( parent, top, false );
     }
 
 
-    protected Composite createTableForm( Composite parent, Composite top, boolean addAllowed ) {
+    protected Composite createTableForm( Composite parent, Control top, boolean addAllowed ) {
 
         int TOPSPACING = 20;
         viewer = new FeatureTableViewer( parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL );

@@ -58,8 +58,8 @@ public class ImageValuePropertyAdapter
      */
     public static UploadedImage convertToUploadedImage( final ImageValue image ) {
         return new DefaultUploadedImage( image.originalFileName().get(), image.originalFilePath()
-                .get(), image.contentType().get(), image.internalFileName().get(), image.fileSize()
-                .get() );
+                .get(), image.contentType().get(), image.internalFileName().get(), image
+                .thumbnailFileName().get(), image.fileSize().get() );
     }
 
 
@@ -92,6 +92,7 @@ public class ImageValuePropertyAdapter
         prototype.internalFileName().set( newImage.internalFileName() );
         prototype.originalFileName().set( newImage.originalFileName() );
         prototype.originalFilePath().set( newImage.originalFilePath() );
+        prototype.thumbnailFileName().set( newImage.thumbnailFileName() );
         return imageBuilder.newInstance();
     }
 }

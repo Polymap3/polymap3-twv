@@ -58,11 +58,11 @@ public class WegErfassungFormEditorPage
 
         Composite line2 = newFormField( "Erfasser" )
                 .setProperty( new PropertyAdapter( "erfasser", weg.erfasser() ) )
-                .setField( new TextFormField() ).setLayoutData( left().top( line1 ).height( 40 ).create() )
+                .setField( new TextFormField() ).setLayoutData( left().top( line1 ).height( 70 ).create() )
                 .create();
 
         newFormField( "Wegewarte" ).setProperty( new PropertyAdapter( "wegewart", weg.wegewart() ) )
-                .setField( new TextFormField() ).setLayoutData( right().height( 40 ).top( line1 ).create() )
+                .setField( new TextFormField() ).setLayoutData( right().height( 70 ).top( line1 ).create() )
                 .create();
 
         Composite line3 = newFormField( "Begehung am" )

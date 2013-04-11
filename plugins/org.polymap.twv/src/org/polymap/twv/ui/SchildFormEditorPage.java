@@ -19,9 +19,12 @@ import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
+import org.polymap.rhei.field.FormFieldEvent;
+import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.field.UploadFormField;
+import org.polymap.rhei.field.UploadFormField.UploadedImage;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.TwvPlugin;
@@ -37,6 +40,9 @@ import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
  */
 public class SchildFormEditorPage
         extends TwvDefaultFormEditorPage {
+
+    private IFormFieldListener uploadListener;
+
 
     public SchildFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( SchildFormEditorPage.class.getName(), "Schild", feature, featureStore );
@@ -60,9 +66,8 @@ public class SchildFormEditorPage
                 .create();
 
         newFormField( "Bestandsnr." ).setProperty( new PropertyAdapter( schild.name() ) )
-                .setField( new StringFormField() )
-                .setLayoutData( right().create() ).setToolTipText( "Nummer des Schildes bei importierten Datenbeständen" )
-                .create();
+                .setField( new StringFormField() ).setLayoutData( right().create() )
+                .setToolTipText( "Nummer des Schildes bei importierten Datenbeständen" ).create();
 
         Composite line1 = newFormField( "Schildart" )
                 .setProperty(
@@ -112,5 +117,25 @@ public class SchildFormEditorPage
                 .setProperty( new ImageValuePropertyAdapter( "bild", schild.bild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
                 .setLayoutData( left().top( line5 ).create() ).create();
+
+        final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line41 )
+                .height( 150 ).width( 90 ).create() );
+
+        if (schild.bild().get().thumbnailFileName().get() != null) {
+            viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.bild().get() ) );
+        }
+
+        site.addFieldListener( uploadListener = new IFormFieldListener() {
+
+            @Override
+            public void fieldChange( FormFieldEvent ev ) {
+                if (ev.getNewValue() != null && "bild".equals( ev.getFieldName() )) {
+                    // repaint image preview
+                    UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+
+                    viewer.setImage( uploadedImage );
+                }
+            }
+        } );
     }
 }

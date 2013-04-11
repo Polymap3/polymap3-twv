@@ -19,8 +19,11 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
+import org.polymap.rhei.field.FormFieldEvent;
+import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.UploadFormField;
+import org.polymap.rhei.field.UploadFormField.UploadedImage;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.TwvPlugin;
@@ -36,6 +39,8 @@ public class MarkierungFormEditorPage
     private final MarkierungComposite   markierung;
 
     private final String editorTitle;
+
+    private IFormFieldListener uploadListener;
 
 
     public MarkierungFormEditorPage( String editorTitle, Feature feature,
@@ -64,5 +69,25 @@ public class MarkierungFormEditorPage
                 .setProperty( new ImageValuePropertyAdapter( "bild", markierung.bild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
+         
+         final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line1 )
+                 .height( 150 ).width( 90 ).create() );
+
+         if (markierung.bild().get().thumbnailFileName().get() != null) {
+             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( markierung.bild().get() ) );
+         }
+
+         site.addFieldListener( uploadListener = new IFormFieldListener() {
+
+             @Override
+             public void fieldChange( FormFieldEvent ev ) {
+                 if (ev.getNewValue() != null && "bild".equals( ev.getFieldName() )) {
+                     // repaint image preview
+                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+
+                     viewer.setImage( uploadedImage );
+                 }
+             }
+         } );
     }
 }
