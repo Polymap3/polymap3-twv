@@ -122,7 +122,8 @@ public class TwvRepositoryAssembler
         // .setMetaInfo( namedQueries )
                 .instantiateOnStartup();
 
-        domainModule.addServices( HRIdentityGeneratorService.class );
+        domainModule.addServices( HRIdentityGeneratorService.class,
+                SchildNummerGeneratorService.class );
     }
 
 

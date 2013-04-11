@@ -19,8 +19,11 @@ import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
+import org.polymap.rhei.field.FormFieldEvent;
+import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.field.UploadFormField;
+import org.polymap.rhei.field.UploadFormField.UploadedImage;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.TwvPlugin;
@@ -34,6 +37,9 @@ import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
  */
 public class WegobjektFormEditorPage
         extends TwvDefaultFormEditorPage {
+
+    private IFormFieldListener uploadListener;
+
 
     public WegobjektFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( WegobjektFormEditorPage.class.getName(), "Wegobjekt", feature, featureStore );
@@ -75,5 +81,23 @@ public class WegobjektFormEditorPage
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
                 .setLayoutData( left().top( line3 ).create() ).create();
 
+        final ImageViewer imagePreview = new ImageViewer( site.getPageBody(), right().top( line2 )
+                .height( 150 ).width( 90 ).create() );
+
+        if (wegobjekt.bild().get().thumbnailFileName().get() != null) {
+            imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.bild()
+                    .get() ) );
+        }
+
+        site.addFieldListener( uploadListener = new IFormFieldListener() {
+
+            @Override
+            public void fieldChange( FormFieldEvent ev ) {
+                if (ev.getNewValue() != null && "bild".equals( ev.getFieldName() )) {
+                    UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+                    imagePreview.setImage( uploadedImage );
+                }
+            }
+        } );
     }
 }

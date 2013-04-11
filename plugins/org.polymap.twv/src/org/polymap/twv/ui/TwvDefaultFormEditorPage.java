@@ -15,7 +15,6 @@ package org.polymap.twv.ui;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
 
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
@@ -76,12 +75,8 @@ public abstract class TwvDefaultFormEditorPage
         return result;
     }
     
-    protected String formattedTitle( String type, Integer number, String pageTitle ) {
-        return formattedTitle( type, number != null ? number.toString() : null, pageTitle );
-    }
-    
-    protected String formattedTitle( String type, String name, String pageTitle ) {
-        return type + ": " + (name != null ? name : "-") + (pageTitle != null ? " - " + pageTitle + "" : "");
+    protected String formattedTitle( String type, Object name, String pageTitle ) {
+        return type + ": " + (name != null ? name.toString() : "-") + (pageTitle != null ? " - " + pageTitle + "" : "");
     }
 
     protected Composite newSection( final Composite top, final String title ) {
@@ -96,10 +91,6 @@ public abstract class TwvDefaultFormEditorPage
         client.setLayout( new FormLayout() );
         client.setLayoutData( new SimpleFormData( SPACING ).left( 0 ).right( 100 ).top( 0, 0 )
                 .create() );
-        
-        Image im = new Image( client.getDisplay(), "file" );
-        
-        Label l = new La
 
         section.setClient( client );
         return section;

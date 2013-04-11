@@ -38,4 +38,7 @@ public interface ImageValue
     
     @Optional
     Property<String> internalFileName();
+    
+    @Optional
+    Property<String> thumbnailFileName();
 }

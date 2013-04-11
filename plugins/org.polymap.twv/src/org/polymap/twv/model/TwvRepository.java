@@ -16,13 +16,13 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.geotools.feature.NameImpl;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.BooleanExpression;
-import org.qi4j.api.query.grammar.OrderBy;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
@@ -77,22 +77,22 @@ public class TwvRepository
 
     // instance *******************************************
 
-    private IOperationSaveListener operationListener   = new OperationSaveListener();
+    private IOperationSaveListener                         operationListener = new OperationSaveListener();
 
     /** Allow direct access for operations. */
-    protected TwvService           twvService;
+    protected TwvService                                   twvService;
 
-    private Integer                highestSchildNummer = -1;
+    private ServiceReference<SchildNummerGeneratorService> schildNummer;
 
 
-//    public static class SimpleEntityProvider<T extends Entity>
-//            extends TwvEntityProvider<T> {
-//
-//        public SimpleEntityProvider( QiModule repo, Class<T> entityClass, Name entityName ) {
-//            super( repo, entityClass, entityName );
-//        }
-//    };
-
+    // public static class SimpleEntityProvider<T extends Entity>
+    // extends TwvEntityProvider<T> {
+    //
+    // public SimpleEntityProvider( QiModule repo, Class<T> entityClass, Name
+    // entityName ) {
+    // super( repo, entityClass, entityName );
+    // }
+    // };
 
     public TwvRepository( final QiModuleAssembler assembler ) {
         super( assembler );
@@ -101,6 +101,8 @@ public class TwvRepository
         if (Polymap.getSessionDisplay() != null) {
             OperationSupport.instance().addOperationSaveListener( operationListener );
         }
+        schildNummer = assembler.getModule().serviceFinder()
+                .findService( SchildNummerGeneratorService.class );
     }
 
 
@@ -191,19 +193,7 @@ public class TwvRepository
 
 
     public Integer nextSchildNummer() {
-        synchronized (highestSchildNummer) {
-            if (highestSchildNummer == -1) {
-                SchildComposite template = QueryExpressions.templateFor( SchildComposite.class );
-                Query<SchildComposite> entities = findEntities( SchildComposite.class, null, 0, 1 );
-                entities.orderBy( QueryExpressions.orderBy( template.laufendeNr(),
-                        OrderBy.Order.DESCENDING ) );
-
-                SchildComposite highest = entities.find();
-                highestSchildNummer = highest != null ? highest.laufendeNr().get() : 0;
-            }
-            highestSchildNummer += 1;
-            return highestSchildNummer;
-        }
+        return schildNummer.get().generate();
     }
 
 

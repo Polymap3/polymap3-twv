@@ -20,6 +20,7 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -28,8 +29,11 @@ import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.EntityType;
 
 import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
+import org.polymap.rhei.field.FormFieldEvent;
+import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.field.UploadFormField;
+import org.polymap.rhei.field.UploadFormField.UploadedImage;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.TwvPlugin;
@@ -38,6 +42,7 @@ import org.polymap.twv.model.data.ImageValue;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
+import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadableImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.AssociationCallback;
@@ -50,6 +55,10 @@ public class WegWegobjektFormEditorPage
         extends TwvDefaultFormEditorPageWithFeatureTable<WegobjektComposite> {
 
     private WegComposite        weg;
+
+    private IFormFieldListener uploadListener;
+
+    private ImageViewer imagePreview;
 
     private final static String prefix = WegWegobjektFormEditorPage.class.getSimpleName();
 
@@ -68,7 +77,7 @@ public class WegWegobjektFormEditorPage
         site.setFormTitle( formattedTitle( "Tourismusweg", weg.name().get(), getTitle() ) );
 
         Composite parent = site.getPageBody();
-        Composite baseForm = createForm( parent );
+        Control baseForm = createForm( parent );
         createTableForm( parent, baseForm );
         refreshFieldEnablement();
     }
@@ -93,6 +102,12 @@ public class WegWegobjektFormEditorPage
         pageSite.setFieldEnabled( prefix + "wegobjektName", enabled );
         pageSite.setFieldEnabled( prefix + "beschreibung", enabled );
         pageSite.setFieldEnabled( prefix + "bild", enabled );
+        
+        if (selectedComposite.get() != null
+                && selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
+            imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( selectedComposite
+                    .get().bild().get() ) );
+        }
     }
 
 
@@ -102,7 +117,7 @@ public class WegWegobjektFormEditorPage
 
 
     // kopiert von WegobjektFormEditorPage
-    public Composite createForm( Composite parent ) {
+    public Control createForm( Composite parent ) {
 
         Composite line1 = newFormField( "Name" )
                 .setParent( parent )
@@ -144,7 +159,21 @@ public class WegWegobjektFormEditorPage
                                 } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
-        return line3;
+        imagePreview = new ImageViewer( parent, right().top( line2 ).height( 150 )
+                .width( 90 ).create() );
+
+        pageSite.addFieldListener( uploadListener = new IFormFieldListener() {
+
+            @Override
+            public void fieldChange( FormFieldEvent ev ) {
+                if (ev.getNewValue() != null && (prefix + "bild").equals( ev.getFieldName() )) {
+                    UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+                    imagePreview.setImage( uploadedImage );
+                }
+            }
+        } );
+        
+        return imagePreview.getControl();
     }
 
 

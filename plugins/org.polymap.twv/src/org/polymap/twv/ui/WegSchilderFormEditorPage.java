@@ -20,6 +20,7 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -28,9 +29,12 @@ import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.EntityType;
 
 import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
+import org.polymap.rhei.field.FormFieldEvent;
+import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.field.UploadFormField;
+import org.polymap.rhei.field.UploadFormField.UploadedImage;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.TwvPlugin;
@@ -41,6 +45,7 @@ import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.WegComposite;
+import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadableImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.AssociationCallback;
@@ -53,6 +58,10 @@ public class WegSchilderFormEditorPage
         extends TwvDefaultFormEditorPageWithFeatureTable<SchildComposite> {
 
     private WegComposite        weg;
+
+    private IFormFieldListener  uploadListener;
+
+    private ImageViewer         imagePreview;
 
     private final static String prefix = WegSchilderFormEditorPage.class.getSimpleName();
 
@@ -71,7 +80,7 @@ public class WegSchilderFormEditorPage
         site.setFormTitle( formattedTitle( "Tourismusweg", weg.name().get(), getTitle() ) );
 
         Composite parent = site.getPageBody();
-        Composite schildForm = createSchildForm( parent );
+        Control schildForm = createSchildForm( parent );
         createTableForm( parent, schildForm );
         refreshFieldEnablement();
     }
@@ -102,6 +111,11 @@ public class WegSchilderFormEditorPage
         pageSite.setFieldEnabled( prefix + "bild", enabled );
 
         // TODO validator not null an der Number
+        if (selectedComposite.get() != null
+                && selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
+            imagePreview.setImage( ImageValuePropertyAdapter
+                    .convertToUploadedImage( selectedComposite.get().bild().get() ) );
+        }
     }
 
 
@@ -111,70 +125,78 @@ public class WegSchilderFormEditorPage
 
 
     // kopiert von SchildFormEditorPage
-    public Composite createSchildForm( Composite parent ) {
+    public Control createSchildForm( Composite parent ) {
+
+        Composite line0 = newFormField( "Nummer" )
+                .setParent( parent )
+                .setProperty(
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
+                                + "laufendeNr", new PropertyCallback<SchildComposite>() {
+
+                            public Property get( SchildComposite entity ) {
+                                return entity.laufendeNr();
+                            }
+                        } ) ).setField( new StringFormField() ).setLayoutData( left().create() )
+                .setToolTipText( "laufende Schild Nummer" ).create();
+
+        newFormField( "Bestandsnr." )
+                .setParent( parent )
+                .setProperty(
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
+                                + "name", new PropertyCallback<SchildComposite>() {
+
+                            public Property get( SchildComposite entity ) {
+                                return entity.name();
+                            }
+                        } ) ).setField( new StringFormField() ).setLayoutData( right().create() )
+                .setToolTipText( "Nummer des Schildes bei importierten Datenbeständen" ).create();
 
         Composite line1 = newFormField( "Schildart" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                prefix + "schildart", new AssociationCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
+                                + "schildart", new AssociationCallback<SchildComposite>() {
 
-                                    public Association get( SchildComposite entity ) {
-                                        return entity.schildart();
-                                    }
-                                } ) )
-                .setField( namedAssocationsPicklist( SchildartComposite.class, true ) )
-                .setLayoutData( left().create() ).create();
-
-        newFormField( "Nummer" )
-                .setParent( parent )
-                .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                prefix + "laufendeNr", new PropertyCallback<SchildComposite>() {
-
-                                    public Property get( SchildComposite entity ) {
-                                        return entity.laufendeNr();
-                                    }
-                                } ) ).setField( new StringFormField() )
-                .setLayoutData( right().create() ).setToolTipText( "laufende Schild Nummer" )
-                .create();
+                            public Association get( SchildComposite entity ) {
+                                return entity.schildart();
+                            }
+                        } ) ).setField( namedAssocationsPicklist( SchildartComposite.class, true ) )
+                .setLayoutData( left().top( line0 ).create() ).create();
 
         Composite line2 = newFormField( "Pfeilrichtung" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                prefix + "pfeilrichtung", new AssociationCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
+                                + "pfeilrichtung", new AssociationCallback<SchildComposite>() {
 
-                                    public Association get( SchildComposite entity ) {
-                                        return entity.pfeilrichtung();
-                                    }
-                                } ) )
-                .setField( namedAssocationsPicklist( PfeilrichtungComposite.class ) )
+                            public Association get( SchildComposite entity ) {
+                                return entity.pfeilrichtung();
+                            }
+                        } ) ).setField( namedAssocationsPicklist( PfeilrichtungComposite.class ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
 
         newFormField( "Material" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                prefix + "material", new AssociationCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
+                                + "material", new AssociationCallback<SchildComposite>() {
 
-                                    public Association get( SchildComposite entity ) {
-                                        return entity.material();
-                                    }
-                                } ) )
-                .setField( namedAssocationsPicklist( SchildmaterialComposite.class ) )
+                            public Association get( SchildComposite entity ) {
+                                return entity.material();
+                            }
+                        } ) ).setField( namedAssocationsPicklist( SchildmaterialComposite.class ) )
                 .setLayoutData( right().top( line1 ).create() ).create();
 
         Composite line3 = newFormField( "Beschriftung" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                prefix + "beschriftung", new PropertyCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
+                                + "beschriftung", new PropertyCallback<SchildComposite>() {
 
-                                    public Property get( SchildComposite entity ) {
-                                        return entity.beschriftung();
-                                    }
-                                } ) ).setField( new TextFormField() )
+                            public Property get( SchildComposite entity ) {
+                                return entity.beschriftung();
+                            }
+                        } ) ).setField( new TextFormField() )
                 .setLayoutData( left().top( line2 ).height( 50 ).right( RIGHT ).create() )
                 .setToolTipText( "Schildbeschriftung mit Entfernungsangabe und Zusatzinfo" )
                 .create();
@@ -182,13 +204,13 @@ public class WegSchilderFormEditorPage
         Composite line4 = newFormField( "Befestigung" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite,
-                                prefix + "befestigung", new PropertyCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
+                                + "befestigung", new PropertyCallback<SchildComposite>() {
 
-                                    public Property get( SchildComposite entity ) {
-                                        return entity.befestigung();
-                                    }
-                                } ) ).setField( new TextFormField() )
+                            public Property get( SchildComposite entity ) {
+                                return entity.befestigung();
+                            }
+                        } ) ).setField( new TextFormField() )
                 .setLayoutData( left().top( line3 ).height( 50 ).create() ).create();
 
         Composite line5 = newFormField( "Bild" )
@@ -205,7 +227,20 @@ public class WegSchilderFormEditorPage
                                 } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
                 .setLayoutData( left().top( line4 ).create() ).create();
 
-        return line5;
+        imagePreview = new ImageViewer( parent, right().top( line3 ).height( 150 ).width( 90 )
+                .create() );
+
+        pageSite.addFieldListener( uploadListener = new IFormFieldListener() {
+
+            @Override
+            public void fieldChange( FormFieldEvent ev ) {
+                if (ev.getNewValue() != null && (prefix + "bild").equals( ev.getFieldName() )) {
+                    UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+                    imagePreview.setImage( uploadedImage );
+                }
+            }
+        } );
+        return imagePreview.getControl();
     }
 
 
