@@ -16,8 +16,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -87,13 +85,13 @@ public class TwvRepository
     private Integer                highestSchildNummer = -1;
 
 
-    public static class SimpleEntityProvider<T extends Entity>
-            extends TwvEntityProvider<T> {
-
-        public SimpleEntityProvider( QiModule repo, Class<T> entityClass, Name entityName ) {
-            super( repo, entityClass, entityName );
-        }
-    };
+//    public static class SimpleEntityProvider<T extends Entity>
+//            extends TwvEntityProvider<T> {
+//
+//        public SimpleEntityProvider( QiModule repo, Class<T> entityClass, Name entityName ) {
+//            super( repo, entityClass, entityName );
+//        }
+//    };
 
 
     public TwvRepository( final QiModuleAssembler assembler ) {
