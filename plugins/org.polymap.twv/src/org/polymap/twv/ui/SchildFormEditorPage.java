@@ -119,7 +119,7 @@ public class SchildFormEditorPage
                 .setLayoutData( left().top( line5 ).create() ).create();
 
         final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line41 )
-                .height( 150 ).width( 90 ).create() );
+                .height( 250 ).width( 250 ).create() );
 
         if (schild.bild().get().thumbnailFileName().get() != null) {
             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.bild().get() ) );

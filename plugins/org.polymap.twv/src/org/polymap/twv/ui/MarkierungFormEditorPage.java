@@ -71,7 +71,7 @@ public class MarkierungFormEditorPage
                 .setLayoutData( left().top( line1 ).create() ).create();
          
          final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line1 )
-                 .height( 150 ).width( 90 ).create() );
+                 .height( 250 ).width( 250 ).create() );
 
          if (markierung.bild().get().thumbnailFileName().get() != null) {
              viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( markierung.bild().get() ) );

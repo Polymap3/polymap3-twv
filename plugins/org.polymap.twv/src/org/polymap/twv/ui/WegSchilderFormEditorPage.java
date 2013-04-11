@@ -227,7 +227,7 @@ public class WegSchilderFormEditorPage
                                 } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
                 .setLayoutData( left().top( line4 ).create() ).create();
 
-        imagePreview = new ImageViewer( parent, right().top( line3 ).height( 150 ).width( 90 )
+        imagePreview = new ImageViewer( parent, right().top( line3 ).height( 250 ).width( 250 )
                 .create() );
 
         pageSite.addFieldListener( uploadListener = new IFormFieldListener() {
