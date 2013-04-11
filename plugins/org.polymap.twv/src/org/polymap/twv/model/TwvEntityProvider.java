@@ -16,6 +16,7 @@ import java.util.Collection;
 
 import org.geotools.data.Query;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -26,6 +27,7 @@ import org.polymap.core.data.util.Geometries;
 import org.polymap.core.model.Entity;
 import org.polymap.core.model.EntityType;
 import org.polymap.core.model.EntityType.Association;
+import org.polymap.core.model.EntityType.Property;
 import org.polymap.core.qi4j.QiModule;
 
 import org.polymap.rhei.data.entityfeature.DefaultEntityProvider;
@@ -63,7 +65,20 @@ class TwvEntityProvider<T extends Entity>
         return "geom";
     }
 
+    
+    @Override
+    public ReferencedEnvelope getBounds() {
+        Property geomProp = getEntityType().getProperty( getDefaultGeometry() );
+        if (geomProp != null) {
+            return super.getBounds();
+        }
+        else {
+            // fake values
+            return new ReferencedEnvelope( 4000000, 5000000, 5000000, 6000000, getCoordinateReferenceSystem( null ) );
+        }
+    }
 
+    
     @Override
     public FeatureType buildFeatureType( FeatureType schema ) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
