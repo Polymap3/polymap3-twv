@@ -90,7 +90,7 @@ public class WegVermarkterFormEditorPage
         pageSite.setFieldEnabled( "angebot", enabled );
         pageSite.setFieldEnabled( "url", enabled );
         
-        // TODO enable NotNullValidator f¸r name
+        // TODO enable NotNullValidator f√ºr name
         // FormFieldComposite-API gibt das aber nicht her
     }
 
@@ -127,7 +127,7 @@ public class WegVermarkterFormEditorPage
                                 } ) ).setField( new StringFormField() )
                 .setLayoutData( right().create() ).create();
 
-        Composite line2 = newFormField( "Straﬂe" )
+        Composite line2 = newFormField( "Stra√üe" )
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<VermarkterComposite>( selectedComposite,

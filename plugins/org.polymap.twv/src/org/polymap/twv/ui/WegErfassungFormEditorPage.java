@@ -49,7 +49,7 @@ public class WegErfassungFormEditorPage
         super.createFormContent( site );
         site.setFormTitle( formattedTitle( "Tourismusweg", weg.name().get(), getTitle() ) );
 
-        Composite line1 = newFormField( "Förderregionen" )
+        Composite line1 = newFormField( "FÃ¶rderregionen" )
                 .setProperty(
                         new ManyAssociationAdapter<FoerderregionComposite>( "foerderregion", weg
                                 .foerderregionen() ) )
@@ -82,7 +82,7 @@ public class WegErfassungFormEditorPage
                 .setField( new TextFormField() )
                 .setLayoutData( left().right( RIGHT ).height( 50 ).top( line3 ).create() ).create();
 
-        Composite line5 = newFormField( "Mängel" )
+        Composite line5 = newFormField( "MÃ¤ngel" )
                 .setProperty( new PropertyAdapter( weg.maengel() ) ).setField( new TextFormField() )
                 .setLayoutData( left().right( RIGHT ).height( 50 ).top( line4 ).create() ).create();
     }

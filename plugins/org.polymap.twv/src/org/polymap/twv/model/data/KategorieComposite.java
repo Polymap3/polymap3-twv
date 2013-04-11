@@ -61,17 +61,17 @@ public interface KategorieComposite
 
             wanderweg.unterkategories().add(
                     cb.create( UnterkategorieComposite.class,
-                            "Qualitätsweg Wanderbares Deutschland" ) );
+                            "QualitÃ¤tsweg Wanderbares Deutschland" ) );
 
             wanderweg.unterkategories().add(
-                    cb.create( UnterkategorieComposite.class, "Europäischer Fernwanderweg" ) );
+                    cb.create( UnterkategorieComposite.class, "EuropÃ¤ischer Fernwanderweg" ) );
 
             wanderweg.unterkategories().add(
                     cb.create( UnterkategorieComposite.class, "Nationaler Fernwanderweg" ) );
 
             wanderweg.unterkategories().add(
                     cb.create( UnterkategorieComposite.class,
-                            "überregionale und regionale Gebietswanderwege" ) );
+                            "Ãœberregionale und regionale Gebietswanderwege" ) );
 
             wanderweg.unterkategories().add(
                     cb.create( UnterkategorieComposite.class,

@@ -123,7 +123,7 @@ public class WegFormEditorPage
                 .setField( namedAssocationsPicklist( AusweisungComposite.class ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
-        Composite line4 = newFormField( "Priorität" )
+        Composite line4 = newFormField( "PrioritÃ¤t" )
                 .setProperty(
                         new AssociationAdapter<PrioritaetComposite>( "prioritaet", weg.prioritaet() ) )
                 .setField( namedAssocationsPicklist( PrioritaetComposite.class ) )
@@ -164,18 +164,18 @@ public class WegFormEditorPage
                     }
                 } ).create();
 
-        // TODO falko laengeImLandkreis wird über Berechnung eingeblendet
+        // TODO falko laengeImLandkreis wird Ã¼ber Berechnung eingeblendet
 
-        // Composite line4 = newFormField( "Länge Landkreis" )
+        // Composite line4 = newFormField( "LÃ¤nge Landkreis" )
         // .setProperty( new PropertyAdapter( weg.laengeImLandkreis() ) )
         // .setField( new StringFormField() ).setLayoutData( left().top( line3
         // ).create() )
-        // .setToolTipText( "Länge im Landkreis Mittelsachsen" ).create();
+        // .setToolTipText( "LÃ¤nge im Landkreis Mittelsachsen" ).create();
 
-        Composite line6 = newFormField( "Gesamtlänge" )
+        Composite line6 = newFormField( "GesamtlÃ¤nge" )
                 .setProperty( new PropertyAdapter( weg.laengeUeberregional() ) )
                 .setField( new StringFormField() ).setLayoutData( right().top( line5 ).create() )
-                .setToolTipText( "überregionale Gesamtlänge" ).create();
+                .setToolTipText( "Ãœberregionale GesamtlÃ¤nge" ).create();
 
         Composite line7 = newFormField( "Wegbeschreibung" )
                 .setProperty( new PropertyAdapter( weg.beschreibung() ) )
@@ -188,7 +188,6 @@ public class WegFormEditorPage
                         new TextFormFieldWithSuggestions( twvRepository.entitiesWithNames(
                                 WegbeschaffenheitComposite.class ).keySet() ) )
                 .setLayoutData( left().right( 100 ).top( line7 ).create() ).create();
-        // TODO Picklist mit Textvorlagen ergänzen
 
         Composite line9 = newFormField( "Widmung" )
                 .setProperty( new AssociationAdapter<WidmungComposite>( "widmung", weg.widmung() ) )

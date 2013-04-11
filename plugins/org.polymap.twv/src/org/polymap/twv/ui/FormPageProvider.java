@@ -68,7 +68,7 @@ public class FormPageProvider
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "foerderregion" )) {
             result.add( new NamedFormEditorPage<FoerderregionComposite>(
-                    FoerderregionComposite.class, "Förderregion", feature, formEditor
+                    FoerderregionComposite.class, "FÃ¶rderregion", feature, formEditor
                             .getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "wegbeschaffenheit" )) {

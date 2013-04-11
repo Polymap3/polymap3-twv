@@ -36,7 +36,7 @@ public class WegEntityProvider
     public FeatureType buildFeatureType( FeatureType schema ) {
         FeatureType type = super.buildFeatureType( schema );
 
-        // aussortieren für die Tabelle
+        // aussortieren fÃ¼r die Tabelle
         SimpleFeatureType filtered = SimpleFeatureTypeBuilder.retype( (SimpleFeatureType)type,
                 new String[] { "geom", "name", "kategorie", "unterkategorie", "erfasser", "ausweisung",
                         "prioritaet", "wegewart" } );

@@ -138,7 +138,7 @@ public class TwvRepository
                                     "Wegobjektname" ) ),
                     new TwvEntityProvider<FoerderregionComposite>( this,
                             FoerderregionComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "F�rderregion" ) ),
+                                    "Förderregion" ) ),
                     new TwvEntityProvider<PfeilrichtungComposite>( this,
                             PfeilrichtungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Pfeilrichtung" ) ), new TwvEntityProvider<KategorieComposite>(

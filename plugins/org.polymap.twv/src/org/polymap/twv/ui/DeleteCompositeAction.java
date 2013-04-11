@@ -37,8 +37,8 @@ public abstract class DeleteCompositeAction<A extends Entity>
 
 
     public DeleteCompositeAction() {
-        super( "Löschen" );
-        setToolTipText( "Eintrag löschen" );
+        super( "LÃ¶schen" );
+        setToolTipText( "Eintrag lÃ¶schen" );
         setImageDescriptor( TwvPlugin.imageDescriptorFromPlugin( TwvPlugin.PLUGIN_ID,
                 "icons/delete.gif" ) );
         setEnabled( true );
@@ -58,7 +58,7 @@ public abstract class DeleteCompositeAction<A extends Entity>
             execute();
         }
         catch (Exception e) {
-            PolymapWorkbench.handleError( TwvPlugin.PLUGIN_ID, this, "Fehler beim Löschen.", e );
+            PolymapWorkbench.handleError( TwvPlugin.PLUGIN_ID, this, "Fehler beim LÃ¶schen.", e );
         }
     }
 }

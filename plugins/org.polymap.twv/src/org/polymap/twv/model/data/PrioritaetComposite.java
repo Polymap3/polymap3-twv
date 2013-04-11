@@ -44,9 +44,9 @@ public interface PrioritaetComposite
 
         public static void createInitData( NamedCreatorCallback cb ) {
             cb.create( PrioritaetComposite.class, "1 - landesweite Bedeutung" );
-            cb.create( PrioritaetComposite.class, "2 - überregionale Bedeutung" );
+            cb.create( PrioritaetComposite.class, "2 - Ã¼berregionale Bedeutung" );
             cb.create( PrioritaetComposite.class, "3 - regionale Bedeutung" );
-            cb.create( PrioritaetComposite.class, "4 - örtliche Bedeutung" );
+            cb.create( PrioritaetComposite.class, "4 - Ã¶rtliche Bedeutung" );
             cb.create( PrioritaetComposite.class, "5 - geringe Bedeutung" );
         }
 

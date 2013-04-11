@@ -28,6 +28,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.polymap.core.qi4j.QiModule;
 import org.polymap.core.qi4j.QiModuleAssembler;
 import org.polymap.core.qi4j.idgen.HRIdentityGeneratorService;
+
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreInfo;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreQueryService;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
@@ -155,14 +156,14 @@ public class TwvRepositoryAssembler
             creator.create( MarkierungComposite.class, "Blau-Strich" );
             creator.create( MarkierungComposite.class, "Rot-Strich" );
             creator.create( MarkierungComposite.class, "Gelb-Strich" );
-            creator.create( MarkierungComposite.class, "Grün-Strich" );
+            creator.create( MarkierungComposite.class, "GrÃ¼n-Strich" );
             creator.create( MarkierungComposite.class, "Blau-Punkt" );
             creator.create( MarkierungComposite.class, "Rot-Punkt" );
             creator.create( MarkierungComposite.class, "Gelb-Punkt" );
-            creator.create( MarkierungComposite.class, "Grün-Punkt" );
-            creator.create( MarkierungComposite.class, "Grün - diagonal (Lehrpfad)" );
+            creator.create( MarkierungComposite.class, "GrÃ¼n-Punkt" );
+            creator.create( MarkierungComposite.class, "GrÃ¼n - diagonal (Lehrpfad)" );
             creator.create( MarkierungComposite.class, "individuelles Logo" );
-            creator.create( MarkierungComposite.class, "Fahrradsymbol grün" );
+            creator.create( MarkierungComposite.class, "Fahrradsymbol grÃ¼n" );
             creator.create( MarkierungComposite.class, "individuelles Logo" );
             creator.create( MarkierungComposite.class, "Pferdekopf Fern" );
             creator.create( MarkierungComposite.class, "individuelles Logo" );
@@ -173,26 +174,26 @@ public class TwvRepositoryAssembler
             creator.create( WegbeschaffenheitComposite.class, "naturnah" );
             creator.create( WegbeschaffenheitComposite.class, "fein" );
             creator.create( WegbeschaffenheitComposite.class, "schlecht" );
-            creator.create( WegbeschaffenheitComposite.class, "Verbund/sandgeschlämmt" );
+            creator.create( WegbeschaffenheitComposite.class, "Verbund/sandgeschlÃ¤mmt" );
             creator.create( WegbeschaffenheitComposite.class, "Asphalt" );
-            creator.create( WegbeschaffenheitComposite.class, "Ökopflaster" );
+            creator.create( WegbeschaffenheitComposite.class, "Ã–kopflaster" );
             creator.create( WegbeschaffenheitComposite.class, "Entfernungsangabe von bis" );
-            creator.create( WegbeschaffenheitComposite.class, "straßenbegleitend" );
-            creator.create( WegbeschaffenheitComposite.class, "öffentliche Straßen" );
+            creator.create( WegbeschaffenheitComposite.class, "straÃŸenbegleitend" );
+            creator.create( WegbeschaffenheitComposite.class, "Ã¶ffentliche StraÃŸen" );
             creator.create( WegbeschaffenheitComposite.class, "Waldweg" );
 
             // Widmung
-            creator.create( WidmungComposite.class, "öffentlich gewidmet auf Basis Eigentum" );
+            creator.create( WidmungComposite.class, "Ã¶ffentlich gewidmet auf Basis Eigentum" );
             creator.create( WidmungComposite.class,
-                    "öffentlich gewidmet auf Basis Gestattungsvertrag" );
-            creator.create( WidmungComposite.class, "nicht öffentlich gewidmet" );
+                    "Ã¶ffentlich gewidmet auf Basis Gestattungsvertrag" );
+            creator.create( WidmungComposite.class, "nicht Ã¶ffentlich gewidmet" );
 
             // Wegobjektname
-            creator.create( WegobjektNameComposite.class, "Überblickskarte/Informationstafel" );
+            creator.create( WegobjektNameComposite.class, "Ãœberblickskarte/Informationstafel" );
             creator.create( WegobjektNameComposite.class, "Thementafel" );
             creator.create( WegobjektNameComposite.class, "Aussichtstafel" );
             creator.create( WegobjektNameComposite.class, "Bank/Sitzgruppe/Rastplatz" );
-            creator.create( WegobjektNameComposite.class, "Unterstand/Schutzhütte" );
+            creator.create( WegobjektNameComposite.class, "Unterstand/SchutzhÃ¼tte" );
             creator.create( WegobjektNameComposite.class, "Papierkorb" );
             creator.create( WegobjektNameComposite.class, "Skulptur/ Denkmal" );
             creator.create( WegobjektNameComposite.class, "Sonstiges" );

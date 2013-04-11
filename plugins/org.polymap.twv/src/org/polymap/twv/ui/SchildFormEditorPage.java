@@ -61,7 +61,7 @@ public class SchildFormEditorPage
 
         newFormField( "Bestandsnr." ).setProperty( new PropertyAdapter( schild.name() ) )
                 .setField( new StringFormField() )
-                .setLayoutData( right().create() ).setToolTipText( "Nummer des Schildes bei importierten Datenbest‰nden" )
+                .setLayoutData( right().create() ).setToolTipText( "Nummer des Schildes bei importierten Datenbest√§nden" )
                 .create();
 
         Composite line1 = newFormField( "Schildart" )
