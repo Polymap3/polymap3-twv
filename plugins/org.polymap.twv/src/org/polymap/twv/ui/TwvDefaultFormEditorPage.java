@@ -75,6 +75,9 @@ public abstract class TwvDefaultFormEditorPage
         return result;
     }
     
+    protected String formattedTitle( String type, Integer number, String pageTitle ) {
+        return formattedTitle( type, number != null ? number.toString() : null, pageTitle );
+    }
     
     protected String formattedTitle( String type, String name, String pageTitle ) {
         return type + ": " + (name != null ? name : "-") + (pageTitle != null ? " - " + pageTitle + "" : "");
