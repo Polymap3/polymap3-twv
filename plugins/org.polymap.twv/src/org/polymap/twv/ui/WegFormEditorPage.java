@@ -149,13 +149,13 @@ public class WegFormEditorPage
                     buf.append( nameProp != null ? nameProp.getValue().toString() : "-" );
                 }
             }, null );
-            log.info( "Gemeinden: " + buf.toString() );
+            log.info( "Kommunen: " + buf.toString() );
         }
         catch (Exception e) {
             log.warn( "", e );
             buf.append( "-konnten nicht ermittelt werden- (" + e.getLocalizedMessage() + ")" );
         }
-        Composite line5 = newFormField( "Gemeinden" ).setEnabled( false )
+        Composite line5 = newFormField( "Kommunen" ).setEnabled( false )
                 .setField( new StringFormField() ).setLayoutData( right().top( line4 ).create() )
                 .setProperty( new PropertyAdapter( weg.geom() ) {
 
