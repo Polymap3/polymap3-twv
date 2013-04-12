@@ -159,8 +159,8 @@ public class WegWegobjektFormEditorPage
                                 } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
-        imagePreview = new ImageViewer( parent, right().top( line2 ).height( 150 )
-                .width( 90 ).create() );
+        imagePreview = new ImageViewer( parent, right().top( line2 ).height( 250 )
+                .width( 250 ).create() );
 
         pageSite.addFieldListener( uploadListener = new IFormFieldListener() {
 

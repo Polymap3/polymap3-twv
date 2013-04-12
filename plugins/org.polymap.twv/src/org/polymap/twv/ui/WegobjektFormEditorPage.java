@@ -82,7 +82,7 @@ public class WegobjektFormEditorPage
                 .setLayoutData( left().top( line3 ).create() ).create();
 
         final ImageViewer imagePreview = new ImageViewer( site.getPageBody(), right().top( line2 )
-                .height( 150 ).width( 90 ).create() );
+                .height( 250 ).width( 250 ).create() );
 
         if (wegobjekt.bild().get().thumbnailFileName().get() != null) {
             imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.bild()
