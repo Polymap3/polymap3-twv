@@ -36,7 +36,6 @@ import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
-import org.polymap.twv.model.Named;
 import org.polymap.twv.model.TwvRepository;
 
 /**
@@ -49,10 +48,10 @@ import org.polymap.twv.model.TwvRepository;
 // JsonState.Mixin.class
 })
 public interface SchildComposite
-        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
+        extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite {
 
     @Optional
-    Property<String> name();
+    Property<String> bestandsNr();
 
 
     @Optional

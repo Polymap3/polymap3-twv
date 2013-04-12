@@ -97,7 +97,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
 
     protected Composite createTableForm( Composite parent, Control top, boolean addAllowed ) {
 
-        int TOPSPACING = 20;
+        int TOPSPACING = 3;
         viewer = new FeatureTableViewer( parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL );
         viewer.getTable().setLayoutData(
                 new SimpleFormData().fill().left( 2 ).height( 100 ).right( 90 )

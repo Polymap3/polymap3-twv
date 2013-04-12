@@ -56,9 +56,9 @@ public class WegWegobjektFormEditorPage
 
     private WegComposite        weg;
 
-    private IFormFieldListener uploadListener;
+    private IFormFieldListener  uploadListener;
 
-    private ImageViewer imagePreview;
+    private ImageViewer         imagePreview;
 
     private final static String prefix = WegWegobjektFormEditorPage.class.getSimpleName();
 
@@ -102,11 +102,17 @@ public class WegWegobjektFormEditorPage
         pageSite.setFieldEnabled( prefix + "wegobjektName", enabled );
         pageSite.setFieldEnabled( prefix + "beschreibung", enabled );
         pageSite.setFieldEnabled( prefix + "bild", enabled );
-        
+
         if (selectedComposite.get() != null
                 && selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
-            imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( selectedComposite
-                    .get().bild().get() ) );
+            imagePreview.setImage( ImageValuePropertyAdapter
+                    .convertToUploadedImage( selectedComposite.get().bild().get() ) );
+        }
+        else {
+            if (imagePreview != null) {
+                // bild löschen wenn ein Objekt ohne Bild selektiert wird
+                imagePreview.setImage( null );
+            }
         }
     }
 
@@ -123,7 +129,8 @@ public class WegWegobjektFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<WegobjektComposite>( selectedComposite,
-                                prefix + "wegobjektName", new AssociationCallback<WegobjektComposite>() {
+                                prefix + "wegobjektName",
+                                new AssociationCallback<WegobjektComposite>() {
 
                                     public Association get( WegobjektComposite entity ) {
                                         return entity.wegobjektName();
@@ -136,7 +143,8 @@ public class WegWegobjektFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<WegobjektComposite>( selectedComposite,
-                                prefix + "beschreibung", new PropertyCallback<WegobjektComposite>() {
+                                prefix + "beschreibung",
+                                new PropertyCallback<WegobjektComposite>() {
 
                                     public Property get( WegobjektComposite entity ) {
                                         return entity.beschreibung();
@@ -156,11 +164,11 @@ public class WegWegobjektFormEditorPage
                                     public Property<ImageValue> get( WegobjektComposite entity ) {
                                         return entity.bild();
                                     }
-                                } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
+                                } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot(), true ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
-        imagePreview = new ImageViewer( parent, right().top( line2 ).height( 250 )
-                .width( 250 ).create() );
+        imagePreview = new ImageViewer( parent, right().top( line2 ).height( 250 ).width( 250 )
+                .create() );
 
         pageSite.addFieldListener( uploadListener = new IFormFieldListener() {
 
@@ -172,7 +180,7 @@ public class WegWegobjektFormEditorPage
                 }
             }
         } );
-        
+
         return imagePreview.getControl();
     }
 

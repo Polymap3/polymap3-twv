@@ -65,7 +65,7 @@ public class SchildFormEditorPage
                 .setLayoutData( left().create() ).setToolTipText( "eindeutige Schildnummer" )
                 .create();
 
-        newFormField( "Bestandsnr." ).setProperty( new PropertyAdapter( schild.name() ) )
+        newFormField( "Bestandsnr." ).setProperty( new PropertyAdapter( schild.bestandsNr() ) )
                 .setField( new StringFormField() ).setLayoutData( right().create() )
                 .setToolTipText( "Nummer des Schildes bei importierten Datenbeständen" ).create();
 
@@ -115,7 +115,7 @@ public class SchildFormEditorPage
 
         Composite line6 = newFormField( "Bild" )
                 .setProperty( new ImageValuePropertyAdapter( "bild", schild.bild() ) )
-                .setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
+                .setField( new UploadFormField( TwvPlugin.getImagesRoot(), true ) )
                 .setLayoutData( left().top( line5 ).create() ).create();
 
         final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line41 )
