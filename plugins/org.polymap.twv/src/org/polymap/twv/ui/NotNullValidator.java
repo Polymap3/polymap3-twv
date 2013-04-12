@@ -15,13 +15,16 @@ package org.polymap.twv.ui;
 import org.polymap.rhei.field.IFormFieldValidator;
 
 /**
+ * 
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 public class NotNullValidator
         implements IFormFieldValidator {
 
      public String validate( Object value ) {
-        if (value == null) {
+        if (value == null ||
+                // wird auch für TextField verwendet, mit der Bedeutung: "nicht leer"
+                (value instanceof String && ((String)value).length() == 0)) {
             return "Dieses Attribut darf nicht leer sein";
         }
         return null;
