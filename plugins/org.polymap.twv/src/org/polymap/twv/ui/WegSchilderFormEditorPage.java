@@ -103,7 +103,7 @@ public class WegSchilderFormEditorPage
     private void refreshFieldEnablement() {
         boolean enabled = selectedComposite.get() != null;
         pageSite.setFieldEnabled( prefix + "schildart", enabled );
-        pageSite.setFieldEnabled( prefix + "laufendeNr", enabled );
+        pageSite.setFieldEnabled( prefix + "bestandsNr", enabled );
         pageSite.setFieldEnabled( prefix + "pfeilrichtung", enabled );
         pageSite.setFieldEnabled( prefix + "material", enabled );
         pageSite.setFieldEnabled( prefix + "beschriftung", enabled );
@@ -115,6 +115,11 @@ public class WegSchilderFormEditorPage
                 && selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
             imagePreview.setImage( ImageValuePropertyAdapter
                     .convertToUploadedImage( selectedComposite.get().bild().get() ) );
+        } else {
+            if (imagePreview != null) {
+                // bild löschen wenn ein Objekt ohne Bild selektiert wird
+                imagePreview.setImage( null );
+            }
         }
     }
 
@@ -129,6 +134,7 @@ public class WegSchilderFormEditorPage
 
         Composite line0 = newFormField( "Nummer" )
                 .setParent( parent )
+                .setEnabled( false )
                 .setProperty(
                         new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
                                 + "laufendeNr", new PropertyCallback<SchildComposite>() {
@@ -143,10 +149,10 @@ public class WegSchilderFormEditorPage
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
-                                + "name", new PropertyCallback<SchildComposite>() {
+                                + "bestandsNr", new PropertyCallback<SchildComposite>() {
 
                             public Property get( SchildComposite entity ) {
-                                return entity.name();
+                                return entity.bestandsNr();
                             }
                         } ) ).setField( new StringFormField() ).setLayoutData( right().create() )
                 .setToolTipText( "Nummer des Schildes bei importierten Datenbeständen" ).create();
@@ -224,7 +230,7 @@ public class WegSchilderFormEditorPage
                                     public Property<ImageValue> get( SchildComposite entity ) {
                                         return entity.bild();
                                     }
-                                } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot() ) )
+                                } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot(), true ) )
                 .setLayoutData( left().top( line4 ).create() ).create();
 
         imagePreview = new ImageViewer( parent, right().top( line3 ).height( 250 ).width( 250 )
@@ -252,8 +258,8 @@ public class WegSchilderFormEditorPage
         PropertyDescriptor prop = null;
         prop = new PropertyDescriptorAdapter( type.getProperty( "laufendeNr" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "laufende Nr." ) );
-        prop = new PropertyDescriptorAdapter( type.getProperty( "name" ) );
-        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Schildart" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "bestandsNr" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bestandsnummer" ) );
         return type;
     }
 

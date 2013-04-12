@@ -59,7 +59,7 @@ public class ImageViewer {
         imageView.setBackground( parent.getBackground() );
         imageView.setForeground( parent.getBackground() );
         imageView.setLayoutData( layout );
-//        imageView.setPSize( 250, 250 );
+        imageView.setSize( 250, 250 );
 
 //        imageView.pack();
         imageView.addMouseListener( new MouseListener() {
