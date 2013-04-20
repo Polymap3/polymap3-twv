@@ -82,7 +82,6 @@ public class WegFormEditorPage
         site.setEditorTitle( formattedTitle( "Weg", weg.name().get(), null ) );
         site.setFormTitle( formattedTitle( "Tourismusweg", weg.name().get(), getTitle() ) );
 
-        // readonly
         Composite line1 = newFormField( "Name" ).setProperty( new PropertyAdapter( weg.name() ) )
                 .setValidator( new NotNullValidator() ).setField( new StringFormField() )
                 .setLayoutData( left().right( 100 ).create() ).create();

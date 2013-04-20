@@ -20,8 +20,6 @@ import org.qi4j.api.property.Property;
 
 import org.eclipse.swt.widgets.Composite;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-
 import org.polymap.core.data.ui.featuretable.DefaultFeatureTableColumn;
 import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.EntityType;
@@ -44,6 +42,7 @@ public class WegVermarkterFormEditorPage
 
     private WegComposite weg;
 
+
     public WegVermarkterFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( WegVermarkterFormEditorPage.class.getName(), "Vermarkter", feature, featureStore );
         this.featureStore = featureStore;
@@ -59,39 +58,6 @@ public class WegVermarkterFormEditorPage
         Composite parent = site.getPageBody();
         Composite form = createForm( parent );
         createTableForm( parent, form, true );
-        refreshFieldEnablement();
-    }
-
-
-    @Override
-    public void doLoad( IProgressMonitor monitor )
-            throws Exception {
-        super.doLoad( monitor );
-        // enable all Fields
-        if (pageSite != null) {
-            refreshFieldEnablement();
-        }
-    }
-
-
-    /**
-     *
-     */
-    private void refreshFieldEnablement() {
-        boolean enabled = selectedComposite.get() != null;
-        pageSite.setFieldEnabled( "name", enabled );
-        pageSite.setFieldEnabled( "ansprechpartner", enabled );
-        pageSite.setFieldEnabled( "strasse", enabled );
-        pageSite.setFieldEnabled( "hausnummer", enabled );
-        pageSite.setFieldEnabled( "plz", enabled );
-        pageSite.setFieldEnabled( "ort", enabled );
-        pageSite.setFieldEnabled( "telefon", enabled );
-        pageSite.setFieldEnabled( "email", enabled );
-        pageSite.setFieldEnabled( "angebot", enabled );
-        pageSite.setFieldEnabled( "url", enabled );
-        
-        // TODO enable NotNullValidator für name
-        // FormFieldComposite-API gibt das aber nicht her
     }
 
 
@@ -112,8 +78,8 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.name();
                                     }
-                                } ) )
-                .setField( new StringFormField() ).setLayoutData( left().create() ).create();
+                                } ) ).setField( reloadable( new StringFormField() ) )
+                .setLayoutData( left().create() ).create();
 
         newFormField( "Ansprechpartner" )
                 .setParent( parent )
@@ -124,7 +90,7 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.ansprechpartner();
                                     }
-                                } ) ).setField( new StringFormField() )
+                                } ) ).setField( reloadable( new StringFormField() ) )
                 .setLayoutData( right().create() ).create();
 
         Composite line2 = newFormField( "Straße" )
@@ -136,7 +102,7 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.strasse();
                                     }
-                                } ) ).setField( new StringFormField() )
+                                } ) ).setField( reloadable( new StringFormField() ) )
                 .setLayoutData( left().right( 70 ).top( name ).create() ).create();
 
         newFormField( "Hausnummer" )
@@ -148,7 +114,7 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.hausnummer();
                                     }
-                                } ) ).setField( new StringFormField() )
+                                } ) ).setField( reloadable( new StringFormField() ) )
                 .setLayoutData( right().left( 70 ).top( name ).create() ).create();
 
         Composite line3 = newFormField( "PLZ" )
@@ -160,7 +126,7 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.plz();
                                     }
-                                } ) ).setField( new StringFormField() )
+                                } ) ).setField( reloadable( new StringFormField() ) )
                 .setLayoutData( left().right( 30 ).top( line2 ).create() ).create();
 
         newFormField( "Ort" )
@@ -172,7 +138,7 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.ort();
                                     }
-                                } ) ).setField( new StringFormField() )
+                                } ) ).setField( reloadable( new StringFormField() ) )
                 .setLayoutData( right().left( 30 ).top( line2 ).create() ).create();
         Composite line4 = newFormField( "Telefon" )
                 .setParent( parent )
@@ -183,7 +149,7 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.telefon();
                                     }
-                                } ) ).setField( new StringFormField() )
+                                } ) ).setField( reloadable( new StringFormField() ) )
                 .setLayoutData( left().top( line3 ).create() ).create();
 
         newFormField( "E-Mail" )
@@ -195,9 +161,8 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.email();
                                     }
-                                } ) )
-                .setField( new StringFormField() ).setLayoutData( right().top( line3 ).create() )
-                .create();
+                                } ) ).setField( reloadable( new StringFormField() ) )
+                .setLayoutData( right().top( line3 ).create() ).create();
 
         Composite line5 = newFormField( "URL" )
                 .setParent( parent )
@@ -208,9 +173,9 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.url();
                                     }
-                                } ) ).setField( new StringFormField() )
+                                } ) ).setField( reloadable( new StringFormField() ) )
                 .setLayoutData( left().right( RIGHT ).top( line4 ).create() ).create();
-        
+
         Composite line6 = newFormField( "Angebot" )
                 .setParent( parent )
                 .setProperty(
@@ -220,7 +185,7 @@ public class WegVermarkterFormEditorPage
                                     public Property get( VermarkterComposite entity ) {
                                         return entity.angebot();
                                     }
-                                } ) ).setField( new StringFormField() )
+                                } ) ).setField( reloadable( new StringFormField() ) )
                 .setLayoutData( left().right( RIGHT ).top( line5 ).height( 80 ).create() ).create();
         return line6;
     }
@@ -247,10 +212,12 @@ public class WegVermarkterFormEditorPage
     public Iterable<VermarkterComposite> getElements() {
         return VermarkterComposite.Mixin.forEntity( weg );
     }
-    
+
+
     @Override
     protected VermarkterComposite createNewComposite() {
-        VermarkterComposite composite = TwvRepository.instance().newEntity( VermarkterComposite.class, null );
+        VermarkterComposite composite = TwvRepository.instance().newEntity(
+                VermarkterComposite.class, null );
         composite.weg().set( weg );
         return composite;
     }
