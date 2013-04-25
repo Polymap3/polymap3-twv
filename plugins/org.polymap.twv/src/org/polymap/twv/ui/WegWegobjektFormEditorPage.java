@@ -37,9 +37,9 @@ import org.polymap.rhei.form.IFormEditorPageSite;
 import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.TwvRepository;
 import org.polymap.twv.model.data.ImageValue;
-import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
+import org.polymap.twv.model.data.WegobjektNameComposite;
 import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadableImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter;
@@ -117,7 +117,7 @@ public class WegWegobjektFormEditorPage
                                         return entity.wegobjektName();
                                     }
                                 } ) )
-                .setField( reloadable( namedAssocationsPicklist( SchildartComposite.class, true ) ) )
+                .setField( reloadable( namedAssocationsPicklist( WegobjektNameComposite.class, true ) ) )
                 .setLayoutData( left().create() ).create();
 
         Composite line2 = newFormField( "Beschreibung" )
