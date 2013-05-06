@@ -97,7 +97,7 @@ public class SchildFormEditorPage
                 .setToolTipText( "Schildbeschriftung mit Entfernungsangabe und Zusatzinfo" )
                 .create();
 
-        Composite line4 = newFormField( "Befestigung" )
+        Composite line4 = newFormField( "Träger" )
                 .setProperty( new PropertyAdapter( schild.befestigung() ) )
                 .setField( new TextFormField() )
                 .setLayoutData( left().top( line3 ).height( 50 ).right( RIGHT ).create() ).create();

@@ -190,7 +190,7 @@ public class WegSchilderFormEditorPage
                 .setToolTipText( "Schildbeschriftung mit Entfernungsangabe und Zusatzinfo" )
                 .create();
 
-        Composite line4 = newFormField( "Befestigung" )
+        Composite line4 = newFormField( "Träger" )
                 .setParent( parent )
                 .setProperty(
                         new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
