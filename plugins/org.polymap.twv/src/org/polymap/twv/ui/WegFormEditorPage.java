@@ -48,6 +48,7 @@ import org.polymap.twv.model.data.AusweisungComposite;
 import org.polymap.twv.model.data.KategorieComposite;
 import org.polymap.twv.model.data.MarkierungComposite;
 import org.polymap.twv.model.data.PrioritaetComposite;
+import org.polymap.twv.model.data.ProfilComposite;
 import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
@@ -199,6 +200,11 @@ public class WegFormEditorPage
                 .setField( namedAssocationsPicklist( MarkierungComposite.class ) )
                 .setLayoutData( right().top( line8 ).create() ).create();
 
+        Composite line10 = newFormField( "Profil" )
+                .setProperty( new AssociationAdapter<ProfilComposite>( "profil", weg.profil() ) )
+                .setField( namedAssocationsPicklist( ProfilComposite.class ) )
+                .setLayoutData( left().top( line9 ).create() ).create();
+        
         site.addFieldListener( kategorieSelectionListener = new IFormFieldListener() {
 
             @Override

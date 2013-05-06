@@ -46,6 +46,7 @@ import org.polymap.twv.model.data.FoerderregionComposite;
 import org.polymap.twv.model.data.KategorieComposite;
 import org.polymap.twv.model.data.MarkierungComposite;
 import org.polymap.twv.model.data.PfeilrichtungComposite;
+import org.polymap.twv.model.data.ProfilComposite;
 import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
@@ -139,6 +140,9 @@ public class TwvRepository
                     new TwvEntityProvider<FoerderregionComposite>( this,
                             FoerderregionComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Förderregion" ) ),
+                    new TwvEntityProvider<ProfilComposite>( this,
+                            ProfilComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Profil" ) ),
                     new TwvEntityProvider<PfeilrichtungComposite>( this,
                             PfeilrichtungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Pfeilrichtung" ) ), new TwvEntityProvider<KategorieComposite>(
