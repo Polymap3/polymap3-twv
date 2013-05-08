@@ -48,6 +48,7 @@ import org.polymap.twv.model.data.AusweisungComposite;
 import org.polymap.twv.model.data.KategorieComposite;
 import org.polymap.twv.model.data.MarkierungComposite;
 import org.polymap.twv.model.data.PrioritaetComposite;
+import org.polymap.twv.model.data.ProfilComposite;
 import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
@@ -82,7 +83,6 @@ public class WegFormEditorPage
         site.setEditorTitle( formattedTitle( "Weg", weg.name().get(), null ) );
         site.setFormTitle( formattedTitle( "Tourismusweg", weg.name().get(), getTitle() ) );
 
-        // readonly
         Composite line1 = newFormField( "Name" ).setProperty( new PropertyAdapter( weg.name() ) )
                 .setValidator( new NotNullValidator() ).setField( new StringFormField() )
                 .setLayoutData( left().right( 100 ).create() ).create();
@@ -179,10 +179,12 @@ public class WegFormEditorPage
 
         Composite line7 = newFormField( "Wegbeschreibung" )
                 .setProperty( new PropertyAdapter( weg.beschreibung() ) )
+                .setToolTipText( "z.B. Ortsangaben, überwiegend Nutzung öffentlicher Straßen und Wege, separate Radverkehrsanlagen, Feld- und Waldwege (für den Touristen nützliche Hinweise)" )
                 .setField( new TextFormField() )
                 .setLayoutData( left().right( 100 ).height( 50 ).top( line6 ).create() ).create();
 
         Composite line8 = newFormField( "Wegbeschaffenheit" )
+                .setToolTipText( "z.B. naturnah, Asphalt, sandgeschlämmte Schotterdecke (technische Zustandsbeschreibung)" )
                 .setProperty( new PropertyAdapter( weg.beschaffenheit() ) )
                 .setField(
                         new TextFormFieldWithSuggestions( twvRepository.entitiesWithNames(
@@ -200,6 +202,11 @@ public class WegFormEditorPage
                 .setField( namedAssocationsPicklist( MarkierungComposite.class ) )
                 .setLayoutData( right().top( line8 ).create() ).create();
 
+        Composite line10 = newFormField( "Profil" )
+                .setProperty( new AssociationAdapter<ProfilComposite>( "profil", weg.profil() ) )
+                .setField( namedAssocationsPicklist( ProfilComposite.class ) )
+                .setLayoutData( left().top( line9 ).create() ).create();
+        
         site.addFieldListener( kategorieSelectionListener = new IFormFieldListener() {
 
             @Override

@@ -43,6 +43,7 @@ import org.polymap.twv.model.data.KategorieComposite;
 import org.polymap.twv.model.data.MarkierungComposite;
 import org.polymap.twv.model.data.PfeilrichtungComposite;
 import org.polymap.twv.model.data.PrioritaetComposite;
+import org.polymap.twv.model.data.ProfilComposite;
 import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
@@ -107,7 +108,7 @@ public class TwvRepositoryAssembler
                 WegobjektComposite.class, WegobjektNameComposite.class, WidmungComposite.class,
                 EntfernungskontrolleComposite.class, FoerderregionComposite.class,
                 PfeilrichtungComposite.class, KategorieComposite.class,
-                UnterkategorieComposite.class, PrioritaetComposite.class );
+                UnterkategorieComposite.class, PrioritaetComposite.class, ProfilComposite.class );
 
         // persistence: workspace/Lucene
         domainModule.addValues( ImageValue.class );
@@ -132,12 +133,11 @@ public class TwvRepositoryAssembler
 
         // create the composites
         final UnitOfWork uow = uowf.newUnitOfWork();
-
+        final Impl creator = new NamedCreatorCallback.Impl( uow );
+        
         if (!isDBInitialized( uow )) {
 
             log.info( "Create Init Data" );
-
-            final Impl creator = new NamedCreatorCallback.Impl( uow );
             EntfernungskontrolleComposite.Mixin.createInitData( creator );
             FoerderregionComposite.Mixin.createInitData( creator );
             PfeilrichtungComposite.Mixin.createInitData( creator );
@@ -216,9 +216,19 @@ public class TwvRepositoryAssembler
             creator.create( SchildmaterialComposite.class, "PVC-Hartschaum" );
             creator.create( SchildmaterialComposite.class, "sonstige" );
 
-            uow.complete();
             log.info( "Create Init Data Completed" );
         }
+        // next version
+        if (!isDBInitializedV2( uow )) {
+            log.info( "Create Init Data V2" );
+            ProfilComposite.Mixin.createInitData( creator );
+
+            log.info( "Create Init Data V2 completed" );
+        }
+        // next version 
+        migrateVermarkter(uow); 
+        
+        uow.complete();
     }
 
 
@@ -232,5 +242,30 @@ public class TwvRepositoryAssembler
                 .newQueryBuilder( AusweisungComposite.class );
         Query<AusweisungComposite> query = builder.newQuery( uow ).maxResults( 1 ).firstResult( 0 );
         return query.iterator().hasNext();
+    }
+    
+    private boolean isDBInitializedV2( UnitOfWork uow ) {
+        QueryBuilder<ProfilComposite> builder = getModule().queryBuilderFactory()
+                .newQueryBuilder( ProfilComposite.class );
+        Query<ProfilComposite> query = builder.newQuery( uow ).maxResults( 1 ).firstResult( 0 );
+        return query.iterator().hasNext();
+    }
+    
+    private void migrateVermarkter( UnitOfWork uow ) {
+        log.info( "Migrate Vermarkter" );
+        QueryBuilder<VermarkterComposite> builder = getModule().queryBuilderFactory()
+                .newQueryBuilder( VermarkterComposite.class );
+        Query<VermarkterComposite> query = builder.newQuery( uow ).maxResults( 100000 ).firstResult( 0 );
+        for (VermarkterComposite vermarkterComposite : query) {
+            WegComposite wegComposite = vermarkterComposite.weg().get();
+            if (wegComposite != null) {
+                wegComposite.vermarkter().add( vermarkterComposite );
+                vermarkterComposite.weg().set( null );
+//            } else {
+//                // abbrechen wenn der erste Vermarter ohne Weg gefunden wird, da dann alle Vermarkter
+//                // migriert sein müssten
+//                return;
+            }
+        }
     }
 }

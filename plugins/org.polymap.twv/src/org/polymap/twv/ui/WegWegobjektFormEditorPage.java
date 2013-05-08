@@ -22,8 +22,6 @@ import org.qi4j.api.property.Property;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-
 import org.polymap.core.data.ui.featuretable.DefaultFeatureTableColumn;
 import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.EntityType;
@@ -39,9 +37,9 @@ import org.polymap.rhei.form.IFormEditorPageSite;
 import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.TwvRepository;
 import org.polymap.twv.model.data.ImageValue;
-import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
+import org.polymap.twv.model.data.WegobjektNameComposite;
 import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadableImageValuePropertyAdapter;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter;
@@ -79,30 +77,13 @@ public class WegWegobjektFormEditorPage
         Composite parent = site.getPageBody();
         Control baseForm = createForm( parent );
         createTableForm( parent, baseForm );
-        refreshFieldEnablement();
     }
 
 
     @Override
-    public void doLoad( IProgressMonitor monitor )
+    protected void refreshReloadables()
             throws Exception {
-        super.doLoad( monitor );
-        // enable all Fields
-        if (pageSite != null) {
-            refreshFieldEnablement();
-        }
-    }
-
-
-    /**
-     *
-     */
-    private void refreshFieldEnablement() {
-        boolean enabled = selectedComposite.get() != null;
-        pageSite.setFieldEnabled( prefix + "wegobjektName", enabled );
-        pageSite.setFieldEnabled( prefix + "beschreibung", enabled );
-        pageSite.setFieldEnabled( prefix + "bild", enabled );
-
+        super.refreshReloadables();
         if (selectedComposite.get() != null
                 && selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
             imagePreview.setImage( ImageValuePropertyAdapter
@@ -136,7 +117,7 @@ public class WegWegobjektFormEditorPage
                                         return entity.wegobjektName();
                                     }
                                 } ) )
-                .setField( namedAssocationsPicklist( SchildartComposite.class, true ) )
+                .setField( reloadable( namedAssocationsPicklist( WegobjektNameComposite.class, true ) ) )
                 .setLayoutData( left().create() ).create();
 
         Composite line2 = newFormField( "Beschreibung" )
@@ -149,7 +130,7 @@ public class WegWegobjektFormEditorPage
                                     public Property get( WegobjektComposite entity ) {
                                         return entity.beschreibung();
                                     }
-                                } ) ).setField( new TextFormField() )
+                                } ) ).setField( reloadable( new TextFormField() ) )
                 .setLayoutData( left().top( line1 ).height( 80 ).right( RIGHT ).create() )
                 .setToolTipText( "Beschreibung des Wegobjektes" ).create();
 
@@ -164,7 +145,8 @@ public class WegWegobjektFormEditorPage
                                     public Property<ImageValue> get( WegobjektComposite entity ) {
                                         return entity.bild();
                                     }
-                                } ) ).setField( new UploadFormField( TwvPlugin.getImagesRoot(), true ) )
+                                } ) )
+                .setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), true ) ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
         imagePreview = new ImageViewer( parent, right().top( line2 ).height( 250 ).width( 250 )

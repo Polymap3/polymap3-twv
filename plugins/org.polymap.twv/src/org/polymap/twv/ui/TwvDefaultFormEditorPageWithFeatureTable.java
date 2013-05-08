@@ -12,8 +12,10 @@
  */
 package org.polymap.twv.ui;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import java.beans.PropertyChangeEvent;
@@ -39,6 +41,7 @@ import org.polymap.core.project.ui.util.SimpleFormData;
 
 import org.polymap.rhei.data.entityfeature.CompositesFeatureContentProvider;
 import org.polymap.rhei.data.entityfeature.CompositesFeatureContentProvider.FeatureTableElement;
+import org.polymap.rhei.field.IFormField;
 import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.form.IFormEditorPage2;
 import org.polymap.rhei.form.IFormEditorPageSite;
@@ -62,6 +65,8 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
     private Map<String, T>         model             = new HashMap<String, T>();
 
     protected CompositeProvider<T> selectedComposite = new CompositeProvider<T>();
+
+    private List<IFormField> reloadables = new ArrayList<IFormField>();
 
 
     /**
@@ -94,7 +99,20 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
         return createTableForm( parent, top, false );
     }
 
+    protected void refreshReloadables() throws Exception {
+        boolean enabled = selectedComposite.get() != null;
+        for (IFormField field : reloadables) {
+            field.setEnabled( enabled );
+            field.load();
+        }
+    }
+    
 
+    protected IFormField reloadable( IFormField formField ) {
+        reloadables.add(formField);
+        return formField;
+    }
+    
     protected Composite createTableForm( Composite parent, Control top, boolean addAllowed ) {
 
         int TOPSPACING = 3;
@@ -127,7 +145,8 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                     selectedComposite.set( newComposite );
                     model.put( newComposite.id(), newComposite );
 
-                    pageSite.reloadEditor();
+                    doLoad( new NullProgressMonitor() );
+                    refreshReloadables();
                 }
             };
             addBtn = new ActionButton( parent, addAction );
@@ -150,7 +169,8 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                     TwvRepository.instance().removeEntity( toSelect );
                     selectedComposite.set( null );
 
-                    pageSite.reloadEditor();
+                    doLoad( new NullProgressMonitor() );
+                    refreshReloadables();
 
                     dirty = true;
                     pageSite.fireEvent( this, this.getClass().getSimpleName(),
@@ -186,7 +206,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                 if (tableRow != null) {
                     selectedComposite.set( (T)tableRow.getComposite() );
                     try {
-                        pageSite.reloadEditor();
+                        refreshReloadables();
                     }
                     catch (Exception e) {
                         // TODO Auto-generated catch block
@@ -249,6 +269,9 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
             // viewer.getTable().layout( true );
             // }
             // } );
+        }
+        if (pageSite != null) {
+            refreshReloadables();
         }
         dirty = false;
     }

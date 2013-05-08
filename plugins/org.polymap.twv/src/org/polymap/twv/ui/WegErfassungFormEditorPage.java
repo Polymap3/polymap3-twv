@@ -54,8 +54,15 @@ public class WegErfassungFormEditorPage
                         new ManyAssociationAdapter<FoerderregionComposite>( "foerderregion", weg
                                 .foerderregionen() ) )
                 .setField( namedAssocationsSelectlist( FoerderregionComposite.class, true ) )
-                .setLayoutData( left().height( 120 ).create() ).create();
+                .setLayoutData( left().right( RIGHT ).height( 120 ).create() ).create();
 
+//        newFormField( "Vermarkter" )
+//                .setProperty(
+//                        new ManyAssociationAdapter<VermarkterComposite>( "vermarkter", weg
+//                                .vermarkter() ) )
+//                .setField( namedAssocationsSelectlist( VermarkterComposite.class, true ) )
+//                .setLayoutData( right().height( 120 ).create() ).create();
+        
         Composite line2 = newFormField( "Erfasser" )
                 .setProperty( new PropertyAdapter( "erfasser", weg.erfasser() ) )
                 .setField( new TextFormField() ).setLayoutData( left().top( line1 ).height( 70 ).create() )

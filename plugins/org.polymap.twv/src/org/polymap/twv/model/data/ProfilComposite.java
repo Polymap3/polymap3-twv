@@ -12,10 +12,12 @@
  */
 package org.polymap.twv.model.data;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 
@@ -24,67 +26,34 @@ import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
 import org.polymap.twv.model.Named;
+import org.polymap.twv.model.NamedCreatorCallback;
 
 /**
- * 
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 @Concerns({ PropertyChangeSupport.Concern.class })
-@Mixins({ VermarkterComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
-        ModelChangeSupport.Mixin.class, QiEntity.Mixin.class,
+@Mixins({ ProfilComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
+        ModelChangeSupport.Mixin.class, QiEntity.Mixin.class
 // JsonState.Mixin.class
 })
-public interface VermarkterComposite
+public interface ProfilComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Optional
     Property<String> name();
 
-
-    @Optional
-    Property<String> ansprechpartner();
-
-
-    @Optional
-    Property<String> strasse();
-
-
-    @Optional
-    Property<String> hausnummer();
-
-
-    @Optional
-    Property<String> plz();
-
-
-    @Optional
-    Property<String> ort();
-
-
-    @Optional
-    Property<String> telefon();
-
-
-    @Optional
-    Property<String> email();
-
-
-    @Optional
-    Property<String> url();
-
-
-    @Optional
-    Property<String> angebot();
-
-
-    @Optional
-    Association<WegComposite> weg();
-
-
     /**
      * Methods and transient fields.
      */
     public static abstract class Mixin
-            implements VermarkterComposite {
+            implements ProfilComposite {
+
+        private static Log log = LogFactory.getLog( Mixin.class );
+
+        public static void createInitData( NamedCreatorCallback cb ) {
+            cb.create( ProfilComposite.class, "leicht" );
+            cb.create( ProfilComposite.class, "mittel" );
+            cb.create( ProfilComposite.class, "schwer" );
+        }
     }
 }

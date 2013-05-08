@@ -24,6 +24,7 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+
 import com.vividsolutions.jts.geom.MultiLineString;
 
 import org.polymap.core.qi4j.QiEntity;
@@ -66,6 +67,9 @@ public interface WegComposite
 
 
     @Optional
+    Association<ProfilComposite> profil();
+
+    @Optional
     Association<PrioritaetComposite> prioritaet();
 
 
@@ -93,6 +97,8 @@ public interface WegComposite
     @Optional
     ManyAssociation<FoerderregionComposite> foerderregionen();
 
+    @Optional
+    ManyAssociation<VermarkterComposite> vermarkter();
 
     @Optional
     Property<String> erfasser();
@@ -133,9 +139,6 @@ public interface WegComposite
             }
             for (WegobjektComposite wegObjekt : WegobjektComposite.Mixin.forEntity( weg )) {
                 repository.removeEntity( wegObjekt );
-            }
-            for (VermarkterComposite vermarkter : VermarkterComposite.Mixin.forEntity( weg )) {
-                repository.removeEntity( vermarkter );
             }
         }
     }
