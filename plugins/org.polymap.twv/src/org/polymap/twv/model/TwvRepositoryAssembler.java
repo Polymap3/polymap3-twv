@@ -225,6 +225,9 @@ public class TwvRepositoryAssembler
 
             log.info( "Create Init Data V2 completed" );
         }
+        // next version 
+        migrateVermarkter(uow); 
+        
         uow.complete();
     }
 
@@ -246,5 +249,23 @@ public class TwvRepositoryAssembler
                 .newQueryBuilder( ProfilComposite.class );
         Query<ProfilComposite> query = builder.newQuery( uow ).maxResults( 1 ).firstResult( 0 );
         return query.iterator().hasNext();
+    }
+    
+    private void migrateVermarkter( UnitOfWork uow ) {
+        log.info( "Migrate Vermarkter" );
+        QueryBuilder<VermarkterComposite> builder = getModule().queryBuilderFactory()
+                .newQueryBuilder( VermarkterComposite.class );
+        Query<VermarkterComposite> query = builder.newQuery( uow ).maxResults( 100000 ).firstResult( 0 );
+        for (VermarkterComposite vermarkterComposite : query) {
+            WegComposite wegComposite = vermarkterComposite.weg().get();
+            if (wegComposite != null) {
+                wegComposite.vermarkter().add( vermarkterComposite );
+                vermarkterComposite.weg().set( null );
+//            } else {
+//                // abbrechen wenn der erste Vermarter ohne Weg gefunden wird, da dann alle Vermarkter
+//                // migriert sein müssten
+//                return;
+            }
+        }
     }
 }

@@ -97,6 +97,8 @@ public interface WegComposite
     @Optional
     ManyAssociation<FoerderregionComposite> foerderregionen();
 
+    @Optional
+    ManyAssociation<VermarkterComposite> vermarkter();
 
     @Optional
     Property<String> erfasser();
@@ -137,9 +139,6 @@ public interface WegComposite
             }
             for (WegobjektComposite wegObjekt : WegobjektComposite.Mixin.forEntity( weg )) {
                 repository.removeEntity( wegObjekt );
-            }
-            for (VermarkterComposite vermarkter : VermarkterComposite.Mixin.forEntity( weg )) {
-                repository.removeEntity( vermarkter );
             }
         }
     }

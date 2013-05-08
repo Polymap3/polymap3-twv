@@ -12,26 +12,18 @@
  */
 package org.polymap.twv.model.data;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.query.grammar.BooleanExpression;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
 import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
 import org.polymap.twv.model.Named;
-import org.polymap.twv.model.TwvRepository;
 
 /**
  * 
@@ -94,22 +86,5 @@ public interface VermarkterComposite
      */
     public static abstract class Mixin
             implements VermarkterComposite {
-
-        private static Log log = LogFactory.getLog( Mixin.class );
-
-
-        @Override
-        public void beforeCompletion()
-                throws UnitOfWorkCompletionException {
-        }
-
-
-        public static Iterable<VermarkterComposite> forEntity( WegComposite weg ) {
-            VermarkterComposite template = QueryExpressions.templateFor( VermarkterComposite.class );
-            BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
-            Query<VermarkterComposite> matches = TwvRepository.instance().findEntities(
-                    VermarkterComposite.class, expr, 0, -1 );
-            return matches;
-        }
     }
 }

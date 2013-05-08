@@ -115,6 +115,7 @@ public abstract class TwvDefaultFormEditorPage
     protected <T extends Named> IFormField namedAssocationsSelectlist( Class<T> type, boolean multiple ) {
         SelectlistFormField list = new SelectlistFormField( twvRepository.entitiesWithNames( type ) );
         list.setIsMultiple( multiple );
+      
         
         return list;
     }

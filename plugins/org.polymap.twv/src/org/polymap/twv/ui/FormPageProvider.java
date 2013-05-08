@@ -24,6 +24,7 @@ import org.polymap.rhei.form.IFormPageProvider;
 import org.polymap.twv.model.data.AusweisungComposite;
 import org.polymap.twv.model.data.EntfernungskontrolleComposite;
 import org.polymap.twv.model.data.FoerderregionComposite;
+import org.polymap.twv.model.data.ProfilComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
@@ -46,12 +47,16 @@ public class FormPageProvider
         if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "weg" )) {
             result.add( new WegFormEditorPage( feature, formEditor.getFeatureStore() ) );
             result.add( new WegErfassungFormEditorPage( feature, formEditor.getFeatureStore() ) );
-            result.add( new WegVermarkterFormEditorPage( feature, formEditor.getFeatureStore() ) );
+//            result.add( new WegVermarkterFormEditorPage( feature, formEditor.getFeatureStore() ) );
+          result.add( new WegVermarkter2FormEditorPage( feature, formEditor.getFeatureStore() ) );
             result.add( new WegWegobjektFormEditorPage( feature, formEditor.getFeatureStore() ) );
             result.add( new WegSchilderFormEditorPage( feature, formEditor.getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schild" )) {
             result.add( new SchildFormEditorPage( feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "vermarkter" )) {
+            result.add( new VermarkterFormEditorPage( feature, formEditor.getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "wegobjekt" )) {
             result.add( new WegobjektFormEditorPage( feature, formEditor.getFeatureStore() ) );
@@ -88,6 +93,10 @@ public class FormPageProvider
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schildart" )) {
             result.add( new NamedFormEditorPage<SchildartComposite>( SchildartComposite.class,
                     "Schildart", feature, formEditor.getFeatureStore() ) );
+        }
+        else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "profil" )) {
+            result.add( new NamedFormEditorPage<ProfilComposite>( ProfilComposite.class,
+                    "Profil", feature, formEditor.getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schildmaterial" )) {
             result.add( new NamedFormEditorPage<SchildmaterialComposite>(
