@@ -15,7 +15,7 @@ package org.polymap.twv.ui.rhei;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 
-import org.polymap.rhei.data.entityfeature.ValuePropertyAdapter;
+import org.polymap.rhei.data.entityfeature.PlainValuePropertyAdapter;
 import org.polymap.rhei.field.UploadFormField.DefaultUploadedImage;
 import org.polymap.rhei.field.UploadFormField.UploadedImage;
 
@@ -26,7 +26,7 @@ import org.polymap.twv.model.data.ImageValue;
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 public class ImageValuePropertyAdapter
-        extends ValuePropertyAdapter<Property<ImageValue>> {
+        extends PlainValuePropertyAdapter<Property<ImageValue>> {
 
     private final Property<ImageValue> imageValueProperty;
 
@@ -54,7 +54,6 @@ public class ImageValuePropertyAdapter
     /**
      * 
      * @param image
-     * @return
      */
     public static UploadedImage convertToUploadedImage( final ImageValue image ) {
         return new DefaultUploadedImage( image.originalFileName().get(), image.originalFilePath()
