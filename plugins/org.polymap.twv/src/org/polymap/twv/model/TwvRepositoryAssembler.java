@@ -227,6 +227,7 @@ public class TwvRepositoryAssembler
         }
         // next version 
         migrateVermarkter(uow); 
+        fixIncorrectManyAssociations( uow );
         
         uow.complete();
     }
@@ -267,5 +268,24 @@ public class TwvRepositoryAssembler
 //                return;
             }
         }
+    }
+    
+    private void fixIncorrectManyAssociations( UnitOfWork uow ) {        
+        log.info( "Remove Vermarkters" );
+        // never complete this uow, otherwise the vermarkter would be persistent
+        UnitOfWork neverComplete = uowf.newUnitOfWork();
+        VermarkterComposite v1 = neverComplete.newEntity( VermarkterComposite.class, "VermarkterComposite-20130426-1043-0" );
+        VermarkterComposite v2 = neverComplete.newEntity( VermarkterComposite.class, "VermarkterComposite-20130415-0942-1" );
+        QueryBuilder<WegComposite> builder = getModule().queryBuilderFactory()
+                .newQueryBuilder( WegComposite.class );
+        Query<WegComposite> query = builder.newQuery( uow ).maxResults( 100000 ).firstResult( 0 );
+        for (WegComposite weg : query) {
+            if (weg.vermarkter().contains( v1 ) ) {
+                weg.vermarkter().remove( v1 );
+            }
+            if (weg.vermarkter().contains( v2 ) ) {
+                weg.vermarkter().remove( v2 );
+            }
+        }  
     }
 }
