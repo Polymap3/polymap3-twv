@@ -244,6 +244,18 @@ public class WegSchilderFormEditorPage
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "laufende Nr." ) );
         prop = new PropertyDescriptorAdapter( type.getProperty( "bestandsNr" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bestandsnummer" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "weg" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Weg" ));/*
+                .setLabelProvider( new ColumnLabelProvider() {
+            public String getText(Object element) {
+                if (element != null) {
+                    ((WegComposite)((CompositesFeatureContentProvider.FeatureTableElement)element).getComposite()).name().get();
+                }
+                return "";
+            };
+        } ) );*/
+        prop = new PropertyDescriptorAdapter( type.getProperty( "bildName" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bildname" ) );
         return type;
     }
 

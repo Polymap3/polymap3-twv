@@ -14,9 +14,7 @@ package org.polymap.twv.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import java.beans.PropertyChangeEvent;
 
@@ -39,8 +37,6 @@ import org.polymap.core.model.Entity;
 import org.polymap.core.model.EntityType;
 import org.polymap.core.project.ui.util.SimpleFormData;
 
-import org.polymap.rhei.data.entityfeature.CompositesFeatureContentProvider;
-import org.polymap.rhei.data.entityfeature.CompositesFeatureContentProvider.FeatureTableElement;
 import org.polymap.rhei.field.IFormField;
 import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.form.IFormEditorPage2;
@@ -48,6 +44,8 @@ import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.model.TwvRepository;
 import org.polymap.twv.ui.rhei.ReloadablePropertyAdapter.CompositeProvider;
+import org.polymap.twv.ui.rhei.SelectableCompositesFeatureContentProvider;
+import org.polymap.twv.ui.rhei.SelectableCompositesFeatureContentProvider.FeatureTableElement;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
@@ -62,7 +60,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
 
     private boolean                dirty;
 
-    private Map<String, T>         model             = new HashMap<String, T>();
+    private List<T>         model             = new ArrayList<T>();
 
     protected CompositeProvider<T> selectedComposite = new CompositeProvider<T>();
 
@@ -125,7 +123,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
         EntityType<T> type = addViewerColumns( viewer );
 
         // model/content
-        viewer.setContent( new CompositesFeatureContentProvider( null, type ) );
+        viewer.setContent( new SelectableCompositesFeatureContentProvider( null, type ) );
         try {
             doLoad( new NullProgressMonitor() );
         }
@@ -143,10 +141,14 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                     dirty = true;
                     T newComposite = createNewComposite();
                     selectedComposite.set( newComposite );
-                    model.put( newComposite.id(), newComposite );
+                    model.add( 0, newComposite );
 
                     doLoad( new NullProgressMonitor() );
-                    refreshReloadables();
+                    viewer.getTable().deselectAll();
+                    viewer.getTable().select(
+                            ((SelectableCompositesFeatureContentProvider)viewer.getContentProvider())
+                                    .getIndicesForElements( newComposite ) );
+                    //refreshReloadables();
                 }
             };
             addBtn = new ActionButton( parent, addAction );
@@ -173,8 +175,8 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                     refreshReloadables();
 
                     dirty = true;
-                    pageSite.fireEvent( this, this.getClass().getSimpleName(),
-                            IFormFieldListener.VALUE_CHANGE, null );
+//                    pageSite.fireEvent( this, this.getClass().getSimpleName(),
+//                            IFormFieldListener.VALUE_CHANGE, null );
                 }
                 // Polymap.getSessionDisplay().asyncExec( new Runnable() {
                 //
@@ -254,14 +256,14 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
         if (viewer != null && !viewer.isBusy()) {
             // model = new HashMap();
             for (T elm : getElements()) {
-                if (!model.containsKey( elm.id() )) {
+                if (!model.contains( elm )) {
                     // TODO wie wird der EventHandler registriert?
                     // elm.addPropertyChangeListener( this );
-                    model.put( elm.id(), elm );
+                    model.add( elm );
                 } // TODO otherwise keep the current loaded object, but whats with
                   // deletion?
             }
-            viewer.setInput( model.values() );
+            viewer.setInput( model );
             // Polymap.getSessionDisplay().asyncExec( new Runnable() {
             //
             // public void run() {
@@ -280,7 +282,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
     public void doSubmit( IProgressMonitor monitor )
             throws Exception {
         if (model != null) {
-            updateElements( model.values() );
+            updateElements( model );
         }
         dirty = false;
     }

@@ -29,6 +29,8 @@ import org.polymap.core.model.Composite;
 import org.polymap.core.model.Entity;
 import org.polymap.core.model.EntityType;
 
+import org.polymap.twv.model.Named;
+
 /**
  * 
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
@@ -71,7 +73,14 @@ public class SelectableCompositesFeatureContentProvider
         return result.toArray();
     }
 
-
+    public int[] getIndicesForElements( Composite... input ) {
+        List<Composite> composites = new ArrayList<Composite>();
+        for (final Composite composite : input) {
+            composites.add( composite );
+        }
+        return getIndicesForElements( composites );
+    }
+    
     public int[] getIndicesForElements( Iterable<? extends Composite> input ) {
         List<Integer> indices = new ArrayList<Integer>();
         log.debug( "getIndicesForElements()" );
@@ -112,7 +121,11 @@ public class SelectableCompositesFeatureContentProvider
 
         public Object getValue( String name ) {
             try {
-                return compositeType.getProperty( name ).getValue( composite );
+                Object value = compositeType.getProperty( name ).getValue( composite );
+                if (value instanceof Named) {
+                    return ((Named)value).name().get();
+                }
+                return value;
             }
             catch (Exception e) {
                 throw new RuntimeException( e );
