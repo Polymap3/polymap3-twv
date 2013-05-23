@@ -61,7 +61,7 @@ public class ImageViewer {
         imageView.setLayoutData( layout );
         imageView.setSize( 250, 250 );
 
-//        imageView.pack();
+        // imageView.pack();
         imageView.addMouseListener( new MouseListener() {
 
             @Override
@@ -82,44 +82,46 @@ public class ImageViewer {
 
 
             private void show() {
-                String url = DownloadServiceHandler.registerContent( new ContentProvider() {
+                if (imageData != null) {
+                    String url = DownloadServiceHandler.registerContent( new ContentProvider() {
 
-                    @Override
-                    public String getFilename() {
-                        return imageData.originalFileName();
-                    }
-
-
-                    @Override
-                    public String getContentType() {
-                        return imageData.contentType();
-                    }
+                        @Override
+                        public String getFilename() {
+                            return imageData.originalFileName();
+                        }
 
 
-                    @Override
-                    public InputStream getInputStream()
-                            throws Exception {
-                        return new FileInputStream( new File( TwvPlugin.getImagesRoot(), imageData
-                                .internalFileName() ) );
-                    }
+                        @Override
+                        public String getContentType() {
+                            return imageData.contentType();
+                        }
 
 
-                    @Override
-                    public boolean done( boolean success ) {
-                        return true;
-                    }
-                } );
-                url = "polymap?meins.jpg&" + url.substring( "polymap?".length() );
-                ExternalBrowser.open( "download_window", url, ExternalBrowser.NAVIGATION_BAR
-                        | ExternalBrowser.STATUS );
+                        @Override
+                        public InputStream getInputStream()
+                                throws Exception {
+                            return new FileInputStream( new File( TwvPlugin.getImagesRoot(), imageData
+                                    .internalFileName() ) );
+                        }
 
-                // Browser browser = new Browser( shell, SWT.NONE );
-                // // create the image
-                // BufferedImage image = createImage();
-                // // store the image in the SessionStore for the service handler
-                // RWT.getSessionStore().setAttribute( IMAGE_KEY, image );
-                // create the HTML with a single <img> tag.
-                // browser.setText( "<img src=\"" + url + "\"/>" );
+
+                        @Override
+                        public boolean done( boolean success ) {
+                            return true;
+                        }
+                    } );
+                    //url = "polymap?meins.jpg&" + url.substring( "polymap?".length() );
+                    ExternalBrowser.open( "download_window", url, ExternalBrowser.NAVIGATION_BAR
+                            | ExternalBrowser.STATUS );
+
+                    // Browser browser = new Browser( shell, SWT.NONE );
+                    // // create the image
+                    // BufferedImage image = createImage();
+                    // // store the image in the SessionStore for the service handler
+                    // RWT.getSessionStore().setAttribute( IMAGE_KEY, image );
+                    // create the HTML with a single <img> tag.
+                    // browser.setText( "<img src=\"" + url + "\"/>" );
+                }
             }
 
         } );
@@ -143,8 +145,11 @@ public class ImageViewer {
 
                 Image image = null;
                 try {
-                    image = Graphics.getImage( imageData.thumbnailFileName(), new FileInputStream(
-                            new File( TwvPlugin.getImagesRoot(), imageData.thumbnailFileName() ) ) );
+                    image = Graphics
+                            .getImage(
+                                    imageData.thumbnailFileName(),
+                                    new FileInputStream( new File( TwvPlugin.getImagesRoot(), imageData
+                                            .thumbnailFileName() ) ) );
                 }
                 catch (FileNotFoundException e) {
                     PolymapWorkbench.handleError( TwvPlugin.PLUGIN_ID, ImageViewer.this,
