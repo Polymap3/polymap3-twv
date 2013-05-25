@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import org.eclipse.rwt.graphics.Graphics;
@@ -110,7 +111,8 @@ public class ImageViewer {
                             return true;
                         }
                     } );
-                    //url = "polymap?meins.jpg&" + url.substring( "polymap?".length() );
+                    // url = "polymap?meins.jpg&" + url.substring(
+                    // "polymap?".length() );
                     ExternalBrowser.open( "download_window", url, ExternalBrowser.NAVIGATION_BAR
                             | ExternalBrowser.STATUS );
 
@@ -137,11 +139,14 @@ public class ImageViewer {
     private void refresh() {
         if (imageData == null) {
             imageView.setEnabled( false );
+            imageView.setCursor( Display.getCurrent().getSystemCursor( SWT.CURSOR_ARROW ) );
+
             imageView.setImage( null );
         }
         else {
             if (imageData.thumbnailFileName() != null) {
                 imageView.setEnabled( true );
+                imageView.setCursor( Display.getCurrent().getSystemCursor( SWT.CURSOR_HAND ) );
 
                 Image image = null;
                 try {
