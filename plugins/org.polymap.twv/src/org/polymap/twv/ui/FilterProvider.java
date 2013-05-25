@@ -58,30 +58,6 @@ public class FilterProvider
         List<IFilter> result = new ArrayList<IFilter>();
 
         if (geores instanceof EntityGeoResourceImpl) {
-            // && geores.resolve( EntityProvider.class, null ) instanceof
-            // TwvEntityProvider) {
-
-            // }
-            // TODO ist dieser Check hier korrekt? Gibt es eine andere Möglichkeit,
-            // direkt auf das Composite zu matchen
-            // bei mir benutzen mehrere Composites durchaus den gleichen
-            // EntityProvider
-            // if (geores.getID().toString().contains(
-            // RichtwertzoneComposite.class.getName() )) {
-            //
-            // result.add( new RichtwertZoneFilter( layer ) );
-            // }
-            // else if (geores.getID().toString().contains(
-            // VertragComposite.class.getName() )) {
-            //
-            // result.add( new DefaultEntityFilter( layer ) );
-            // result.add( new VertraegeFuerBaujahrUndGebaeudeartFilter( layer ) );
-            // }
-            // else if (geores.getID().toString().contains(
-            // FlurstuecksdatenBaulandComposite.class.getName() )) {
-            //
-            // result.add( new EinzelneVertragsdatenBaulandFilter( layer ) );
-            // }
             EntityProvider provider = geores.resolve( EntityProvider.class, null );
             if (provider != null && provider instanceof TwvEntityProvider) {
                 Class type = provider.getEntityType().getType();

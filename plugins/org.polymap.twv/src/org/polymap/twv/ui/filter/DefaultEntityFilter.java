@@ -25,10 +25,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.BooleanExpression;
 
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.core.model.Entity;
@@ -43,7 +45,7 @@ import org.polymap.rhei.field.BetweenFormField;
 import org.polymap.rhei.field.BetweenValidator;
 import org.polymap.rhei.field.DateTimeFormField;
 import org.polymap.rhei.field.NumberValidator;
-import org.polymap.rhei.field.PicklistFormField;
+import org.polymap.rhei.field.SelectlistFormField;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.filter.IFilterEditorSite;
 
@@ -128,8 +130,12 @@ public class DefaultEntityFilter
                         labelFor( property.getName() ) ) );
             }
             else if (Named.class.isAssignableFrom( propertyType )) {
-                site.addStandardLayout( site.newFormField( result, property.getName(), propertyType,
-                        new PicklistFormField( valuesFor( propertyType ) ), null, labelFor( property.getName() ) ) );
+                SelectlistFormField field = new SelectlistFormField( valuesFor( propertyType ) );
+                field.setIsMultiple( true );
+                Composite formField = site.newFormField( result, property.getName(), propertyType, field, null,
+                        labelFor( property.getName() ) );
+                site.addStandardLayout( formField );
+                ((FormData)formField.getLayoutData()).height = 100;
             }
         }
 
@@ -143,7 +149,6 @@ public class DefaultEntityFilter
 
 
     private String labelFor( String name ) {
-        // TODO implementieren
         return name.substring( 0, 1 ).toUpperCase() + name.substring( 1 );
     }
 
@@ -164,15 +169,7 @@ public class DefaultEntityFilter
                     Class propertyType = property.getType();
                     Method propertyMethod = entityClass.getDeclaredMethod( property.getName(), new Class[0] );
                     if (String.class.isAssignableFrom( propertyType )) {
-                        String match = (String)value;
-                        if (!match.isEmpty()) {
-                            if (match.indexOf( '*' ) == -1 && match.indexOf( '?' ) == -1) {
-                                match = '*' + match + '*';
-                            }
-                            currentExpression = QueryExpressions.matches(
-                                    (org.qi4j.api.property.Property<String>)propertyMethod.invoke( template,
-                                            new Object[0] ), match );
-                        }
+                        currentExpression = createStringExpression( template, value, propertyMethod );
                     }
                     else if (Integer.class.isAssignableFrom( propertyType )) {
                         currentExpression = createIntegerExpression( template, value, propertyMethod );
@@ -184,8 +181,7 @@ public class DefaultEntityFilter
                         currentExpression = createDateExpression( template, value, propertyMethod );
                     }
                     else if (Named.class.isAssignableFrom( propertyType )) {
-                        currentExpression = QueryExpressions.eq(
-                                (Association<Named>)propertyMethod.invoke( template, new Object[0] ), (Named)value );
+                        currentExpression = createNamedExpression( template, value, propertyMethod );
                     }
                     expr = (expr == null) ? currentExpression : QueryExpressions.and( expr, currentExpression );
                 }
@@ -195,6 +191,45 @@ public class DefaultEntityFilter
         catch (Exception e) {
             throw new RuntimeException( e );
         }
+    }
+
+
+    private BooleanExpression createStringExpression( Entity template, Object value, Method propertyMethod )
+            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        String match = (String)value;
+        if (!match.isEmpty()) {
+            if (match.indexOf( '*' ) == -1 && match.indexOf( '?' ) == -1) {
+                match = '*' + match + '*';
+            }
+            return QueryExpressions.matches(
+                    (org.qi4j.api.property.Property<String>)propertyMethod.invoke( template, new Object[0] ), match );
+        }
+        return null;
+    }
+
+
+    private BooleanExpression createNamedExpression( Entity template, Object value, Method propertyMethod )
+            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        List<Named> values = (List<Named>)value;
+        BooleanExpression expr = null;
+        for (Named named : values) {
+            Object p = propertyMethod.invoke( template, new Object[0] );
+            BooleanExpression current = null;
+            if (p instanceof Association) {
+                current = QueryExpressions.eq( (Association<Named>)p, named );
+            }
+            else {
+                // must be manyassociation
+                current = QueryExpressions.contains( (ManyAssociation<Named>)p, named );
+            }
+            if (expr == null) {
+                expr = current;
+            }
+            else {
+                expr = QueryExpressions.or( expr, current );
+            }
+        }
+        return expr;
     }
 
 
