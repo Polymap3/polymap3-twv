@@ -15,6 +15,14 @@
             class="org.polymap.twv.model.TwvRepositoryAssembler">
       </assembler>
    </extension>
+   <extension
+         point="org.polymap.rhei.form.filterProviders">
+      <filterProvider
+            class="org.polymap.twv.ui.FilterProvider"
+            id="org.polymap.twv.ui.FilterProvider"
+            name="org.polymap.twv.ui.FilterProvider">
+      </filterProvider>
+   </extension>
    <!--extension
          point="org.eclipse.ui.importWizards">
       <wizard

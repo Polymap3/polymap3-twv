@@ -135,6 +135,7 @@ public interface WegobjektComposite
                 public void set( String anIgnoredValue )
                         throws IllegalArgumentException, IllegalStateException {
                         // ignored
+                    log.info( anIgnoredValue + " on search?" );
                 }
             };
         }

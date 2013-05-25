@@ -32,6 +32,7 @@ import org.polymap.core.qi4j.idgen.HRIdentityGeneratorService;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreInfo;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreQueryService;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
+import org.polymap.rhei.filter.FilterFactory;
 
 import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.NamedCreatorCallback.Impl;
@@ -125,6 +126,8 @@ public class TwvRepositoryAssembler
 
         domainModule.addServices( HRIdentityGeneratorService.class,
                 SchildNummerGeneratorService.class );
+        
+        FilterFactory.instance().disableStandardFilter();
     }
 
 
