@@ -190,6 +190,21 @@ public class WegFormEditorPage
                                 .keySet() ) ).setLayoutData( left().right( 100 ).top( line8 ).create() ).create();
 
         Composite line10 = newFormField( "Profil" )
+                .setToolTipText(
+                        "leicht \n"
+                                + "Weg gut ausgebaut, Gelände flach oder leicht ansteigend, keine Absturzgefahr, \n"
+                                + "auch mit Turnschuhen/ ohne Spezialräder geeignet, \n"
+                                + "Orientierung problemlos möglich, wenig Ausdauer erforderlich\n"
+                                + "\nmittel \n"
+                                + "durchgehend gut ersichtlicher und begeh- oder befahrbarer Weg,\n"
+                                + "teilweise Abhänge und Böschungen, teilweise Steigungen und Neigungen, \n"
+                                + "Trekkingschuhe und Trittsicherheit/ Mountainbike empfehlenswert, \n"
+                                + "elementares Orientierungsvermögen, etwas Ausdauer\n"
+                                + "\nschwierig \n"
+                                + "Weg nicht durchgehend sichtbar, heikle Stellen, Trittsicherheit, \n"
+                                + "Trekkingschuhe/ Mountainbike erforderlich, Abhänge und Böschungen nur mit \n"
+                                + "Sichtschutz, erhebliche Steigungen und Neigungen, gutes \n"
+                                + "Orientierungsvermögen und Ausdauer notwendig" )
                 .setProperty( new AssociationAdapter<ProfilComposite>( "profil", weg.profil() ) )
                 .setField( namedAssocationsPicklist( ProfilComposite.class ) )
                 .setLayoutData( left().top( line9 ).create() ).create();
