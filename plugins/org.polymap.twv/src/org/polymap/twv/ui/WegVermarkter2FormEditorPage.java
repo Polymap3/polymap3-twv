@@ -22,6 +22,8 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -36,10 +38,12 @@ import org.polymap.core.project.ui.util.SimpleFormData;
 
 import org.polymap.rhei.data.entityfeature.ManyAssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
+import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.form.IFormEditorPage2;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
+import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.TwvRepository;
 import org.polymap.twv.model.data.VermarkterComposite;
 import org.polymap.twv.model.data.WegComposite;
@@ -53,20 +57,26 @@ public class WegVermarkter2FormEditorPage
         extends TwvDefaultFormEditorPage
         implements IFormEditorPage2 {
 
-    private WegComposite                                weg;
+    private WegComposite                    weg;
 
-    private FeatureTableViewer                          viewer;
+    private FeatureTableViewer              viewer;
 
-    private boolean                                     isDirty;
+    private boolean                         isDirty;
 
-//    private ManyAssociationAdapter<VermarkterComposite> vermarkterAdapter;
-    private final List<VermarkterComposite> selectedVermarkter;// = new ArrayList<VermarkterComposite>();
+    // private ManyAssociationAdapter<VermarkterComposite> vermarkterAdapter;
+    // list der vermarkter die noch am Weg dran sind, Änderungen passieren nur hier
+    // als Adapter
+    private final List<VermarkterComposite> wegVermarkter      = new ArrayList<VermarkterComposite>();
+
+    // liste der Vermarkter die gerade ausgewählt um diese bspw. zu Löschen
+    private final List<VermarkterComposite> selectedVermarkter = new ArrayList<VermarkterComposite>();
 
 
     public WegVermarkter2FormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( WegVermarkter2FormEditorPage.class.getName(), "Vermarkter", feature, featureStore );
         this.weg = twvRepository.findEntity( WegComposite.class, feature.getIdentifier().getID() );
-        selectedVermarkter = weg.vermarkter().toList();
+        wegVermarkter.addAll( weg.vermarkter().toList() );
+        // selectedVermarkter = weg.vermarkter().toList();
     }
 
 
@@ -77,28 +87,52 @@ public class WegVermarkter2FormEditorPage
 
         final Composite parent = site.getPageBody();
 
-//        int TOPSPACING = 3;
+        int TOPSPACING = 3;
 
         viewer = new FeatureTableViewer( parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL );
-        viewer.getTable().setLayoutData(
-                new SimpleFormData().fill().left( 2 ).height( 200 ).right( RIGHT ).create() );
+        viewer.getTable().setLayoutData( new SimpleFormData().fill().left( 2 ).height( 200 ).right( 90 ).create() );
 
-        // columns
-        EntityType<VermarkterComposite> type = addViewerColumns( viewer );
+        VermarkterSelector addAction = new VermarkterSelector(wegVermarkter) {
 
-        // model/content
-        viewer.setContent( new SelectableCompositesFeatureContentProvider(
-                null, type ) );
+            @Override
+            public void fieldChange( FormFieldEvent ev ) {
+                // TODO Auto-generated method stub
+                throw new RuntimeException( "not yet implemented." );
+            }
 
-//        vermarkterAdapter = new ManyAssociationAdapter<VermarkterComposite>( "vermarkter",
-//                weg.vermarkter() );
 
-        try {
-            doLoad( new NullProgressMonitor() );
-        }
-        catch (Exception e) {
-            throw new RuntimeException( e );
-        }
+            @Override
+            protected void addSelected( List<VermarkterComposite> elements )
+                    throws Exception {
+                wegVermarkter.addAll( elements );
+                // if something returns, add them to wegVermarkter
+                // and reload
+                doLoad( new NullProgressMonitor() );
+                isDirty = true;
+                site.fireEvent( this, "vermarkter", IFormFieldListener.VALUE_CHANGE,
+                        wegVermarkter );
+            }
+        };
+        ActionButton addBtn = new ActionButton( parent, addAction );
+        addBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING ).right( 98, -SPACING ).height( 30 )
+                .create() );
+
+        DeleteCompositeAction deleteAction = new DeleteCompositeAction() {
+
+            protected void execute()
+                    throws Exception {
+                for (VermarkterComposite vermarkter : selectedVermarkter) {
+                    wegVermarkter.remove( vermarkter );
+                }
+                doLoad( new NullProgressMonitor() );
+                isDirty = true;
+                site.fireEvent( this, "vermarkter", IFormFieldListener.VALUE_CHANGE,
+                        wegVermarkter );
+            }
+        };
+        ActionButton delBtn = new ActionButton( parent, deleteAction );
+        delBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING ).top( addBtn, SPACING )
+                .right( 98, -SPACING ).height( 30 ).create() );
 
         parent.layout( true );
 
@@ -112,11 +146,31 @@ public class WegVermarkter2FormEditorPage
                 for (FeatureTableElement tableRow : selections) {
                     selectedVermarkter.add( (VermarkterComposite)tableRow.getComposite() );
                 }
-//                vermarkterAdapter.setValue( selectedVermarkter );
-                isDirty = true;
+            }
+        } );
 
-                site.fireEvent( this, "vermarkter", IFormFieldListener.VALUE_CHANGE,
-                        selectedVermarkter );
+        // columns
+        EntityType<VermarkterComposite> type = addViewerColumns( viewer );
+
+        // model/content
+        viewer.setContent( new SelectableCompositesFeatureContentProvider( null, type ) );
+
+        try {
+            doLoad( new NullProgressMonitor() );
+        }
+        catch (Exception e) {
+            throw new RuntimeException( e );
+        }
+
+        parent.layout( true );
+
+        viewer.addDoubleClickListener( new IDoubleClickListener() {
+
+            @Override
+            public void doubleClick( DoubleClickEvent event ) {
+                StructuredSelection selection = (StructuredSelection)event.getSelection();
+                FeatureTableElement tableRow = (FeatureTableElement)selection.getFirstElement();
+                TwvPlugin.openEditor( fs, "Vermarkter", (VermarkterComposite)tableRow.getComposite() );
             }
         } );
     }
@@ -140,12 +194,11 @@ public class WegVermarkter2FormEditorPage
 
 
     public List<VermarkterComposite> getElements() {
-        List<VermarkterComposite> allVC = new ArrayList<VermarkterComposite>();
-        for (VermarkterComposite vc : TwvRepository.instance().findEntities(
-                VermarkterComposite.class, null, 0, 1000 )) {
-            allVC.add( vc );
-        }
-        return allVC;
+        // List<VermarkterComposite> allVC = new ArrayList<VermarkterComposite>();
+        // for (VermarkterComposite vc : weg.vermarkter()) {
+        // allVC.add( vc );
+        // }
+        return wegVermarkter;
     }
 
 
@@ -171,11 +224,11 @@ public class WegVermarkter2FormEditorPage
             // Umweg über selectedIndices, da ich sonst nicht mehr an die
             // TableElemente
             selectedVermarkter.clear();
-            selectedVermarkter.addAll( weg.vermarkter().toList() );
+            // selectedVermarkter.addAll( weg.vermarkter().toList() );
             viewer.getTable().deselectAll();
-            viewer.getTable().select(
-                    ((SelectableCompositesFeatureContentProvider)viewer.getContentProvider())
-                            .getIndicesForElements( selectedVermarkter ) );
+            // viewer.getTable().select(
+            // ((SelectableCompositesFeatureContentProvider)viewer.getContentProvider())
+            // .getIndicesForElements( selectedVermarkter ) );
         }
         isDirty = false;
     }
@@ -184,8 +237,7 @@ public class WegVermarkter2FormEditorPage
     @Override
     public void doSubmit( IProgressMonitor monitor )
             throws Exception {
-        new ManyAssociationAdapter<VermarkterComposite>( "vermarkter",
-              weg.vermarkter() ).setValue( selectedVermarkter );
+        new ManyAssociationAdapter<VermarkterComposite>( "vermarkter", weg.vermarkter() ).setValue( wegVermarkter );
         isDirty = false;
     }
 
