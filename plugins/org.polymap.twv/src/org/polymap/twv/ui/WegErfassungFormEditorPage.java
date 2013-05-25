@@ -77,7 +77,7 @@ public class WegErfassungFormEditorPage
                 .setField( new DateTimeFormField() ).setLayoutData( left().top( line2 ).create() )
                 .create();
 
-        newFormField( "Entfernungskontrolle" )
+        newFormField( "Kontrolle" ).setToolTipText( "Entfernungskontrolle" )
                 .setProperty(
                         new AssociationAdapter<EntfernungskontrolleComposite>( "widmung", weg
                                 .entfernungskontrolle() ) )
