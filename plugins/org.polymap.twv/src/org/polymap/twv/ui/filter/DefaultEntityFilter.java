@@ -183,7 +183,9 @@ public class DefaultEntityFilter
                     else if (Named.class.isAssignableFrom( propertyType )) {
                         currentExpression = createNamedExpression( template, value, propertyMethod );
                     }
-                    expr = (expr == null) ? currentExpression : QueryExpressions.and( expr, currentExpression );
+                    if (currentExpression != null) {
+                        expr = (expr == null) ? currentExpression : QueryExpressions.and( expr, currentExpression );
+                    }
                 }
             }
             return module.findEntities( entityClass, expr, 0, getMaxResults() );
