@@ -87,7 +87,7 @@ public interface WegComposite
 
 
     @Optional
-    Association<WidmungComposite> widmung();
+    Property<String> widmung();
 
 
     @Optional
