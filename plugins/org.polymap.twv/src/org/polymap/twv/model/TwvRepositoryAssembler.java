@@ -15,11 +15,14 @@ package org.polymap.twv.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.LayerAssembly;
@@ -103,20 +106,19 @@ public class TwvRepositoryAssembler
         // project layer / module
         LayerAssembly domainLayer = _app.layerAssembly( "application-layer" );
         ModuleAssembly domainModule = domainLayer.moduleAssembly( TWV_MODULE );
-        domainModule.addEntities( AusweisungComposite.class, MarkierungComposite.class,
-                SchildartComposite.class, SchildComposite.class, SchildmaterialComposite.class,
-                VermarkterComposite.class, WegbeschaffenheitComposite.class, WegComposite.class,
-                WegobjektComposite.class, WegobjektNameComposite.class, WidmungComposite.class,
-                EntfernungskontrolleComposite.class, FoerderregionComposite.class,
-                PfeilrichtungComposite.class, KategorieComposite.class,
+        domainModule.addEntities( AusweisungComposite.class, MarkierungComposite.class, SchildartComposite.class,
+                SchildComposite.class, SchildmaterialComposite.class, VermarkterComposite.class,
+                WegbeschaffenheitComposite.class, WegComposite.class, WegobjektComposite.class,
+                WegobjektNameComposite.class, WidmungComposite.class, EntfernungskontrolleComposite.class,
+                FoerderregionComposite.class, PfeilrichtungComposite.class, KategorieComposite.class,
                 UnterkategorieComposite.class, PrioritaetComposite.class, ProfilComposite.class );
 
         // persistence: workspace/Lucene
         domainModule.addValues( ImageValue.class );
 
         domainModule.addServices( LuceneEntityStoreService.class )
-                .setMetaInfo( new LuceneEntityStoreInfo( TwvPlugin.getModuleRoot() ) )
-                .instantiateOnStartup().identifiedBy( "lucene-repository" );
+                .setMetaInfo( new LuceneEntityStoreInfo( TwvPlugin.getModuleRoot() ) ).instantiateOnStartup()
+                .identifiedBy( "lucene-repository" );
 
         // indexer
         domainModule.addServices( LuceneEntityStoreQueryService.class )
@@ -124,9 +126,8 @@ public class TwvRepositoryAssembler
         // .setMetaInfo( namedQueries )
                 .instantiateOnStartup();
 
-        domainModule.addServices( HRIdentityGeneratorService.class,
-                SchildNummerGeneratorService.class );
-        
+        domainModule.addServices( HRIdentityGeneratorService.class, SchildNummerGeneratorService.class );
+
         FilterFactory.instance().disableStandardFilter();
     }
 
@@ -137,7 +138,7 @@ public class TwvRepositoryAssembler
         // create the composites
         final UnitOfWork uow = uowf.newUnitOfWork();
         final Impl creator = new NamedCreatorCallback.Impl( uow );
-        
+
         if (!isDBInitialized( uow )) {
 
             log.info( "Create Init Data" );
@@ -188,8 +189,7 @@ public class TwvRepositoryAssembler
 
             // Widmung
             creator.create( WidmungComposite.class, "öffentlich gewidmet auf Basis Eigentum" );
-            creator.create( WidmungComposite.class,
-                    "öffentlich gewidmet auf Basis Gestattungsvertrag" );
+            creator.create( WidmungComposite.class, "öffentlich gewidmet auf Basis Gestattungsvertrag" );
             creator.create( WidmungComposite.class, "nicht öffentlich gewidmet" );
 
             // Wegobjektname
@@ -228,10 +228,10 @@ public class TwvRepositoryAssembler
 
             log.info( "Create Init Data V2 completed" );
         }
-        // next version 
-        migrateVermarkter(uow); 
+        // next version
+        migrateVermarkter( uow );
         fixIncorrectManyAssociations( uow );
-        
+
         uow.complete();
     }
 
@@ -242,53 +242,51 @@ public class TwvRepositoryAssembler
      * @return
      */
     private boolean isDBInitialized( UnitOfWork uow ) {
-        QueryBuilder<AusweisungComposite> builder = getModule().queryBuilderFactory()
-                .newQueryBuilder( AusweisungComposite.class );
+        QueryBuilder<AusweisungComposite> builder = getModule().queryBuilderFactory().newQueryBuilder(
+                AusweisungComposite.class );
         Query<AusweisungComposite> query = builder.newQuery( uow ).maxResults( 1 ).firstResult( 0 );
         return query.iterator().hasNext();
     }
-    
+
+
     private boolean isDBInitializedV2( UnitOfWork uow ) {
-        QueryBuilder<ProfilComposite> builder = getModule().queryBuilderFactory()
-                .newQueryBuilder( ProfilComposite.class );
+        QueryBuilder<ProfilComposite> builder = getModule().queryBuilderFactory().newQueryBuilder(
+                ProfilComposite.class );
         Query<ProfilComposite> query = builder.newQuery( uow ).maxResults( 1 ).firstResult( 0 );
         return query.iterator().hasNext();
     }
-    
+
+
     private void migrateVermarkter( UnitOfWork uow ) {
         log.info( "Migrate Vermarkter" );
-        QueryBuilder<VermarkterComposite> builder = getModule().queryBuilderFactory()
-                .newQueryBuilder( VermarkterComposite.class );
+        QueryBuilder<VermarkterComposite> builder = getModule().queryBuilderFactory().newQueryBuilder(
+                VermarkterComposite.class );
         Query<VermarkterComposite> query = builder.newQuery( uow ).maxResults( 100000 ).firstResult( 0 );
         for (VermarkterComposite vermarkterComposite : query) {
             WegComposite wegComposite = vermarkterComposite.weg().get();
             if (wegComposite != null) {
                 wegComposite.vermarkter().add( vermarkterComposite );
                 vermarkterComposite.weg().set( null );
-//            } else {
-//                // abbrechen wenn der erste Vermarter ohne Weg gefunden wird, da dann alle Vermarkter
-//                // migriert sein müssten
-//                return;
+                // } else {
+                // // abbrechen wenn der erste Vermarter ohne Weg gefunden wird, da
+                // dann alle Vermarkter
+                // // migriert sein müssten
+                // return;
             }
         }
     }
-    
-    private void fixIncorrectManyAssociations( UnitOfWork uow ) {        
-        log.info( "Remove Vermarkters" );
-        // never complete this uow, otherwise the vermarkter would be persistent
-        UnitOfWork neverComplete = uowf.newUnitOfWork();
-        VermarkterComposite v1 = neverComplete.newEntity( VermarkterComposite.class, "VermarkterComposite-20130426-1043-0" );
-        VermarkterComposite v2 = neverComplete.newEntity( VermarkterComposite.class, "VermarkterComposite-20130415-0942-1" );
-        QueryBuilder<WegComposite> builder = getModule().queryBuilderFactory()
-                .newQueryBuilder( WegComposite.class );
-        Query<WegComposite> query = builder.newQuery( uow ).maxResults( 100000 ).firstResult( 0 );
-        for (WegComposite weg : query) {
-            if (weg.vermarkter().contains( v1 ) ) {
-                weg.vermarkter().remove( v1 );
-            }
-            if (weg.vermarkter().contains( v2 ) ) {
-                weg.vermarkter().remove( v2 );
-            }
-        }  
+
+
+    private void fixIncorrectManyAssociations( UnitOfWork uow )
+            throws ConcurrentEntityModificationException, UnitOfWorkCompletionException {
+        log.info( "Create Vermarkters to be removed later by hand" );
+        EntityBuilder<VermarkterComposite> entityBuilder = uow.newEntityBuilder( VermarkterComposite.class,
+                "VermarkterComposite-20130426-1043-0" );
+        entityBuilder.instance().name().set( "_delete_me_" );
+        entityBuilder.newInstance();
+        
+        entityBuilder = uow.newEntityBuilder( VermarkterComposite.class, "VermarkterComposite-20130415-0942-1" );
+        entityBuilder.instance().name().set( "_delete_me_" );
+        entityBuilder.newInstance();
     }
 }
