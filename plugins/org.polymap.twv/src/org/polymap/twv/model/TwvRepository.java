@@ -102,57 +102,41 @@ public class TwvRepository
         if (Polymap.getSessionDisplay() != null) {
             OperationSupport.instance().addOperationSaveListener( operationListener );
         }
-        schildNummer = assembler.getModule().serviceFinder()
-                .findService( SchildNummerGeneratorService.class );
+        schildNummer = assembler.getModule().serviceFinder().findService( SchildNummerGeneratorService.class );
     }
 
 
     public void init( final Session session ) {
         try {
-            twvService = new TwvService( new WegEntityProvider( this, new NameImpl(
-                    TwvRepository.NAMESPACE, "Weg" ) ),
-                    new TwvEntityProvider<SchildComposite>( this, SchildComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),
-                    new TwvEntityProvider<AusweisungComposite>( this, AusweisungComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ) ),
-                    new TwvEntityProvider<MarkierungComposite>( this, MarkierungComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Markierung" ) ),
-                    new TwvEntityProvider<SchildartComposite>( this, SchildartComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Schildart" ) ),
-                    new TwvEntityProvider<EntfernungskontrolleComposite>( this,
-                            EntfernungskontrolleComposite.class, new NameImpl(
-                                    TwvRepository.NAMESPACE, "Entfernungskontrolle" ) ),
-                    new TwvEntityProvider<SchildComposite>( this, SchildComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),
-                    new TwvEntityProvider<SchildmaterialComposite>( this,
-                            SchildmaterialComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Schildmaterial" ) ),
-                    new TwvEntityProvider<VermarkterComposite>( this, VermarkterComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ) ),
-                    new TwvEntityProvider<WegbeschaffenheitComposite>( this,
-                            WegbeschaffenheitComposite.class, new NameImpl(
-                                    TwvRepository.NAMESPACE, "Wegbeschaffenheit" ) ),
-                    new TwvEntityProvider<WegobjektComposite>( this, WegobjektComposite.class,
-                            new NameImpl( TwvRepository.NAMESPACE, "Wegobjekt" ) ),
-                    new TwvEntityProvider<WegobjektNameComposite>( this,
-                            WegobjektNameComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Wegobjektname" ) ),
-                    new TwvEntityProvider<FoerderregionComposite>( this,
-                            FoerderregionComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Förderregion" ) ),
-                    new TwvEntityProvider<ProfilComposite>( this,
-                            ProfilComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Profil" ) ),
-                    new TwvEntityProvider<PfeilrichtungComposite>( this,
-                            PfeilrichtungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Pfeilrichtung" ) ), new TwvEntityProvider<KategorieComposite>(
-                            this, KategorieComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Kategorie" ) ),
-                    new TwvEntityProvider<UnterkategorieComposite>( this,
-                            UnterkategorieComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Unterkategorie" ) ), new TwvEntityProvider<WidmungComposite>(
-                            this, WidmungComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Widmung" ) ) );
+            twvService = new TwvService( new WegEntityProvider( this, new NameImpl( TwvRepository.NAMESPACE, "Weg" ) ),
+                    new TwvEntityProvider<SchildComposite>( this, SchildComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Schild" ) ), new TwvEntityProvider<AusweisungComposite>( this,
+                            AusweisungComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ) ),
+                    new TwvEntityProvider<MarkierungComposite>( this, MarkierungComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Markierung" ) ), new TwvEntityProvider<SchildartComposite>( this,
+                            SchildartComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Schildart" ) ),
+                    new TwvEntityProvider<EntfernungskontrolleComposite>( this, EntfernungskontrolleComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Entfernungskontrolle" ) ),
+                    new TwvEntityProvider<SchildComposite>( this, SchildComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Schild" ) ), new TwvEntityProvider<SchildmaterialComposite>(
+                            this, SchildmaterialComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Schildmaterial" ) ), new TwvEntityProvider<VermarkterComposite>( this,
+                            VermarkterComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ) ),
+                    new TwvEntityProvider<WegbeschaffenheitComposite>( this, WegbeschaffenheitComposite.class,
+                            new NameImpl( TwvRepository.NAMESPACE, "Wegbeschaffenheit" ) ),
+                    new TwvEntityProvider<WegobjektComposite>( this, WegobjektComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Wegobjekt" ) ),
+                    new TwvEntityProvider<WegobjektNameComposite>( this, WegobjektNameComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Wegobjektname" ) ),
+                    new TwvEntityProvider<FoerderregionComposite>( this, FoerderregionComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Förderregion" ) ), new TwvEntityProvider<ProfilComposite>( this,
+                            ProfilComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Profil" ) ),
+                    new TwvEntityProvider<PfeilrichtungComposite>( this, PfeilrichtungComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Pfeilrichtung" ) ), new TwvEntityProvider<KategorieComposite>(
+                            this, KategorieComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Kategorie" ) ),
+                    new TwvEntityProvider<UnterkategorieComposite>( this, UnterkategorieComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Unterkategorie" ) ), new TwvEntityProvider<WidmungComposite>(
+                            this, WidmungComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Widmung" ) ) );
         }
         catch (Exception e) {
             throw new RuntimeException( e );
@@ -174,8 +158,8 @@ public class TwvRepository
     }
 
 
-    public <T> Query<T> findEntities( Class<T> compositeType, BooleanExpression expression,
-            int firstResult, int maxResults ) {
+    public <T> Query<T> findEntities( Class<T> compositeType, BooleanExpression expression, int firstResult,
+            int maxResults ) {
         // Lucene does not like Integer.MAX_VALUE!?
         maxResults = Math.min( maxResults, 1000000 );
         return super.findEntities( compositeType, expression, firstResult, maxResults );
@@ -223,8 +207,16 @@ public class TwvRepository
 
     @Override
     public void removeEntity( Entity entity ) {
-        if (WegComposite.class.isAssignableFrom( entity.getClass() )) {
+        if (entity instanceof WegComposite) {
             WegComposite.Mixin.beforeRemove( (WegComposite)entity );
+        }
+        else if (entity instanceof VermarkterComposite) {
+            VermarkterComposite vermarkter = (VermarkterComposite)entity;
+            for (WegComposite weg : findEntities( WegComposite.class, null, 0, 10000 )) {
+                if (weg.vermarkter().contains( vermarkter )) {
+                    weg.vermarkter().remove( vermarkter );
+                }
+            }
         }
         super.removeEntity( entity );
     }
