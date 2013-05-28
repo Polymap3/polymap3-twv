@@ -35,6 +35,7 @@ import org.polymap.core.qi4j.idgen.HRIdentityGeneratorService;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreInfo;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreQueryService;
 import org.polymap.rhei.data.entitystore.lucene.LuceneEntityStoreService;
+
 import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.NamedCreatorCallback.Impl;
 import org.polymap.twv.model.data.AusweisungComposite;
@@ -279,12 +280,7 @@ public class TwvRepositoryAssembler
     private void fixIncorrectManyAssociations( UnitOfWork uow )
             throws ConcurrentEntityModificationException, UnitOfWorkCompletionException {
         log.info( "Create Vermarkters to be removed later by hand" );
-        EntityBuilder<VermarkterComposite> entityBuilder = uow.newEntityBuilder( VermarkterComposite.class,
-                "VermarkterComposite-20130426-1043-0" );
-        entityBuilder.instance().name().set( "_delete_me_" );
-        entityBuilder.newInstance();
-        
-        entityBuilder = uow.newEntityBuilder( VermarkterComposite.class, "VermarkterComposite-20130415-0942-1" );
+        EntityBuilder<VermarkterComposite> entityBuilder = uow.newEntityBuilder( VermarkterComposite.class, "VermarkterComposite-20130415-0942-0" );
         entityBuilder.instance().name().set( "_delete_me_" );
         entityBuilder.newInstance();
     }
