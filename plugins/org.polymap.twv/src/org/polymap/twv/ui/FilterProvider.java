@@ -64,25 +64,24 @@ public class FilterProvider
                 Class type = provider.getEntityType().getType();
                 // egeo.
                 if (type.isAssignableFrom( WegComposite.class )) {
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo, "name",
-                            "kategorie", "unterkategorie", "ausweisung" ) );
+                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo));
+//                    , "ausweisung", "bemerkung", "beschaffenheit", "beschreibung", "entfernungskontrolle", "erfasser", "kategorie", "name", 
+//                            "kategorie", "unterkategorie", "ausweisung" ) );
                 }
                 else if (type.isAssignableFrom( MarkierungComposite.class )) {
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo, "name" ) );
+                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ).exclude( "bildName" ) );
                 }
                 else if (type.isAssignableFrom( WegobjektComposite.class )) {
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo,
-                            "wegobjektName", "beschreibung", "weg" ) );
+                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo).exclude( "name", "bildName" ) );
                 }
                 else if (type.isAssignableFrom( VermarkterComposite.class )) {
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo, "name" ) );
+                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) );
                 }
                 
                 else if (type.isAssignableFrom( SchildComposite.class )) {
 //                    SchildComposite prototype = repo.prototypeFor(SchildComposite.class);
 //                    prototype.standort()()()()
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo,
-                            "beschriftung", "bestandsNr", "laufendeNr",  "befestigung", "material", "pfeilrichtung", "schildart", "standort", "weg" ) );
+                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ).exclude( "bildName" ) );
                 }
                 else {
                     result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) );

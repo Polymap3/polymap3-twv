@@ -99,35 +99,37 @@ public class DefaultEntityFilter
         EntityType<?> entityType = module.entityType( entityClass );
         for (String propertyName : propertyNames) {
             Property property = entityType.getProperty( propertyName );
-            Class propertyType = property.getType();
-            if (String.class.isAssignableFrom( propertyType )) {
-                site.addStandardLayout( site.newFormField( result, property.getName(), String.class,
-                        new StringFormField(), null, labelFor( property.getName() ) ) );
-            }
-            else if (Integer.class.isAssignableFrom( propertyType )) {
-                site.addStandardLayout( site.newFormField( result, property.getName(), Integer.class,
-                        new BetweenFormField( new StringFormField(), new StringFormField() ), new BetweenValidator(
-                                new NumberValidator( Integer.class, Polymap.getSessionLocale() ) ), labelFor( property
-                                .getName() ) ) );
-            }
-            else if (Double.class.isAssignableFrom( propertyType )) {
-                site.addStandardLayout( site.newFormField( result, property.getName(), Double.class,
-                        new BetweenFormField( new StringFormField(), new StringFormField() ), new BetweenValidator(
-                                new NumberValidator( Double.class, Polymap.getSessionLocale(), 12, 2, 1, 2 ) ),
-                        labelFor( property.getName() ) ) );
-            }
-            else if (Date.class.isAssignableFrom( propertyType )) {
-                site.addStandardLayout( site.newFormField( result, property.getName(), Date.class,
-                        new BetweenFormField( new DateTimeFormField(), new DateTimeFormField() ), null,
-                        labelFor( property.getName() ) ) );
-            }
-            else if (Named.class.isAssignableFrom( propertyType )) {
-                SelectlistFormField field = new SelectlistFormField( valuesFor( propertyType ) );
-                field.setIsMultiple( true );
-                Composite formField = site.newFormField( result, property.getName(), propertyType, field, null,
-                        labelFor( property.getName() ) );
-                site.addStandardLayout( formField );
-                ((FormData)formField.getLayoutData()).height = 100;
+            if (!(property instanceof EntityType.ManyAssociation)) {
+                Class propertyType = property.getType();
+                if (String.class.isAssignableFrom( propertyType )) {
+                    site.addStandardLayout( site.newFormField( result, property.getName(), String.class,
+                            new StringFormField(), null, labelFor( property.getName() ) ) );
+                }
+                else if (Integer.class.isAssignableFrom( propertyType )) {
+                    site.addStandardLayout( site.newFormField( result, property.getName(), Integer.class,
+                            new BetweenFormField( new StringFormField(), new StringFormField() ), new BetweenValidator(
+                                    new NumberValidator( Integer.class, Polymap.getSessionLocale() ) ),
+                            labelFor( property.getName() ) ) );
+                }
+                else if (Double.class.isAssignableFrom( propertyType )) {
+                    site.addStandardLayout( site.newFormField( result, property.getName(), Double.class,
+                            new BetweenFormField( new StringFormField(), new StringFormField() ), new BetweenValidator(
+                                    new NumberValidator( Double.class, Polymap.getSessionLocale(), 12, 2, 1, 2 ) ),
+                            labelFor( property.getName() ) ) );
+                }
+                else if (Date.class.isAssignableFrom( propertyType )) {
+                    site.addStandardLayout( site.newFormField( result, property.getName(), Date.class,
+                            new BetweenFormField( new DateTimeFormField(), new DateTimeFormField() ), null,
+                            labelFor( property.getName() ) ) );
+                }
+                else if (Named.class.isAssignableFrom( propertyType )) {
+                    SelectlistFormField field = new SelectlistFormField( valuesFor( propertyType ) );
+                    field.setIsMultiple( true );
+                    Composite formField = site.newFormField( result, property.getName(), propertyType, field, null,
+                            labelFor( property.getName() ) );
+                    site.addStandardLayout( formField );
+                    ((FormData)formField.getLayoutData()).height = 100;
+                }
             }
         }
 
@@ -139,8 +141,14 @@ public class DefaultEntityFilter
         return ((TwvRepository)module).entitiesWithNames( propertyType );
     }
 
+    public DefaultEntityFilter  exclude( String... names ) {
+        for (String name : names) {
+            this.propertyNames.remove( name );
+        }
+        return this;
+    }
 
-    private String labelFor( String name ) {
+    protected String labelFor( String name ) {
         return name.substring( 0, 1 ).toUpperCase() + name.substring( 1 );
     }
 
