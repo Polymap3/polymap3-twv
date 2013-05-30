@@ -50,7 +50,6 @@ public class FilterProvider
     public List<IFilter> addFilters( ILayer _layer )
             throws Exception {
         this.layer = _layer;
-        log.debug( "addFilters(): layer= " + layer );
 
         final TwvRepository repo = TwvRepository.instance();
         IGeoResource geores = layer.getGeoResource();
