@@ -60,6 +60,7 @@ public class FilterProvider
         if (geores instanceof EntityGeoResourceImpl) {
             EntityProvider provider = geores.resolve( EntityProvider.class, null );
             if (provider != null && provider instanceof TwvEntityProvider) {
+                TwvEntityProvider pr = (TwvEntityProvider)provider;
                 Class type = provider.getEntityType().getType();
                 // egeo.
                 if (type.isAssignableFrom( WegComposite.class )) {
@@ -76,9 +77,12 @@ public class FilterProvider
                 else if (type.isAssignableFrom( VermarkterComposite.class )) {
                     result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo, "name" ) );
                 }
+                
                 else if (type.isAssignableFrom( SchildComposite.class )) {
+//                    SchildComposite prototype = repo.prototypeFor(SchildComposite.class);
+//                    prototype.standort()()()()
                     result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo,
-                            "beschriftung", "laufendeNr", "bestandsNr", "weg" ) );
+                            "beschriftung", "bestandsNr", "laufendeNr",  "befestigung", "material", "pfeilrichtung", "schildart", "standort", "weg" ) );
                 }
                 else {
                     result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) );

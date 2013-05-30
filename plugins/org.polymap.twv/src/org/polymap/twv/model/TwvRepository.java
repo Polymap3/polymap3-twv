@@ -220,4 +220,9 @@ public class TwvRepository
         }
         super.removeEntity( entity );
     }
+
+
+    public SchildComposite prototypeFor( Class<SchildComposite> clazz ) {
+        return uow.newEntityBuilder( clazz ).instance();
+    }
 }
