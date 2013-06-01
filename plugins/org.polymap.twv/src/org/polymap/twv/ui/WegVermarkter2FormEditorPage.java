@@ -237,7 +237,7 @@ public class WegVermarkter2FormEditorPage
     @Override
     public void doSubmit( IProgressMonitor monitor )
             throws Exception {
-        new ManyAssociationAdapter<VermarkterComposite>( "vermarkter", weg.vermarkter() ).setValue( wegVermarkter );
+        new ManyAssociationAdapter<VermarkterComposite>( weg.vermarkter() ).setValue( wegVermarkter );
         isDirty = false;
     }
 

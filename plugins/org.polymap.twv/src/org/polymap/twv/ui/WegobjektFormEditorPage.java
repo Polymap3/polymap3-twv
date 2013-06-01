@@ -50,7 +50,7 @@ public class WegobjektFormEditorPage
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
 
-        WegobjektComposite wegobjekt = twvRepository.findEntity( WegobjektComposite.class, feature
+        final WegobjektComposite wegobjekt = twvRepository.findEntity( WegobjektComposite.class, feature
                 .getIdentifier().getID() );
         site.setEditorTitle( formattedTitle( "Wegobjekt", wegobjekt.name().get(), null ) );
         site.setFormTitle( formattedTitle( "Wegobjekt", wegobjekt.name().get(), getTitle() ) );
@@ -59,7 +59,7 @@ public class WegobjektFormEditorPage
         Composite line1 = newFormField( "Wegobjektname" )
                 .setParent( parent )
                 .setProperty(
-                        new AssociationAdapter<WegobjektNameComposite>( "wegobjektName", wegobjekt
+                        new AssociationAdapter<WegobjektNameComposite>( wegobjekt
                                 .wegobjektName() ) )
                 .setField( namedAssocationsPicklist( WegobjektNameComposite.class, true ) )
                 .setLayoutData( left().create() ).create();
@@ -71,7 +71,7 @@ public class WegobjektFormEditorPage
                 .setToolTipText( "Beschreibung des Wegobjektes" ).create();
 
         Composite line3 = newFormField( "Weg" ).setParent( parent )
-                .setProperty( new AssociationAdapter<WegComposite>( "weg", wegobjekt.weg() ) )
+                .setProperty( new AssociationAdapter<WegComposite>( wegobjekt.weg() ) )
                 .setValidator( new NotNullValidator() )
                 .setField( namedAssocationsPicklist( WegComposite.class ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
@@ -93,7 +93,7 @@ public class WegobjektFormEditorPage
 
             @Override
             public void fieldChange( FormFieldEvent ev ) {
-                if (ev.getNewValue() != null && "bild".equals( ev.getFieldName() )) {
+                if (ev.getNewValue() != null && wegobjekt.bild().qualifiedName().name().equals( ev.getFieldName() )) {
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
                     imagePreview.setImage( uploadedImage );
                 }
