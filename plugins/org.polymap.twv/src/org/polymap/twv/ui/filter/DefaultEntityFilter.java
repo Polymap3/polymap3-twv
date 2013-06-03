@@ -99,36 +99,38 @@ public class DefaultEntityFilter
         EntityType<?> entityType = module.entityType( entityClass );
         for (String propertyName : propertyNames) {
             Property property = entityType.getProperty( propertyName );
-            Class propertyType = property.getType();
-            if (String.class.isAssignableFrom( propertyType )) {
-                site.addStandardLayout( site.newFormField( result, property.getName(), String.class,
-                        new StringFormField(), null, labelFor( property.getName() ) ) );
-            }
-            else if (Integer.class.isAssignableFrom( propertyType )) {
-                site.addStandardLayout( site.newFormField( result, property.getName(), Integer.class,
-                        new BetweenFormField( new StringFormField(), new StringFormField() ), new BetweenValidator(
-                                new NumberValidator( Integer.class, Polymap.getSessionLocale() ) ), labelFor( property
-                                .getName() ) ) );
-            }
-            else if (Double.class.isAssignableFrom( propertyType )) {
-                site.addStandardLayout( site.newFormField( result, property.getName(), Double.class,
-                        new BetweenFormField( new StringFormField(), new StringFormField() ), new BetweenValidator(
-                                new NumberValidator( Double.class, Polymap.getSessionLocale(), 12, 2, 1, 2 ) ),
-                        labelFor( property.getName() ) ) );
-            }
-            else if (Date.class.isAssignableFrom( propertyType )) {
-                site.addStandardLayout( site.newFormField( result, property.getName(), Date.class,
-                        new BetweenFormField( new DateTimeFormField(), new DateTimeFormField() ), null,
-                        labelFor( property.getName() ) ) );
-            }
-            else if (Named.class.isAssignableFrom( propertyType )) {
-                SelectlistFormField field = new SelectlistFormField( valuesFor( propertyType ) );
-                field.setIsMultiple( true );
-                Composite formField = site.newFormField( result, property.getName(), propertyType, field, null,
-                        labelFor( property.getName() ) );
-                site.addStandardLayout( formField );
-                ((FormData)formField.getLayoutData()).height = 100;
-            }
+//            if (!(property instanceof EntityType.ManyAssociation)) {
+                Class propertyType = property.getType();
+                if (String.class.isAssignableFrom( propertyType )) {
+                    site.addStandardLayout( site.newFormField( result, property.getName(), String.class,
+                            new StringFormField(), null, labelFor( property.getName() ) ) );
+                }
+                else if (Integer.class.isAssignableFrom( propertyType )) {
+                    site.addStandardLayout( site.newFormField( result, property.getName(), Integer.class,
+                            new BetweenFormField( new StringFormField(), new StringFormField() ), new BetweenValidator(
+                                    new NumberValidator( Integer.class, Polymap.getSessionLocale() ) ),
+                            labelFor( property.getName() ) ) );
+                }
+                else if (Double.class.isAssignableFrom( propertyType )) {
+                    site.addStandardLayout( site.newFormField( result, property.getName(), Double.class,
+                            new BetweenFormField( new StringFormField(), new StringFormField() ), new BetweenValidator(
+                                    new NumberValidator( Double.class, Polymap.getSessionLocale(), 12, 2, 1, 2 ) ),
+                            labelFor( property.getName() ) ) );
+                }
+                else if (Date.class.isAssignableFrom( propertyType )) {
+                    site.addStandardLayout( site.newFormField( result, property.getName(), Date.class,
+                            new BetweenFormField( new DateTimeFormField(), new DateTimeFormField() ), null,
+                            labelFor( property.getName() ) ) );
+                }
+                else if (Named.class.isAssignableFrom( propertyType )) {
+                    SelectlistFormField field = new SelectlistFormField( valuesFor( propertyType ) );
+                    field.setIsMultiple( true );
+                    Composite formField = site.newFormField( result, property.getName(), propertyType, field, null,
+                            labelFor( property.getName() ) );
+                    site.addStandardLayout( formField );
+                    ((FormData)formField.getLayoutData()).height = 100;
+                }
+//            }
         }
 
         return result;
@@ -140,7 +142,15 @@ public class DefaultEntityFilter
     }
 
 
-    private String labelFor( String name ) {
+    public DefaultEntityFilter exclude( String... names ) {
+        for (String name : names) {
+            this.propertyNames.remove( name );
+        }
+        return this;
+    }
+
+
+    protected String labelFor( String name ) {
         return name.substring( 0, 1 ).toUpperCase() + name.substring( 1 );
     }
 
@@ -203,7 +213,8 @@ public class DefaultEntityFilter
 
 
     private BooleanExpression createNamedExpression( Entity template, Object value, Method propertyMethod )
-            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException,
+            NoSuchMethodException {
         List<Named> values = (List<Named>)value;
         BooleanExpression expr = null;
         for (Named named : values) {
@@ -214,7 +225,20 @@ public class DefaultEntityFilter
             }
             else {
                 // must be manyassociation
-                current = QueryExpressions.contains( (ManyAssociation<Named>)p, named );
+                Method identity = entityClass.getMethod( "identity", new Class[0] );
+                for (Object entity : module.findEntities( entityClass, null, 0, 10000 )) {
+                    if (((ManyAssociation<Named>)propertyMethod.invoke( entity, new Object[0] )).contains( named )) {
+                        BooleanExpression newExpr = QueryExpressions.eq(
+                                (org.qi4j.api.property.Property<String>)identity.invoke( template, new Object[0] ),
+                                ((Entity)entity).id() );
+                        if (current == null) {
+                            current = newExpr;
+                        }
+                        else {
+                            current = QueryExpressions.or( current, newExpr );
+                        }
+                    }
+                }
             }
             if (expr == null) {
                 expr = current;

@@ -88,7 +88,7 @@ public class WegFormEditorPage
                 .setLayoutData( left().right( 100 ).create() ).create();
 
         Composite line2 = newFormField( "Kategorie" )
-                .setProperty( new AssociationAdapter<KategorieComposite>( "kategorie", weg.kategorie() ) )
+                .setProperty( new AssociationAdapter<KategorieComposite>( weg.kategorie() ) )
                 .setField( namedAssocationsPicklist( KategorieComposite.class ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
         selectedKategorie = weg.kategorie().get();
@@ -109,16 +109,16 @@ public class WegFormEditorPage
             }
         } );
         newFormField( "Unterkategorie" )
-                .setProperty( new AssociationAdapter<UnterkategorieComposite>( "unterkategorie", weg.unterkategorie() ) )
+                .setProperty( new AssociationAdapter<UnterkategorieComposite>( weg.unterkategorie() ) )
                 .setField( unterkategorieList ).setLayoutData( right().top( line1 ).create() ).create();
 
         Composite line3 = newFormField( "Ausweisung" )
-                .setProperty( new AssociationAdapter<AusweisungComposite>( "ausweisung", weg.ausweisung() ) )
+                .setProperty( new AssociationAdapter<AusweisungComposite>( weg.ausweisung() ) )
                 .setField( namedAssocationsPicklist( AusweisungComposite.class ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
         Composite line4 = newFormField( "Priorität" )
-                .setProperty( new AssociationAdapter<PrioritaetComposite>( "prioritaet", weg.prioritaet() ) )
+                .setProperty( new AssociationAdapter<PrioritaetComposite>( weg.prioritaet() ) )
                 .setField( namedAssocationsPicklist( PrioritaetComposite.class ) )
                 .setLayoutData( right().top( line2 ).create() ).create();
 
@@ -194,23 +194,20 @@ public class WegFormEditorPage
                         "leicht \n"
                                 + "Weg gut ausgebaut, Gelände flach oder leicht ansteigend, keine Absturzgefahr, \n"
                                 + "auch mit Turnschuhen/ ohne Spezialräder geeignet, \n"
-                                + "Orientierung problemlos möglich, wenig Ausdauer erforderlich\n"
-                                + "\nmittel \n"
+                                + "Orientierung problemlos möglich, wenig Ausdauer erforderlich\n" + "\nmittel \n"
                                 + "durchgehend gut ersichtlicher und begeh- oder befahrbarer Weg,\n"
                                 + "teilweise Abhänge und Böschungen, teilweise Steigungen und Neigungen, \n"
                                 + "Trekkingschuhe und Trittsicherheit/ Mountainbike empfehlenswert, \n"
-                                + "elementares Orientierungsvermögen, etwas Ausdauer\n"
-                                + "\nschwierig \n"
+                                + "elementares Orientierungsvermögen, etwas Ausdauer\n" + "\nschwierig \n"
                                 + "Weg nicht durchgehend sichtbar, heikle Stellen, Trittsicherheit, \n"
                                 + "Trekkingschuhe/ Mountainbike erforderlich, Abhänge und Böschungen nur mit \n"
                                 + "Sichtschutz, erhebliche Steigungen und Neigungen, gutes \n"
                                 + "Orientierungsvermögen und Ausdauer notwendig" )
-                .setProperty( new AssociationAdapter<ProfilComposite>( "profil", weg.profil() ) )
+                .setProperty( new AssociationAdapter<ProfilComposite>( weg.profil() ) )
                 .setField( namedAssocationsPicklist( ProfilComposite.class ) )
                 .setLayoutData( left().top( line9 ).create() ).create();
 
-        newFormField( "Markierung" )
-                .setProperty( new AssociationAdapter<MarkierungComposite>( "markierung", weg.markierung() ) )
+        newFormField( "Markierung" ).setProperty( new AssociationAdapter<MarkierungComposite>( weg.markierung() ) )
                 .setField( namedAssocationsPicklist( MarkierungComposite.class ) )
                 .setLayoutData( right().top( line9 ).create() ).create();
 
@@ -218,7 +215,8 @@ public class WegFormEditorPage
 
             @Override
             public void fieldChange( FormFieldEvent ev ) {
-                if (ev.getEventCode() == VALUE_CHANGE && ev.getFieldName().equalsIgnoreCase( "kategorie" )) {
+                if (ev.getEventCode() == VALUE_CHANGE
+                        && ev.getFieldName().equalsIgnoreCase( weg.kategorie().qualifiedName().name() )) {
                     if ((ev.getNewValue() == null && selectedKategorie != null)
                             || !ev.getNewValue().equals( selectedKategorie )) {
                         selectedKategorie = ev.getNewValue();

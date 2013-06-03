@@ -51,46 +51,30 @@ public class WegErfassungFormEditorPage
 
         Composite line1 = newFormField( "Förderregionen" )
                 .setProperty(
-                        new ManyAssociationAdapter<FoerderregionComposite>( "foerderregion", weg
-                                .foerderregionen() ) )
+                        new ManyAssociationAdapter<FoerderregionComposite>( weg.foerderregionen() ) )
                 .setField( namedAssocationsSelectlist( FoerderregionComposite.class, true ) )
                 .setLayoutData( left().right( RIGHT ).height( 120 ).create() ).create();
 
-//        newFormField( "Vermarkter" )
-//                .setProperty(
-//                        new ManyAssociationAdapter<VermarkterComposite>( "vermarkter", weg
-//                                .vermarkter() ) )
-//                .setField( namedAssocationsSelectlist( VermarkterComposite.class, true ) )
-//                .setLayoutData( right().height( 120 ).create() ).create();
-        
-        Composite line2 = newFormField( "Erfasser" )
-                .setProperty( new PropertyAdapter( "erfasser", weg.erfasser() ) )
-                .setField( new TextFormField() ).setLayoutData( left().top( line1 ).height( 70 ).create() )
-                .create();
+        Composite line2 = newFormField( "Erfasser" ).setProperty( new PropertyAdapter( "erfasser", weg.erfasser() ) )
+                .setField( new TextFormField() ).setLayoutData( left().top( line1 ).height( 70 ).create() ).create();
 
         newFormField( "Wegewarte" ).setProperty( new PropertyAdapter( "wegewart", weg.wegewart() ) )
-                .setField( new TextFormField() ).setLayoutData( right().height( 70 ).top( line1 ).create() )
-                .create();
+                .setField( new TextFormField() ).setLayoutData( right().height( 70 ).top( line1 ).create() ).create();
 
-        Composite line3 = newFormField( "Begehung am" )
-                .setProperty( new PropertyAdapter( weg.begehungAm() ) )
-                .setField( new DateTimeFormField() ).setLayoutData( left().top( line2 ).create() )
-                .create();
+        Composite line3 = newFormField( "Begehung am" ).setProperty( new PropertyAdapter( weg.begehungAm() ) )
+                .setField( new DateTimeFormField() ).setLayoutData( left().top( line2 ).create() ).create();
 
         newFormField( "Kontrolle" ).setToolTipText( "Entfernungskontrolle" )
-                .setProperty(
-                        new AssociationAdapter<EntfernungskontrolleComposite>( "widmung", weg
-                                .entfernungskontrolle() ) )
+                .setProperty( new AssociationAdapter<EntfernungskontrolleComposite>( weg.entfernungskontrolle() ) )
                 .setField( namedAssocationsPicklist( EntfernungskontrolleComposite.class ) )
                 .setLayoutData( right().top( line2 ).create() ).create();
 
-        Composite line4 = newFormField( "Bemerkung" )
-                .setProperty( new PropertyAdapter( weg.bemerkung() ) )
+        Composite line4 = newFormField( "Bemerkung" ).setProperty( new PropertyAdapter( weg.bemerkung() ) )
                 .setField( new TextFormField() )
                 .setLayoutData( left().right( RIGHT ).height( 50 ).top( line3 ).create() ).create();
 
-        Composite line5 = newFormField( "Mängel" )
-                .setProperty( new PropertyAdapter( weg.maengel() ) ).setField( new TextFormField() )
+        Composite line5 = newFormField( "Mängel" ).setProperty( new PropertyAdapter( weg.maengel() ) )
+                .setField( new TextFormField() )
                 .setLayoutData( left().right( RIGHT ).height( 50 ).top( line4 ).create() ).create();
     }
 }
