@@ -128,7 +128,7 @@ public class TwvRepositoryAssembler
         domainModule.addServices( HRIdentityGeneratorService.class, SchildNummerGeneratorService.class );
 
         // FIXME nötige Änderungen in Rhei fehlen noch
-        //FilterFactory.instance().disableStandardFilter();
+        // FilterFactory.instance().disableStandardFilter();
     }
 
 
@@ -231,8 +231,28 @@ public class TwvRepositoryAssembler
         // next version
         migrateVermarkter( uow );
         fixIncorrectManyAssociations( uow );
+        renumberSchilder( uow );
 
         uow.complete();
+    }
+
+
+    private void renumberSchilder( UnitOfWork uow ) {
+        QueryBuilder<SchildComposite> builder = module.queryBuilderFactory().newQueryBuilder( SchildComposite.class );
+        // SchildComposite template = QueryExpressions.templateFor(
+        // SchildComposite.class );
+        // builder = builder.where( QueryExpressions.eq( template.laufendeNr(), null
+        // ) );
+        Query<SchildComposite> query = builder.newQuery( uow ).maxResults( 10000 ).firstResult( 0 );
+
+        SchildNummerGeneratorService schildNummer = (SchildNummerGeneratorService)module.serviceFinder()
+                .findService( SchildNummerGeneratorService.class ).get();
+        for (SchildComposite schild : query) {
+            if (schild.laufendeNr().get() == null) {
+                log.info( "Setting new number..." );
+                schild.laufendeNr().set( schildNummer.generate() );
+            }
+        }
     }
 
 
@@ -280,7 +300,8 @@ public class TwvRepositoryAssembler
     private void fixIncorrectManyAssociations( UnitOfWork uow )
             throws ConcurrentEntityModificationException, UnitOfWorkCompletionException {
         log.info( "Create Vermarkters to be removed later by hand" );
-        EntityBuilder<VermarkterComposite> entityBuilder = uow.newEntityBuilder( VermarkterComposite.class, "VermarkterComposite-20130415-0942-0" );
+        EntityBuilder<VermarkterComposite> entityBuilder = uow.newEntityBuilder( VermarkterComposite.class,
+                "VermarkterComposite-20130415-0942-0" );
         entityBuilder.instance().name().set( "_delete_me_" );
         entityBuilder.newInstance();
     }
