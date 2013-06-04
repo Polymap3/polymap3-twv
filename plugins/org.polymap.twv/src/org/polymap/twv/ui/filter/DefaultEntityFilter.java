@@ -66,7 +66,7 @@ public class DefaultEntityFilter
 
 
     public <T extends Entity> DefaultEntityFilter( ILayer layer, Class<T> type, QiModule module ) {
-        super( "__twv--", layer, "Standard (neu)...", null, 10000, type );
+        super( "__twv--", layer, "Standard...", null, 10000, type );
         this.module = module;
         this.propertyNames = new ArrayList();
         EntityType<?> entityType = module.entityType( entityClass );
@@ -79,7 +79,7 @@ public class DefaultEntityFilter
 
     public <T extends Entity> DefaultEntityFilter( ILayer layer, Class<T> type, QiModule module,
             String... propertyNames ) {
-        super( "__twv--", layer, "Standard (neu)...", null, 10000, type );
+        super( "__twv--", layer, "Standard...", null, 10000, type );
         this.module = module;
         this.propertyNames = new ArrayList();
         for (String name : propertyNames) {
