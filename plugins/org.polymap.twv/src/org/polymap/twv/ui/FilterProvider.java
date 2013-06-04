@@ -63,24 +63,38 @@ public class FilterProvider
                 Class type = provider.getEntityType().getType();
                 // egeo.
                 if (type.isAssignableFrom( WegComposite.class )) {
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo));
-//                    , "ausweisung", "bemerkung", "beschaffenheit", "beschreibung", "entfernungskontrolle", "erfasser", "kategorie", "name", 
-//                            "kategorie", "unterkategorie", "ausweisung" ) );
+                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) );
+                    // , "ausweisung", "bemerkung", "beschaffenheit", "beschreibung",
+                    // "entfernungskontrolle", "erfasser", "kategorie", "name",
+                    // "kategorie", "unterkategorie", "ausweisung" ) );
                 }
                 else if (type.isAssignableFrom( MarkierungComposite.class )) {
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ).exclude( "bildName" ) );
+                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo )
+                            .exclude( "bildName" ) );
                 }
                 else if (type.isAssignableFrom( WegobjektComposite.class )) {
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo).exclude( "name", "bildName" ) );
+                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ).exclude(
+                            "name", "bildName" ) );
                 }
                 else if (type.isAssignableFrom( VermarkterComposite.class )) {
                     result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) );
                 }
-                
+
                 else if (type.isAssignableFrom( SchildComposite.class )) {
-//                    SchildComposite prototype = repo.prototypeFor(SchildComposite.class);
-//                    prototype.standort()()()()
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ).exclude( "bildName" ) );
+                    // SchildComposite prototype =
+                    // repo.prototypeFor(SchildComposite.class);
+                    // prototype.standort()()()()
+                    DefaultEntityFilter filter = new DefaultEntityFilter( layer, provider.getEntityType().getType(),
+                            repo ) {
+
+                        @Override
+                        protected String labelFor( String name ) {
+                            return "befestigung".equals( name ) ? "Träger" : super.labelFor( name );
+
+                        }
+                    };
+
+                    result.add( filter.exclude( "bildName" ) );
                 }
                 else {
                     result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) );
