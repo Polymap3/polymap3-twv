@@ -67,7 +67,7 @@ public class MarkierungFormEditorPage
         
          newFormField( "Bild" )
                 .setProperty( new ImageValuePropertyAdapter( "bild", markierung.bild() ) )
-                .setField( new UploadFormField( TwvPlugin.getImagesRoot(), true ) )
+                .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
          
          final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line1 )

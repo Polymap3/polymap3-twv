@@ -17,10 +17,13 @@ import org.opengis.feature.Feature;
 
 import org.eclipse.swt.widgets.Composite;
 
+import org.polymap.core.runtime.Polymap;
+
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
 import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
+import org.polymap.rhei.field.NumberValidator;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.field.UploadFormField;
@@ -59,8 +62,10 @@ public class SchildFormEditorPage
         site.setFormTitle( formattedTitle( "Schild", schild.laufendeNr().get(), getTitle() ) );
 
         Composite line0 = newFormField( "Nummer" ).setProperty( new PropertyAdapter( schild.laufendeNr() ) )
-                .setField( new StringFormField() ).setEnabled( false ).setLayoutData( left().create() )
-                .setToolTipText( "eindeutige Schildnummer" ).create();
+                .setField( new StringFormField( StringFormField.Style.ALIGN_RIGHT ) )
+                .setValidator( new NumberValidator( Integer.class, Polymap.getSessionLocale(), 12, 0 ) )
+                .setEnabled( false ).setLayoutData( left().create() ).setToolTipText( "eindeutige Schildnummer" )
+                .create();
 
         newFormField( "Bestandsnr." ).setProperty( new PropertyAdapter( schild.bestandsNr() ) )
                 .setField( new StringFormField() ).setLayoutData( right().create() )
@@ -99,7 +104,7 @@ public class SchildFormEditorPage
                 .setLayoutData( left().top( line41 ).create() ).create();
 
         Composite line6 = newFormField( "Bild" ).setProperty( new ImageValuePropertyAdapter( "bild", schild.bild() ) )
-                .setField( new UploadFormField( TwvPlugin.getImagesRoot(), true ) )
+                .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( left().top( line5 ).create() ).create();
 
         final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line41 ).height( 250 ).width( 250 )

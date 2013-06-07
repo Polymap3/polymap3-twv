@@ -25,10 +25,12 @@ import org.eclipse.swt.widgets.Control;
 import org.polymap.core.data.ui.featuretable.DefaultFeatureTableColumn;
 import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.EntityType;
+import org.polymap.core.runtime.Polymap;
 
 import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
 import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
+import org.polymap.rhei.field.NumberValidator;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.field.UploadFormField;
@@ -88,10 +90,9 @@ public class WegSchilderFormEditorPage
         super.refreshReloadables();
 
         // TODO validator not null an der Number
-        if (selectedComposite.get() != null
-                && selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
-            imagePreview.setImage( ImageValuePropertyAdapter
-                    .convertToUploadedImage( selectedComposite.get().bild().get() ) );
+        if (selectedComposite.get() != null && selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
+            imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( selectedComposite.get().bild()
+                    .get() ) );
         }
         else {
             if (imagePreview != null) {
@@ -114,111 +115,104 @@ public class WegSchilderFormEditorPage
                 .setParent( parent )
                 .setEnabled( false )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
-                                + "laufendeNr", new PropertyCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix + "laufendeNr",
+                                new PropertyCallback<SchildComposite>() {
 
-                            public Property get( SchildComposite entity ) {
-                                return entity.laufendeNr();
-                            }
-                        } ) ).setField( reloadable( new StringFormField() ) )
-                .setLayoutData( left().create() ).setToolTipText( "laufende Schild Nummer" )
-                .create();
+                                    public Property get( SchildComposite entity ) {
+                                        return entity.laufendeNr();
+                                    }
+                                } ) ).setField( reloadable( new StringFormField( StringFormField.Style.ALIGN_RIGHT ) ) )
+                .setValidator( new NumberValidator( Integer.class, Polymap.getSessionLocale(), 12, 0 ) )
+                .setLayoutData( left().create() ).setToolTipText( "laufende Schildnummer" ).create();
 
         newFormField( "Bestandsnr." )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
-                                + "bestandsNr", new PropertyCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix + "bestandsNr",
+                                new PropertyCallback<SchildComposite>() {
 
-                            public Property get( SchildComposite entity ) {
-                                return entity.bestandsNr();
-                            }
-                        } ) ).setField( reloadable( new StringFormField() ) )
-                .setLayoutData( right().create() )
+                                    public Property get( SchildComposite entity ) {
+                                        return entity.bestandsNr();
+                                    }
+                                } ) ).setField( reloadable( new StringFormField() ) ).setLayoutData( right().create() )
                 .setToolTipText( "Nummer des Schildes bei importierten Datenbeständen" ).create();
 
         Composite line1 = newFormField( "Schildart" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
-                                + "schildart", new AssociationCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix + "schildart",
+                                new AssociationCallback<SchildComposite>() {
 
-                            public Association get( SchildComposite entity ) {
-                                return entity.schildart();
-                            }
-                        } ) )
+                                    public Association get( SchildComposite entity ) {
+                                        return entity.schildart();
+                                    }
+                                } ) )
                 .setField( reloadable( namedAssocationsPicklist( SchildartComposite.class, true ) ) )
                 .setLayoutData( left().top( line0 ).create() ).create();
 
         Composite line2 = newFormField( "Pfeilrichtung" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
-                                + "pfeilrichtung", new AssociationCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix + "pfeilrichtung",
+                                new AssociationCallback<SchildComposite>() {
 
-                            public Association get( SchildComposite entity ) {
-                                return entity.pfeilrichtung();
-                            }
-                        } ) )
-                .setField( reloadable( namedAssocationsPicklist( PfeilrichtungComposite.class ) ) )
+                                    public Association get( SchildComposite entity ) {
+                                        return entity.pfeilrichtung();
+                                    }
+                                } ) ).setField( reloadable( namedAssocationsPicklist( PfeilrichtungComposite.class ) ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
 
         newFormField( "Material" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
-                                + "material", new AssociationCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix + "material",
+                                new AssociationCallback<SchildComposite>() {
 
-                            public Association get( SchildComposite entity ) {
-                                return entity.material();
-                            }
-                        } ) )
+                                    public Association get( SchildComposite entity ) {
+                                        return entity.material();
+                                    }
+                                } ) )
                 .setField( reloadable( namedAssocationsPicklist( SchildmaterialComposite.class ) ) )
                 .setLayoutData( right().top( line1 ).create() ).create();
 
         Composite line3 = newFormField( "Beschriftung" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
-                                + "beschriftung", new PropertyCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix + "beschriftung",
+                                new PropertyCallback<SchildComposite>() {
 
-                            public Property get( SchildComposite entity ) {
-                                return entity.beschriftung();
-                            }
-                        } ) ).setField( reloadable( new TextFormField() ) )
+                                    public Property get( SchildComposite entity ) {
+                                        return entity.beschriftung();
+                                    }
+                                } ) ).setField( reloadable( new TextFormField() ) )
                 .setLayoutData( left().top( line2 ).height( 50 ).right( RIGHT ).create() )
-                .setToolTipText( "Schildbeschriftung mit Entfernungsangabe und Zusatzinfo" )
-                .create();
+                .setToolTipText( "Schildbeschriftung mit Entfernungsangabe und Zusatzinfo" ).create();
 
         Composite line4 = newFormField( "Träger" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix
-                                + "befestigung", new PropertyCallback<SchildComposite>() {
+                        new ReloadablePropertyAdapter<SchildComposite>( selectedComposite, prefix + "befestigung",
+                                new PropertyCallback<SchildComposite>() {
 
-                            public Property get( SchildComposite entity ) {
-                                return entity.befestigung();
-                            }
-                        } ) ).setField( reloadable( new TextFormField() ) )
+                                    public Property get( SchildComposite entity ) {
+                                        return entity.befestigung();
+                                    }
+                                } ) ).setField( reloadable( new TextFormField() ) )
                 .setLayoutData( left().top( line3 ).height( 50 ).create() ).create();
 
         Composite line5 = newFormField( "Bild" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadableImageValuePropertyAdapter<SchildComposite>(
-                                selectedComposite,
-                                prefix + "bild",
+                        new ReloadableImageValuePropertyAdapter<SchildComposite>( selectedComposite, prefix + "bild",
                                 new ReloadableImageValuePropertyAdapter.PropertyCallback<SchildComposite>() {
 
                                     public Property<ImageValue> get( SchildComposite entity ) {
                                         return entity.bild();
                                     }
-                                } ) )
-                .setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), true ) ) )
+                                } ) ).setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), false ) ) )
                 .setLayoutData( left().top( line4 ).create() ).create();
 
-        imagePreview = new ImageViewer( parent, right().top( line3 ).height( 250 ).width( 250 )
-                .create() );
+        imagePreview = new ImageViewer( parent, right().top( line3 ).height( 250 ).width( 250 ).create() );
 
         pageSite.addFieldListener( uploadListener = new IFormFieldListener() {
 
@@ -245,15 +239,67 @@ public class WegSchilderFormEditorPage
         prop = new PropertyDescriptorAdapter( type.getProperty( "bestandsNr" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bestandsnummer" ) );
         prop = new PropertyDescriptorAdapter( type.getProperty( "weg" ) );
-        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Weg" ));/*
-                .setLabelProvider( new ColumnLabelProvider() {
-            public String getText(Object element) {
-                if (element != null) {
-                    ((WegComposite)((CompositesFeatureContentProvider.FeatureTableElement)element).getComposite()).name().get();
-                }
-                return "";
-            };
-        } ) );*/
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Weg" ) );/*
+                                                                                      * .
+                                                                                      * setLabelProvider
+                                                                                      * (
+                                                                                      * new
+                                                                                      * ColumnLabelProvider
+                                                                                      * (
+                                                                                      * )
+                                                                                      * {
+                                                                                      * public
+                                                                                      * String
+                                                                                      * getText
+                                                                                      * (
+                                                                                      * Object
+                                                                                      * element
+                                                                                      * )
+                                                                                      * {
+                                                                                      * if
+                                                                                      * (
+                                                                                      * element
+                                                                                      * !=
+                                                                                      * null
+                                                                                      * )
+                                                                                      * {
+                                                                                      * (
+                                                                                      * (
+                                                                                      * WegComposite
+                                                                                      * )
+                                                                                      * (
+                                                                                      * (
+                                                                                      * CompositesFeatureContentProvider
+                                                                                      * .
+                                                                                      * FeatureTableElement
+                                                                                      * )
+                                                                                      * element
+                                                                                      * )
+                                                                                      * .
+                                                                                      * getComposite
+                                                                                      * (
+                                                                                      * )
+                                                                                      * )
+                                                                                      * .
+                                                                                      * name
+                                                                                      * (
+                                                                                      * )
+                                                                                      * .
+                                                                                      * get
+                                                                                      * (
+                                                                                      * )
+                                                                                      * ;
+                                                                                      * }
+                                                                                      * return
+                                                                                      * ""
+                                                                                      * ;
+                                                                                      * }
+                                                                                      * ;
+                                                                                      * }
+                                                                                      * )
+                                                                                      * )
+                                                                                      * ;
+                                                                                      */
         prop = new PropertyDescriptorAdapter( type.getProperty( "bildName" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bildname" ) );
         return type;

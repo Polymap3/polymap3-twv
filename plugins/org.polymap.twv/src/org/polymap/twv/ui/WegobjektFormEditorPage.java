@@ -78,7 +78,7 @@ public class WegobjektFormEditorPage
 
         Composite line4 = newFormField( "Bild" ).setParent( parent )
                 .setProperty( new ImageValuePropertyAdapter( "bild", wegobjekt.bild() ) )
-                .setField( new UploadFormField( TwvPlugin.getImagesRoot(), true ) )
+                .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( left().top( line3 ).create() ).create();
 
         final ImageViewer imagePreview = new ImageViewer( site.getPageBody(), right().top( line2 )

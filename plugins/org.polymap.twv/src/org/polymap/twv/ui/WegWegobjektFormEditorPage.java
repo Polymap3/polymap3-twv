@@ -146,7 +146,7 @@ public class WegWegobjektFormEditorPage
                                         return entity.bild();
                                     }
                                 } ) )
-                .setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), true ) ) )
+                .setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), false ) ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
         imagePreview = new ImageViewer( parent, right().top( line2 ).height( 250 ).width( 250 )
