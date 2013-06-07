@@ -28,7 +28,6 @@ import org.qi4j.api.property.PropertyInfo;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.BooleanExpression;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -108,14 +107,14 @@ public interface SchildComposite
         private static Log log = LogFactory.getLog( Mixin.class );
 
 
-        @Override
-        public void beforeCompletion()
-                throws UnitOfWorkCompletionException {
-
-            if (laufendeNr().get() == null) {
-                laufendeNr().set( TwvRepository.instance().nextSchildNummer() );
-            }
-        }
+//        @Override
+//        public void beforeCompletion()
+//                throws UnitOfWorkCompletionException {
+//
+//            if (laufendeNr().get() == null) {
+//                laufendeNr().set( TwvRepository.instance().nextSchildNummer() );
+//            }
+//        }
 
         private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class,
                                                       "bildName" );

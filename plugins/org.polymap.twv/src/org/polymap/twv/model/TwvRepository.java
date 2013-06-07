@@ -109,7 +109,7 @@ public class TwvRepository
     public void init( final Session session ) {
         try {
             twvService = new TwvService( new WegEntityProvider( this, new NameImpl( TwvRepository.NAMESPACE, "Weg" ) ),
-                    new TwvEntityProvider<SchildComposite>( this, SchildComposite.class, new NameImpl(
+                    new SchildEntityProvider( this, new NameImpl(
                             TwvRepository.NAMESPACE, "Schild" ) ), new TwvEntityProvider<AusweisungComposite>( this,
                             AusweisungComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ) ),
                     new TwvEntityProvider<MarkierungComposite>( this, MarkierungComposite.class, new NameImpl(

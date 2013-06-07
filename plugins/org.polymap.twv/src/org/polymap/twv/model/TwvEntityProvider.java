@@ -13,6 +13,7 @@
 package org.polymap.twv.model;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.geotools.data.Query;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -48,7 +49,7 @@ public class TwvEntityProvider<T extends Entity>
         super( repo, entityClass, entityName );
     }
 
-    
+
     @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem( String propName ) {
         try {
@@ -59,13 +60,13 @@ public class TwvEntityProvider<T extends Entity>
         }
     }
 
-    
+
     @Override
     public String getDefaultGeometry() {
         return "geom";
     }
 
-    
+
     @Override
     public ReferencedEnvelope getBounds() {
         Property geomProp = getEntityType().getProperty( getDefaultGeometry() );
@@ -78,7 +79,24 @@ public class TwvEntityProvider<T extends Entity>
         }
     }
 
-    
+
+    //
+    // @Override
+    // public FeatureType buildFeatureType() {
+    //
+    // EntityType type = getEntityType();
+    // SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+    // builder.setName( getEntityName() );
+    // return buildFeatureType( builder.buildFeatureType() );
+    // }
+    //
+    //
+    // @Override
+    // public Feature buildFeature( Entity entity, FeatureType schema ) {
+    // // TODO Auto-generated method stub
+    // throw new RuntimeException( "not yet implemented." );
+    // }
+
     @Override
     public FeatureType buildFeatureType( FeatureType schema ) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -113,8 +131,7 @@ public class TwvEntityProvider<T extends Entity>
             for (EntityType.Property prop : p) {
                 if (prop instanceof Association) {
                     Association association = (Association)prop;
-                    org.opengis.feature.Property property = feature.getProperty( association
-                            .getName() );
+                    org.opengis.feature.Property property = feature.getProperty( association.getName() );
                     if (property != null) {
                         if (Named.class.isAssignableFrom( association.getType() )) {
                             Named associationValue = (Named)association.getValue( entity );
@@ -138,7 +155,20 @@ public class TwvEntityProvider<T extends Entity>
     @Override
     public boolean modifyFeature( T entity, String propName, Object value )
             throws Exception {
-        // apply default method
+        EntityType.Property prop = type.getProperty( propName );
+        if (prop instanceof Association) {
+            Association association = (Association)prop;
+            if (Named.class.isAssignableFrom( association.getType() )) {
+                if (value != null) {
+                    Map entitiesWithNames = TwvRepository.instance().entitiesWithNames( association.getType() );
+                    prop.setValue( entity, entitiesWithNames.get( value ) );
+                }
+                else {
+                    prop.setValue( entity, null );
+                }
+                return true;
+            }
+        }
         return false;
     }
 
@@ -146,204 +176,209 @@ public class TwvEntityProvider<T extends Entity>
     @Override
     public Query transformQuery( Query query ) {
         return query;
-        // mapping von benamsten assoziationen zurück auf properties krieg ich jetzt nicht gebacken
-//        String typeName = query.getTypeName();
-//        Filter filter = query.getFilter();
-//        Filter dublicate = filter == null ? null : (Filter)filter.accept( new DuplicatingFilterVisitor() {
-//        //        query.getFilter().accept( new FilterVisitor() {
-//            
-////            @Override
-////            public Object visitNullFilter( Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-////            
-////            @Override
-////            public Object visit( Within filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-////            
-////            
-////            @Override
-////            public Object visit( Touches filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-////            
-////            @Override
-////            public Object visit( Overlaps filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-////            
-////            
-////            @Override
-////            public Object visit( Intersects filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-//            
-//            @Override
-//            public Object visit( Equals filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-//            
-////            @Override
-////            public Object visit( DWithin filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-////            
-////            
-////            @Override
-////            public Object visit( Disjoint filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-////            
-////            
-////            @Override
-////            public Object visit( Crosses filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-//            
-//            @Override
-//            public Object visit( Contains filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-////            
-////            @Override
-////            public Object visit( Beyond filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-////            
-////            
-////            @Override
-////            public Object visit( BBOX filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-//            
-//            @Override
-//            public Object visit( PropertyIsNull filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-//            
-//            @Override
-//            public Object visit( PropertyIsLike filter, Object extraData ) {
-//                PropertyName propName = (PropertyName)visit( (PropertyName)filter.getExpression(), extraData );
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-//            
-//            @Override
-//            public Object visit( PropertyIsLessThanOrEqualTo filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-//            
-//            @Override
-//            public Object visit( PropertyIsLessThan filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-//            
-//            @Override
-//            public Object visit( PropertyIsGreaterThanOrEqualTo filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-//            
-//            @Override
-//            public Object visit( PropertyIsGreaterThan filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-//            
-//            @Override
-//            public Object visit( PropertyIsNotEqualTo filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-//            
-//            @Override
-//            public Object visit( PropertyIsEqualTo filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-//            
-//            @Override
-//            public Object visit( PropertyIsBetween filter, Object extraData ) {
-//                // TODO Auto-generated method stub
-//                throw new RuntimeException( "not yet implemented." );
-//            }
-//            
-////            
-////            @Override
-////            public Object visit( Or filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-//            
-////            @Override
-////            public Object visit( Not filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-//            
-////            @Override
-////            public Object visit( Id filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-//            
-////            @Override
-////            public Object visit( And filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-////            
-////            @Override
-////            public Object visit( IncludeFilter filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//            
-//            
-////            @Override
-////            public Object visit( ExcludeFilter filter, Object extraData ) {
-////                // TODO Auto-generated method stub
-////                throw new RuntimeException( "not yet implemented." );
-////            }
-//        }, null );
-//        
-//        DefaultQuery result = new DefaultQuery( query );
-//        result.setFilter( dublicate );
-//        return result;
+        // mapping von benamsten assoziationen zurück auf properties krieg ich jetzt
+        // nicht gebacken
+        // String typeName = query.getTypeName();
+        // Filter filter = query.getFilter();
+        // Filter dublicate = filter == null ? null : (Filter)filter.accept( new
+        // DuplicatingFilterVisitor() {
+        // // query.getFilter().accept( new FilterVisitor() {
+        //
+        // // @Override
+        // // public Object visitNullFilter( Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        // //
+        // // @Override
+        // // public Object visit( Within filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        // //
+        // //
+        // // @Override
+        // // public Object visit( Touches filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        // //
+        // // @Override
+        // // public Object visit( Overlaps filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        // //
+        // //
+        // // @Override
+        // // public Object visit( Intersects filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        //
+        // @Override
+        // public Object visit( Equals filter, Object extraData ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        //
+        // // @Override
+        // // public Object visit( DWithin filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        // //
+        // //
+        // // @Override
+        // // public Object visit( Disjoint filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        // //
+        // //
+        // // @Override
+        // // public Object visit( Crosses filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        //
+        // @Override
+        // public Object visit( Contains filter, Object extraData ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        // //
+        // // @Override
+        // // public Object visit( Beyond filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        // //
+        // //
+        // // @Override
+        // // public Object visit( BBOX filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        //
+        // @Override
+        // public Object visit( PropertyIsNull filter, Object extraData ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        //
+        // @Override
+        // public Object visit( PropertyIsLike filter, Object extraData ) {
+        // PropertyName propName = (PropertyName)visit(
+        // (PropertyName)filter.getExpression(), extraData );
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        //
+        // @Override
+        // public Object visit( PropertyIsLessThanOrEqualTo filter, Object extraData
+        // ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        //
+        // @Override
+        // public Object visit( PropertyIsLessThan filter, Object extraData ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        //
+        // @Override
+        // public Object visit( PropertyIsGreaterThanOrEqualTo filter, Object
+        // extraData ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        //
+        // @Override
+        // public Object visit( PropertyIsGreaterThan filter, Object extraData ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        //
+        // @Override
+        // public Object visit( PropertyIsNotEqualTo filter, Object extraData ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        //
+        // @Override
+        // public Object visit( PropertyIsEqualTo filter, Object extraData ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        //
+        // @Override
+        // public Object visit( PropertyIsBetween filter, Object extraData ) {
+        // // TODO Auto-generated method stub
+        // throw new RuntimeException( "not yet implemented." );
+        // }
+        //
+        // //
+        // // @Override
+        // // public Object visit( Or filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        //
+        // // @Override
+        // // public Object visit( Not filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        //
+        // // @Override
+        // // public Object visit( Id filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        //
+        // // @Override
+        // // public Object visit( And filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        // //
+        // // @Override
+        // // public Object visit( IncludeFilter filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        //
+        //
+        // // @Override
+        // // public Object visit( ExcludeFilter filter, Object extraData ) {
+        // // // TODO Auto-generated method stub
+        // // throw new RuntimeException( "not yet implemented." );
+        // // }
+        // }, null );
+        //
+        // DefaultQuery result = new DefaultQuery( query );
+        // result.setFilter( dublicate );
+        // return result;
     }
 }
