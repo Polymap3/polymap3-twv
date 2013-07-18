@@ -63,7 +63,14 @@ public class FilterProvider
                 Class type = provider.getEntityType().getType();
                 // egeo.
                 if (type.isAssignableFrom( WegComposite.class )) {
-                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) );
+                    result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) {
+
+                        @Override
+                        protected String labelFor( String name ) {
+                            return "entfernungskontrolle".equals( name ) ? "Kontrolle" : super.labelFor( name );
+
+                        }
+                    } );
                     // , "ausweisung", "bemerkung", "beschaffenheit", "beschreibung",
                     // "entfernungskontrolle", "erfasser", "kategorie", "name",
                     // "kategorie", "unterkategorie", "ausweisung" ) );
