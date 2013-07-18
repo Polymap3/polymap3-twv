@@ -69,6 +69,8 @@ public interface WegobjektComposite
     @Optional
     Property<ImageValue> bild();
 
+    @Optional
+    Property<ImageValue> detailBild();
 
     @Optional
     @Computed

@@ -56,7 +56,7 @@ public class SchildFormEditorPage
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
 
-        SchildComposite schild = twvRepository.findEntity( SchildComposite.class, feature.getIdentifier().getID() );
+        final SchildComposite schild = twvRepository.findEntity( SchildComposite.class, feature.getIdentifier().getID() );
 
         site.setEditorTitle( formattedTitle( "Schild", schild.laufendeNr().get(), null ) );
         site.setFormTitle( formattedTitle( "Schild", schild.laufendeNr().get(), getTitle() ) );
@@ -107,13 +107,24 @@ public class SchildFormEditorPage
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( left().top( line5 ).create() ).create();
 
-        final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line41 ).height( 250 ).width( 250 )
+        final ImageViewer viewer = new ImageViewer( site.getPageBody(), left().top( line6 ).height( 250 ).width( 250 )
                 .create() );
 
         if (schild.bild().get().thumbnailFileName().get() != null) {
             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.bild().get() ) );
         }
 
+        Composite line6a = newFormField( "Detailbild" ).setProperty( new ImageValuePropertyAdapter( "detailBild", schild.detailBild() ) )
+                .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
+                .setLayoutData( right().top( line5 ).create() ).create();
+
+        final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().top( line6a ).height( 250 ).width( 250 )
+                .create() );
+
+        if (schild.detailBild().get().thumbnailFileName().get() != null) {
+            viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.detailBild().get() ) );
+        }
+        
         site.addFieldListener( uploadListener = new IFormFieldListener() {
 
             @Override
@@ -123,6 +134,10 @@ public class SchildFormEditorPage
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
 
                     viewer.setImage( uploadedImage );
+                }
+                if (ev.getNewValue() != null && schild.detailBild().qualifiedName().name().equals( ev.getFieldName() )) {
+                    UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+                    imagePreview2.setImage( uploadedImage );
                 }
             }
         } );

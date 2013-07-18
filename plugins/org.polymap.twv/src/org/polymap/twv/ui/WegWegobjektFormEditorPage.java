@@ -58,6 +58,8 @@ public class WegWegobjektFormEditorPage
 
     private ImageViewer         imagePreview;
 
+    private ImageViewer         imagePreview2;
+
     private final static String prefix = WegWegobjektFormEditorPage.class.getSimpleName();
 
 
@@ -84,15 +86,22 @@ public class WegWegobjektFormEditorPage
     protected void refreshReloadables()
             throws Exception {
         super.refreshReloadables();
-        if (selectedComposite.get() != null
-                && selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
-            imagePreview.setImage( ImageValuePropertyAdapter
-                    .convertToUploadedImage( selectedComposite.get().bild().get() ) );
+        if (selectedComposite.get() != null) {
+
+            if (selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
+                imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( selectedComposite.get().bild()
+                        .get() ) );
+            }
+            if (selectedComposite.get().detailBild().get().thumbnailFileName().get() != null) {
+                imagePreview2.setImage( ImageValuePropertyAdapter.convertToUploadedImage( selectedComposite.get()
+                        .detailBild().get() ) );
+            }
         }
         else {
             if (imagePreview != null) {
                 // bild löschen wenn ein Objekt ohne Bild selektiert wird
                 imagePreview.setImage( null );
+                imagePreview2.setImage( null );
             }
         }
     }
@@ -109,8 +118,7 @@ public class WegWegobjektFormEditorPage
         Composite line1 = newFormField( "Name" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<WegobjektComposite>( selectedComposite,
-                                prefix + "wegobjektName",
+                        new ReloadablePropertyAdapter<WegobjektComposite>( selectedComposite, prefix + "wegobjektName",
                                 new AssociationCallback<WegobjektComposite>() {
 
                                     public Association get( WegobjektComposite entity ) {
@@ -123,8 +131,7 @@ public class WegWegobjektFormEditorPage
         Composite line2 = newFormField( "Beschreibung" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadablePropertyAdapter<WegobjektComposite>( selectedComposite,
-                                prefix + "beschreibung",
+                        new ReloadablePropertyAdapter<WegobjektComposite>( selectedComposite, prefix + "beschreibung",
                                 new PropertyCallback<WegobjektComposite>() {
 
                                     public Property get( WegobjektComposite entity ) {
@@ -137,20 +144,32 @@ public class WegWegobjektFormEditorPage
         Composite line3 = newFormField( "Bild" )
                 .setParent( parent )
                 .setProperty(
-                        new ReloadableImageValuePropertyAdapter<WegobjektComposite>(
-                                selectedComposite,
+                        new ReloadableImageValuePropertyAdapter<WegobjektComposite>( selectedComposite,
                                 prefix + "bild",
                                 new ReloadableImageValuePropertyAdapter.PropertyCallback<WegobjektComposite>() {
 
                                     public Property<ImageValue> get( WegobjektComposite entity ) {
                                         return entity.bild();
                                     }
-                                } ) )
-                .setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), false ) ) )
+                                } ) ).setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), false ) ) )
                 .setLayoutData( left().top( line2 ).create() ).create();
 
-        imagePreview = new ImageViewer( parent, right().top( line2 ).height( 250 ).width( 250 )
-                .create() );
+        imagePreview = new ImageViewer( parent, left().top( line3 ).height( 250 ).width( 250 ).create() );
+
+        Composite line4 = newFormField( "Detailbild" )
+                .setParent( parent )
+                .setProperty(
+                        new ReloadableImageValuePropertyAdapter<WegobjektComposite>( selectedComposite, prefix
+                                + "detailBild",
+                                new ReloadableImageValuePropertyAdapter.PropertyCallback<WegobjektComposite>() {
+
+                                    public Property<ImageValue> get( WegobjektComposite entity ) {
+                                        return entity.detailBild();
+                                    }
+                                } ) ).setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), false ) ) )
+                .setLayoutData( right().top( line2 ).create() ).create();
+
+        imagePreview2 = new ImageViewer( parent, right().top( line4 ).height( 250 ).width( 250 ).create() );
 
         pageSite.addFieldListener( uploadListener = new IFormFieldListener() {
 
@@ -160,10 +179,14 @@ public class WegWegobjektFormEditorPage
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
                     imagePreview.setImage( uploadedImage );
                 }
+                if (ev.getNewValue() != null && (prefix + "detailBild").equals( ev.getFieldName() )) {
+                    UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+                    imagePreview2.setImage( uploadedImage );
+                }
             }
         } );
 
-        return imagePreview.getControl();
+        return imagePreview2.getControl();
     }
 
 

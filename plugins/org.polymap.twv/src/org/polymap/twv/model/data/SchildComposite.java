@@ -88,6 +88,9 @@ public interface SchildComposite
     @Optional
     Property<ImageValue> bild();
 
+    @Optional
+    Property<ImageValue> detailBild();
+
 
     @Optional
     @Computed

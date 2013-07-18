@@ -63,6 +63,8 @@ public class WegSchilderFormEditorPage
 
     private ImageViewer         imagePreview;
 
+    private ImageViewer         imagePreview2;
+
     private final static String prefix = WegSchilderFormEditorPage.class.getSimpleName();
 
 
@@ -90,14 +92,21 @@ public class WegSchilderFormEditorPage
         super.refreshReloadables();
 
         // TODO validator not null an der Number
-        if (selectedComposite.get() != null && selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
-            imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( selectedComposite.get().bild()
-                    .get() ) );
+        if (selectedComposite.get() != null) {
+            if (selectedComposite.get().bild().get().thumbnailFileName().get() != null) {
+                imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( selectedComposite.get().bild()
+                        .get() ) );
+            }
+            if (selectedComposite.get().detailBild().get().thumbnailFileName().get() != null) {
+                imagePreview2.setImage( ImageValuePropertyAdapter.convertToUploadedImage( selectedComposite.get()
+                        .detailBild().get() ) );
+            }
         }
         else {
             if (imagePreview != null) {
                 // bild löschen wenn ein Objekt ohne Bild selektiert wird
                 imagePreview.setImage( null );
+                imagePreview2.setImage( null );
             }
         }
     }
@@ -212,7 +221,21 @@ public class WegSchilderFormEditorPage
                                 } ) ).setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), false ) ) )
                 .setLayoutData( left().top( line4 ).create() ).create();
 
-        imagePreview = new ImageViewer( parent, right().top( line3 ).height( 250 ).width( 250 ).create() );
+        imagePreview = new ImageViewer( parent, left().top( line5 ).height( 250 ).width( 250 ).create() );
+
+        Composite line5a = newFormField( "Detailbild" )
+                .setParent( parent )
+                .setProperty(
+                        new ReloadableImageValuePropertyAdapter<SchildComposite>( selectedComposite, prefix + "detailBild",
+                                new ReloadableImageValuePropertyAdapter.PropertyCallback<SchildComposite>() {
+
+                                    public Property<ImageValue> get( SchildComposite entity ) {
+                                        return entity.detailBild();
+                                    }
+                                } ) ).setField( reloadable( new UploadFormField( TwvPlugin.getImagesRoot(), false ) ) )
+                .setLayoutData( right().top( line4 ).create() ).create();
+
+        imagePreview2 = new ImageViewer( parent, right().top( line5a ).height( 250 ).width( 250 ).create() );
 
         pageSite.addFieldListener( uploadListener = new IFormFieldListener() {
 
@@ -221,6 +244,10 @@ public class WegSchilderFormEditorPage
                 if (ev.getNewValue() != null && (prefix + "bild").equals( ev.getFieldName() )) {
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
                     imagePreview.setImage( uploadedImage );
+                }
+                if (ev.getNewValue() != null && (prefix + "detailBild").equals( ev.getFieldName() )) {
+                    UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+                    imagePreview2.setImage( uploadedImage );
                 }
             }
         } );
@@ -238,68 +265,6 @@ public class WegSchilderFormEditorPage
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "laufende Nr." ) );
         prop = new PropertyDescriptorAdapter( type.getProperty( "bestandsNr" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bestandsnummer" ) );
-        prop = new PropertyDescriptorAdapter( type.getProperty( "weg" ) );
-        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Weg" ) );/*
-                                                                                      * .
-                                                                                      * setLabelProvider
-                                                                                      * (
-                                                                                      * new
-                                                                                      * ColumnLabelProvider
-                                                                                      * (
-                                                                                      * )
-                                                                                      * {
-                                                                                      * public
-                                                                                      * String
-                                                                                      * getText
-                                                                                      * (
-                                                                                      * Object
-                                                                                      * element
-                                                                                      * )
-                                                                                      * {
-                                                                                      * if
-                                                                                      * (
-                                                                                      * element
-                                                                                      * !=
-                                                                                      * null
-                                                                                      * )
-                                                                                      * {
-                                                                                      * (
-                                                                                      * (
-                                                                                      * WegComposite
-                                                                                      * )
-                                                                                      * (
-                                                                                      * (
-                                                                                      * CompositesFeatureContentProvider
-                                                                                      * .
-                                                                                      * FeatureTableElement
-                                                                                      * )
-                                                                                      * element
-                                                                                      * )
-                                                                                      * .
-                                                                                      * getComposite
-                                                                                      * (
-                                                                                      * )
-                                                                                      * )
-                                                                                      * .
-                                                                                      * name
-                                                                                      * (
-                                                                                      * )
-                                                                                      * .
-                                                                                      * get
-                                                                                      * (
-                                                                                      * )
-                                                                                      * ;
-                                                                                      * }
-                                                                                      * return
-                                                                                      * ""
-                                                                                      * ;
-                                                                                      * }
-                                                                                      * ;
-                                                                                      * }
-                                                                                      * )
-                                                                                      * )
-                                                                                      * ;
-                                                                                      */
         prop = new PropertyDescriptorAdapter( type.getProperty( "bildName" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bildname" ) );
         return type;

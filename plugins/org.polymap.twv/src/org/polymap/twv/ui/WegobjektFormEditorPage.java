@@ -81,11 +81,24 @@ public class WegobjektFormEditorPage
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( left().top( line3 ).create() ).create();
 
-        final ImageViewer imagePreview = new ImageViewer( site.getPageBody(), right().top( line2 )
+        final ImageViewer imagePreview = new ImageViewer( site.getPageBody(), left().top( line4 )
                 .height( 250 ).width( 250 ).create() );
 
         if (wegobjekt.bild().get().thumbnailFileName().get() != null) {
             imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.bild()
+                    .get() ) );
+        }
+
+        Composite line5 = newFormField( "Detailbild" ).setParent( parent )
+                .setProperty( new ImageValuePropertyAdapter( "detailBild", wegobjekt.detailBild() ) )
+                .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
+                .setLayoutData( right().top( line3 ).create() ).create();
+
+        final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().top( line5 )
+                .height( 250 ).width( 250 ).create() );
+
+        if (wegobjekt.detailBild().get().thumbnailFileName().get() != null) {
+            imagePreview2.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.detailBild()
                     .get() ) );
         }
 
@@ -96,6 +109,10 @@ public class WegobjektFormEditorPage
                 if (ev.getNewValue() != null && wegobjekt.bild().qualifiedName().name().equals( ev.getFieldName() )) {
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
                     imagePreview.setImage( uploadedImage );
+                }
+                if (ev.getNewValue() != null && wegobjekt.detailBild().qualifiedName().name().equals( ev.getFieldName() )) {
+                    UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+                    imagePreview2.setImage( uploadedImage );
                 }
             }
         } );
