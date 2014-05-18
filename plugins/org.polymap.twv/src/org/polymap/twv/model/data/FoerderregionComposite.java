@@ -25,6 +25,7 @@ import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
+import org.polymap.twv.model.JsonState;
 import org.polymap.twv.model.Named;
 import org.polymap.twv.model.NamedCreatorCallback;
 
@@ -32,15 +33,14 @@ import org.polymap.twv.model.NamedCreatorCallback;
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 @Concerns({ PropertyChangeSupport.Concern.class })
-@Mixins({ FoerderregionComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
-        ModelChangeSupport.Mixin.class, QiEntity.Mixin.class
-// JsonState.Mixin.class
-})
+@Mixins({ FoerderregionComposite.Mixin.class, PropertyChangeSupport.Mixin.class, ModelChangeSupport.Mixin.class,
+        QiEntity.Mixin.class, JsonState.Mixin.class })
 public interface FoerderregionComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Optional
     Property<String> name();
+
 
     /**
      * Methods and transient fields.
@@ -50,9 +50,9 @@ public interface FoerderregionComposite
 
         private static Log log = LogFactory.getLog( Mixin.class );
 
+
         public static void createInitData( NamedCreatorCallback cb ) {
-            cb.create( FoerderregionComposite.class,
-                    "LEADER-Region Vorerzgebirgsregion Augustusburger Land" );
+            cb.create( FoerderregionComposite.class, "LEADER-Region Vorerzgebirgsregion Augustusburger Land" );
             cb.create( FoerderregionComposite.class, "LEADER-Region Klosterbezirk Altzella" );
             cb.create( FoerderregionComposite.class, "LEADER-Region Land des Roten Porphyr" );
             cb.create( FoerderregionComposite.class, "LEADER-Region Lommatzscher Pflege" );

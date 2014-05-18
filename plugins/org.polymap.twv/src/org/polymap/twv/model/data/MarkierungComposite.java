@@ -29,16 +29,15 @@ import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
+import org.polymap.twv.model.JsonState;
 import org.polymap.twv.model.Named;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 @Concerns({ PropertyChangeSupport.Concern.class })
-@Mixins({ MarkierungComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
-        ModelChangeSupport.Mixin.class, QiEntity.Mixin.class
-// JsonState.Mixin.class
-})
+@Mixins({ MarkierungComposite.Mixin.class, PropertyChangeSupport.Mixin.class, ModelChangeSupport.Mixin.class,
+        QiEntity.Mixin.class, JsonState.Mixin.class })
 public interface MarkierungComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
@@ -63,8 +62,7 @@ public interface MarkierungComposite
 
         private static Log   log              = LogFactory.getLog( Mixin.class );
 
-        private PropertyInfo bildNameProperty = new GenericPropertyInfo( MarkierungComposite.class,
-                                                      "bildName" );
+        private PropertyInfo bildNameProperty = new GenericPropertyInfo( MarkierungComposite.class, "bildName" );
 
 
         @Override
@@ -78,10 +76,11 @@ public interface MarkierungComposite
                     return "";
                 }
 
+
                 @Override
                 public void set( String anIgnoredValue )
                         throws IllegalArgumentException, IllegalStateException {
-                        // ignored
+                    // ignored
                 }
             };
         }

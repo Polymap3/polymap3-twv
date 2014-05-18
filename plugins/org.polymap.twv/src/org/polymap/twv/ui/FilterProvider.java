@@ -35,6 +35,7 @@ import org.polymap.twv.model.data.VermarkterComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
 import org.polymap.twv.ui.filter.DefaultEntityFilter;
+import org.polymap.twv.ui.filter.WegFilter;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
@@ -71,6 +72,7 @@ public class FilterProvider
 
                         }
                     } );
+                    result.add( new WegFilter( layer, repo ) );
                     // , "ausweisung", "bemerkung", "beschaffenheit", "beschreibung",
                     // "entfernungskontrolle", "erfasser", "kategorie", "name",
                     // "kategorie", "unterkategorie", "ausweisung" ) );

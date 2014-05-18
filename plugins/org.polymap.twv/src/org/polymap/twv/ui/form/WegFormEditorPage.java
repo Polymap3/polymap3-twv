@@ -10,7 +10,7 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
  */
-package org.polymap.twv.ui;
+package org.polymap.twv.ui.form;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -27,6 +27,8 @@ import org.apache.commons.logging.LogFactory;
 import com.google.common.collect.Iterables;
 
 import org.eclipse.swt.widgets.Composite;
+
+import org.eclipse.jface.action.Action;
 
 import org.polymap.core.data.DataPlugin;
 import org.polymap.core.data.PipelineFeatureSource;
@@ -53,6 +55,7 @@ import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
 import org.polymap.twv.model.data.WidmungComposite;
+import org.polymap.twv.ui.TwvDefaultFormEditorPage;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
@@ -226,4 +229,8 @@ public class WegFormEditorPage
             }
         } );
     }
+//    
+//    public Action[] getEditorActions() {
+//        return new Action[] { new PrintAction( weg ) };
+//    }
 }

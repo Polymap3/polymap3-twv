@@ -35,6 +35,7 @@ import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
+import org.polymap.twv.model.JsonState;
 import org.polymap.twv.model.TwvRepository;
 
 /**
@@ -42,10 +43,8 @@ import org.polymap.twv.model.TwvRepository;
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 @Concerns({ PropertyChangeSupport.Concern.class })
-@Mixins({ SchildComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
-        ModelChangeSupport.Mixin.class, QiEntity.Mixin.class,
-// JsonState.Mixin.class
-})
+@Mixins({ SchildComposite.Mixin.class, PropertyChangeSupport.Mixin.class, ModelChangeSupport.Mixin.class,
+        QiEntity.Mixin.class, JsonState.Mixin.class })
 public interface SchildComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite {
 
@@ -88,6 +87,7 @@ public interface SchildComposite
     @Optional
     Property<ImageValue> bild();
 
+
     @Optional
     Property<ImageValue> detailBild();
 
@@ -107,20 +107,18 @@ public interface SchildComposite
     public static abstract class Mixin
             implements SchildComposite {
 
-        private static Log log = LogFactory.getLog( Mixin.class );
+        private static Log   log              = LogFactory.getLog( Mixin.class );
 
+        // @Override
+        // public void beforeCompletion()
+        // throws UnitOfWorkCompletionException {
+        //
+        // if (laufendeNr().get() == null) {
+        // laufendeNr().set( TwvRepository.instance().nextSchildNummer() );
+        // }
+        // }
 
-//        @Override
-//        public void beforeCompletion()
-//                throws UnitOfWorkCompletionException {
-//
-//            if (laufendeNr().get() == null) {
-//                laufendeNr().set( TwvRepository.instance().nextSchildNummer() );
-//            }
-//        }
-
-        private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class,
-                                                      "bildName" );
+        private PropertyInfo bildNameProperty = new GenericPropertyInfo( SchildComposite.class, "bildName" );
 
 
         @Override
@@ -147,8 +145,7 @@ public interface SchildComposite
         public static Iterable<SchildComposite> forEntity( WegComposite weg ) {
             SchildComposite template = QueryExpressions.templateFor( SchildComposite.class );
             BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
-            Query<SchildComposite> matches = TwvRepository.instance().findEntities(
-                    SchildComposite.class, expr, 0, -1 );
+            Query<SchildComposite> matches = TwvRepository.instance().findEntities( SchildComposite.class, expr, 0, -1 );
             return matches;
         }
     }

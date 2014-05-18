@@ -10,7 +10,7 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
  */
-package org.polymap.twv.ui;
+package org.polymap.twv.ui.form;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +47,9 @@ import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.TwvRepository;
 import org.polymap.twv.model.data.VermarkterComposite;
 import org.polymap.twv.model.data.WegComposite;
+import org.polymap.twv.ui.ActionButton;
+import org.polymap.twv.ui.DeleteCompositeAction;
+import org.polymap.twv.ui.TwvDefaultFormEditorPage;
 import org.polymap.twv.ui.rhei.SelectableCompositesFeatureContentProvider;
 import org.polymap.twv.ui.rhei.SelectableCompositesFeatureContentProvider.FeatureTableElement;
 

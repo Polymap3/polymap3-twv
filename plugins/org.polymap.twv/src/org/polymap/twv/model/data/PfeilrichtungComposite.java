@@ -25,6 +25,7 @@ import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
+import org.polymap.twv.model.JsonState;
 import org.polymap.twv.model.Named;
 import org.polymap.twv.model.NamedCreatorCallback;
 
@@ -32,15 +33,14 @@ import org.polymap.twv.model.NamedCreatorCallback;
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 @Concerns({ PropertyChangeSupport.Concern.class })
-@Mixins({ PfeilrichtungComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
-        ModelChangeSupport.Mixin.class, QiEntity.Mixin.class
-// JsonState.Mixin.class
-})
+@Mixins({ PfeilrichtungComposite.Mixin.class, PropertyChangeSupport.Mixin.class, ModelChangeSupport.Mixin.class,
+        QiEntity.Mixin.class, JsonState.Mixin.class })
 public interface PfeilrichtungComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Optional
     Property<String> name();
+
 
     /**
      * Methods and transient fields.
@@ -50,9 +50,9 @@ public interface PfeilrichtungComposite
 
         private static Log log = LogFactory.getLog( Mixin.class );
 
+
         public static void createInitData( NamedCreatorCallback cb ) {
-            cb.create( PfeilrichtungComposite.class,
-                    "links" );
+            cb.create( PfeilrichtungComposite.class, "links" );
             cb.create( PfeilrichtungComposite.class, "rechts" );
             cb.create( PfeilrichtungComposite.class, "beidseitig" );
         }

@@ -18,14 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.BooleanExpression;
@@ -37,10 +34,8 @@ import org.polymap.core.model.Entity;
 import org.polymap.core.model.EntityType;
 import org.polymap.core.model.EntityType.Property;
 import org.polymap.core.project.ILayer;
-import org.polymap.core.qi4j.QiModule;
 import org.polymap.core.runtime.Polymap;
 
-import org.polymap.rhei.data.entityfeature.AbstractEntityFilter;
 import org.polymap.rhei.field.BetweenFormField;
 import org.polymap.rhei.field.BetweenValidator;
 import org.polymap.rhei.field.DateTimeFormField;
@@ -56,42 +51,31 @@ import org.polymap.twv.model.TwvRepository;
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 public class DefaultEntityFilter
-        extends AbstractEntityFilter {
+        extends AbstractTwvEntityFilter {
 
     private static Log         log = LogFactory.getLog( DefaultEntityFilter.class );
-
-    private QiModule           module;
 
     private final List<String> propertyNames;
 
 
-    public <T extends Entity> DefaultEntityFilter( ILayer layer, Class<T> type, QiModule module ) {
-        super( "__twv--", layer, "Standard...", null, 10000, type );
-        this.module = module;
+    public <T extends Entity> DefaultEntityFilter( ILayer layer, Class<T> type, TwvRepository module ) {
+        super(layer, type, "Standard...", module );
         this.propertyNames = new ArrayList();
         EntityType<?> entityType = module.entityType( entityClass );
         for (Property property : entityType.getProperties()) {
             propertyNames.add( property.getName() );
         }
-        //Collections.sort( this.propertyNames );
     }
 
 
-    public <T extends Entity> DefaultEntityFilter( ILayer layer, Class<T> type, QiModule module,
+    public <T extends Entity> DefaultEntityFilter( ILayer layer, Class<T> type, TwvRepository module,
             String... propertyNames ) {
-        super( "__twv--", layer, "Standard...", null, 10000, type );
-        this.module = module;
+        super( layer, type, "Standard...", module );
         this.propertyNames = new ArrayList();
         for (String name : propertyNames) {
             this.propertyNames.add( name );
         }
     }
-
-
-    public boolean hasControl() {
-        return true;
-    }
-
 
     public Composite createControl( Composite parent, IFilterEditorSite site ) {
         Composite result = site.createStandardLayout( parent );
@@ -144,24 +128,12 @@ public class DefaultEntityFilter
         return result;
     }
 
-
-    private Map<String, ? extends Object> valuesFor( Class propertyType ) {
-        return ((TwvRepository)module).entitiesWithNames( propertyType );
-    }
-
-
     public DefaultEntityFilter exclude( String... names ) {
         for (String name : names) {
             this.propertyNames.remove( name );
         }
         return this;
     }
-
-
-    protected String labelFor( String name ) {
-        return name.substring( 0, 1 ).toUpperCase() + name.substring( 1 );
-    }
-
 
     @Override
     protected Query<? extends Entity> createQuery( IFilterEditorSite site ) {
@@ -203,118 +175,5 @@ public class DefaultEntityFilter
         catch (Exception e) {
             throw new RuntimeException( e );
         }
-    }
-
-
-    private BooleanExpression createStringExpression( Entity template, Object value, Method propertyMethod )
-            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        String match = (String)value;
-        if (!match.isEmpty()) {
-            if (match.indexOf( '*' ) == -1 && match.indexOf( '?' ) == -1) {
-                match = '*' + match + '*';
-            }
-            return QueryExpressions.matches(
-                    (org.qi4j.api.property.Property<String>)propertyMethod.invoke( template, new Object[0] ), match );
-        }
-        return null;
-    }
-
-
-    private BooleanExpression createNamedExpression( Entity template, Object value, Method propertyMethod )
-            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException,
-            NoSuchMethodException {
-        List<Named> values = (List<Named>)value;
-        BooleanExpression expr = null;
-        for (Named named : values) {
-            Object p = propertyMethod.invoke( template, new Object[0] );
-            BooleanExpression current = null;
-            if (p instanceof Association) {
-                current = QueryExpressions.eq( (Association<Named>)p, named );
-            }
-            else {
-                // must be manyassociation
-                Method identity = entityClass.getMethod( "identity", new Class[0] );
-                for (Object entity : module.findEntities( entityClass, null, 0, 10000 )) {
-                    if (((ManyAssociation<Named>)propertyMethod.invoke( entity, new Object[0] )).contains( named )) {
-                        BooleanExpression newExpr = QueryExpressions.eq(
-                                (org.qi4j.api.property.Property<String>)identity.invoke( template, new Object[0] ),
-                                ((Entity)entity).id() );
-                        if (current == null) {
-                            current = newExpr;
-                        }
-                        else {
-                            current = QueryExpressions.or( current, newExpr );
-                        }
-                    }
-                }
-            }
-            if (expr == null) {
-                expr = current;
-            }
-            else {
-                expr = QueryExpressions.or( expr, current );
-            }
-        }
-        return expr;
-    }
-
-
-    private BooleanExpression createIntegerExpression( Entity template, Object value, Method propertyMethod )
-            throws IllegalAccessException, InvocationTargetException {
-        BooleanExpression currentExpression;
-        Object[] betweenValues = (Object[])value;
-        BooleanExpression ge = betweenValues[0] != null ? QueryExpressions.ge(
-                (org.qi4j.api.property.Property<Integer>)propertyMethod.invoke( template, new Object[0] ),
-                Integer.parseInt( (String)betweenValues[0] ) ) : null;
-
-        BooleanExpression le = betweenValues[1] != null ? QueryExpressions.le(
-                (org.qi4j.api.property.Property<Integer>)propertyMethod.invoke( template, new Object[0] ),
-                Integer.parseInt( (String)betweenValues[1] ) ) : null;
-
-        currentExpression = ge;
-        if (le != null) {
-            currentExpression = currentExpression == null ? le : QueryExpressions.and( ge, le );
-        }
-        return currentExpression;
-    }
-
-
-    private BooleanExpression createDoubleExpression( Entity template, Object value, Method propertyMethod )
-            throws IllegalAccessException, InvocationTargetException {
-        BooleanExpression currentExpression;
-        Object[] betweenValues = (Object[])value;
-        BooleanExpression ge = betweenValues[0] != null ? QueryExpressions.ge(
-                (org.qi4j.api.property.Property<Double>)propertyMethod.invoke( template, new Object[0] ),
-                Double.parseDouble( (String)betweenValues[0] ) ) : null;
-
-        BooleanExpression le = betweenValues[1] != null ? QueryExpressions.le(
-                (org.qi4j.api.property.Property<Double>)propertyMethod.invoke( template, new Object[0] ),
-                Double.parseDouble( (String)betweenValues[1] ) ) : null;
-
-        currentExpression = ge;
-        if (le != null) {
-            currentExpression = currentExpression == null ? le : QueryExpressions.and( ge, le );
-        }
-        return currentExpression;
-    }
-
-
-    private BooleanExpression createDateExpression( Entity template, Object value, Method propertyMethod )
-            throws IllegalAccessException, InvocationTargetException {
-        BooleanExpression currentExpression;
-        Object[] betweenValues = (Object[])value;
-        BooleanExpression ge = betweenValues[0] != null ? QueryExpressions.ge(
-                (org.qi4j.api.property.Property<Date>)propertyMethod.invoke( template, new Object[0] ),
-                (Date)betweenValues[0] ) : null;
-
-        BooleanExpression le = betweenValues[1] != null ? QueryExpressions.le(
-                (org.qi4j.api.property.Property<Date>)propertyMethod.invoke( template, new Object[0] ),
-                (Date)betweenValues[1] ) : null;
-
-        currentExpression = ge;
-        if (le != null) {
-            currentExpression = currentExpression == null ? le : QueryExpressions.and( ge, le );
-        }
-        return currentExpression;
     }
 }

@@ -3,6 +3,11 @@ package org.polymap.twv;
 import java.util.Collections;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.geotools.data.FeatureStore;
@@ -20,6 +25,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import org.eclipse.core.runtime.IPath;
 
 import org.polymap.core.data.DataPlugin;
 import org.polymap.core.data.PipelineFeatureSource;
@@ -41,9 +48,9 @@ public class TwvPlugin
     // The shared instance
     private static TwvPlugin   plugin;
 
-    private static File moduleRoot;
+    private static File        moduleRoot;
 
-    private static File imagesRoot;
+    private static File        imagesRoot;
 
 
     public TwvPlugin() {
@@ -115,23 +122,21 @@ public class TwvPlugin
 
 
     /**
-     *
+     * 
      * @param string
      * @param composite
      */
     public static void openEditor( FeatureStore fs, String layerName, Entity composite ) {
         try {
             IMap map = ((PipelineFeatureSource)fs).getLayer().getMap();
-            ILayer layer = Iterables.getOnlyElement( Iterables.filter( map.getLayers(),
-                    Layers.hasLabel( layerName) ) );
+            ILayer layer = Iterables.getOnlyElement( Iterables.filter( map.getLayers(), Layers.hasLabel( layerName ) ) );
             if (layer != null) {
                 FeatureStore store = PipelineFeatureSource.forLayer( layer, false );
 
                 String id = composite.id();
                 FeatureId featureId = new FeatureIdImpl( id );
 
-                FeatureCollection features = store.getFeatures( DataPlugin.ff.id( Collections
-                        .singleton( featureId ) ) );
+                FeatureCollection features = store.getFeatures( DataPlugin.ff.id( Collections.singleton( featureId ) ) );
                 // .features().next();
                 Feature feature = features.features().next();
                 org.polymap.rhei.form.FormEditor.open( store, feature, null, true );
@@ -142,4 +147,56 @@ public class TwvPlugin
         }
     }
 
+
+    /**
+     * Find the given path as file in the workspace (first) or resource in the bundle
+     * (second).
+     * 
+     * @param path
+     * @return Newly created, unbuffered stream, or null if neither file nor resource
+     *         was found. Caller is responsible to correctly close the stream.
+     * @throws IOException If a resource was found but opening failed.
+     */
+    public InputStream getResourceAsStream( String path )
+            throws IOException {
+        IPath workspace = Polymap.getWorkspacePath();
+        File f = new File( workspace.toFile(), path );
+        if (f.exists()) {
+            try {
+                return new FileInputStream( f );
+            }
+            catch (FileNotFoundException e) {
+                throw new RuntimeException( e );
+            }
+        }
+        else {
+            URL url = getDefault().getBundle().getResource( path );
+            return url != null ? url.openStream() : null;
+        }
+    }
+
+
+    /**
+     * Find the given path as file in the workspace (first) or resource in the bundle
+     * (second).
+     * 
+     * @param path
+     * @return The URL of the resource.
+     * @throws IOException If a resource was found but opening failed.
+     */
+    public URL getResource( String path ) {
+        IPath workspace = Polymap.getWorkspacePath();
+        File f = new File( workspace.toFile(), path );
+        if (f.exists()) {
+            try {
+                return f.toURI().toURL();
+            }
+            catch (MalformedURLException e) {
+                throw new RuntimeException( e );
+            }
+        }
+        else {
+            return getDefault().getBundle().getResource( path );
+        }
+    }
 }

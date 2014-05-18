@@ -75,6 +75,10 @@ public class TwvRepository
     public static final TwvRepository instance() {
         return Qi4jPlugin.Session.instance().module( TwvRepository.class );
     }
+//    
+//    public static final TwvRepository globalInstance() {
+//        return Qi4jPlugin.Session..globalInstance().module( Anta2Repository.class );
+//    }
 
     // instance *******************************************
 

@@ -30,6 +30,16 @@ import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
 import org.polymap.twv.model.data.WegobjektNameComposite;
 import org.polymap.twv.model.data.WidmungComposite;
+import org.polymap.twv.ui.form.MarkierungFormEditorPage;
+import org.polymap.twv.ui.form.NamedFormEditorPage;
+import org.polymap.twv.ui.form.SchildFormEditorPage;
+import org.polymap.twv.ui.form.VermarkterFormEditorPage;
+import org.polymap.twv.ui.form.WegErfassungFormEditorPage;
+import org.polymap.twv.ui.form.WegFormEditorPage;
+import org.polymap.twv.ui.form.WegSchilderFormEditorPage;
+import org.polymap.twv.ui.form.WegVermarkter2FormEditorPage;
+import org.polymap.twv.ui.form.WegWegobjektFormEditorPage;
+import org.polymap.twv.ui.form.WegobjektFormEditorPage;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
@@ -51,6 +61,7 @@ public class FormPageProvider
           result.add( new WegVermarkter2FormEditorPage( feature, formEditor.getFeatureStore() ) );
             result.add( new WegWegobjektFormEditorPage( feature, formEditor.getFeatureStore() ) );
             result.add( new WegSchilderFormEditorPage( feature, formEditor.getFeatureStore() ) );
+//            result.add( new WegReportPage( feature, formEditor.getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schild" )) {
             result.add( new SchildFormEditorPage( feature, formEditor.getFeatureStore() ) );

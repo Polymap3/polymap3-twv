@@ -36,6 +36,7 @@ import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
+import org.polymap.twv.model.JsonState;
 import org.polymap.twv.model.Named;
 import org.polymap.twv.model.TwvRepository;
 
@@ -44,10 +45,8 @@ import org.polymap.twv.model.TwvRepository;
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 @Concerns({ PropertyChangeSupport.Concern.class })
-@Mixins({ WegobjektComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
-        ModelChangeSupport.Mixin.class, QiEntity.Mixin.class,
-// JsonState.Mixin.class
-})
+@Mixins({ WegobjektComposite.Mixin.class, PropertyChangeSupport.Mixin.class, ModelChangeSupport.Mixin.class,
+        QiEntity.Mixin.class, JsonState.Mixin.class })
 public interface WegobjektComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
@@ -66,11 +65,14 @@ public interface WegobjektComposite
     @Optional
     Property<Point> geom();
 
+
     @Optional
     Property<ImageValue> bild();
 
+
     @Optional
     Property<ImageValue> detailBild();
+
 
     @Optional
     @Computed
@@ -108,17 +110,17 @@ public interface WegobjektComposite
                     }
                     return null;
                 }
-                
+
+
                 @Override
                 public void set( String anIgnoredValue )
                         throws IllegalArgumentException, IllegalStateException {
-                        // ignored
+                    // ignored
                 }
             };
         }
 
-        private PropertyInfo bildNameProperty = new GenericPropertyInfo( WegobjektComposite.class,
-                                                      "bildName" );
+        private PropertyInfo bildNameProperty = new GenericPropertyInfo( WegobjektComposite.class, "bildName" );
 
 
         @Override
@@ -131,12 +133,12 @@ public interface WegobjektComposite
                     }
                     return "";
                 }
-                
-                
+
+
                 @Override
                 public void set( String anIgnoredValue )
                         throws IllegalArgumentException, IllegalStateException {
-                        // ignored
+                    // ignored
                     log.info( anIgnoredValue + " on search?" );
                 }
             };
@@ -146,8 +148,8 @@ public interface WegobjektComposite
         public static Iterable<WegobjektComposite> forEntity( WegComposite weg ) {
             WegobjektComposite template = QueryExpressions.templateFor( WegobjektComposite.class );
             BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
-            Query<WegobjektComposite> matches = TwvRepository.instance().findEntities(
-                    WegobjektComposite.class, expr, 0, -1 );
+            Query<WegobjektComposite> matches = TwvRepository.instance().findEntities( WegobjektComposite.class, expr,
+                    0, -1 );
             return matches;
         }
     }

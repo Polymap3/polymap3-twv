@@ -31,6 +31,7 @@ import org.polymap.core.qi4j.QiEntity;
 import org.polymap.core.qi4j.event.ModelChangeSupport;
 import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
+import org.polymap.twv.model.JsonState;
 import org.polymap.twv.model.Named;
 import org.polymap.twv.model.TwvRepository;
 
@@ -39,17 +40,15 @@ import org.polymap.twv.model.TwvRepository;
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 @Concerns({ PropertyChangeSupport.Concern.class })
-@Mixins({ WegComposite.Mixin.class, PropertyChangeSupport.Mixin.class,
-        ModelChangeSupport.Mixin.class, QiEntity.Mixin.class,
-// JsonState.Mixin.class
-})
+@Mixins({ WegComposite.Mixin.class, PropertyChangeSupport.Mixin.class, ModelChangeSupport.Mixin.class,
+        QiEntity.Mixin.class, JsonState.Mixin.class })
 public interface WegComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Optional
     Property<MultiLineString> geom();
 
-    
+
     @Optional
     Property<String> name();
 
@@ -68,6 +67,7 @@ public interface WegComposite
 
     @Optional
     Association<ProfilComposite> profil();
+
 
     @Optional
     Association<PrioritaetComposite> prioritaet();
@@ -97,8 +97,10 @@ public interface WegComposite
     @Optional
     ManyAssociation<FoerderregionComposite> foerderregionen();
 
+
     @Optional
     ManyAssociation<VermarkterComposite> vermarkter();
+
 
     @Optional
     Property<String> erfasser();
@@ -131,6 +133,7 @@ public interface WegComposite
             implements WegComposite {
 
         private static Log log = LogFactory.getLog( Mixin.class );
+
 
         public static void beforeRemove( WegComposite weg ) {
             TwvRepository repository = TwvRepository.instance();

@@ -23,6 +23,14 @@
             name="org.polymap.twv.ui.FilterProvider">
       </filterProvider>
    </extension>
+   <extension
+         point="org.polymap.core.http.servlets">
+      <servlet
+            class="org.polymap.twv.rest.RestServlet"
+            name="RestServlet"
+            path="/rest">
+      </servlet>
+   </extension>
    <!--extension
          point="org.eclipse.ui.importWizards">
       <wizard

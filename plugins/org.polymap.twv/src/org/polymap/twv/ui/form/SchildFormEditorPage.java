@@ -10,7 +10,7 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
  */
-package org.polymap.twv.ui;
+package org.polymap.twv.ui.form;
 
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
@@ -36,6 +36,8 @@ import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.WegComposite;
+import org.polymap.twv.ui.ImageViewer;
+import org.polymap.twv.ui.TwvDefaultFormEditorPage;
 import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
 
 /**
