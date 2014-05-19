@@ -28,8 +28,6 @@ import com.google.common.collect.Iterables;
 
 import org.eclipse.swt.widgets.Composite;
 
-import org.eclipse.jface.action.Action;
-
 import org.polymap.core.data.DataPlugin;
 import org.polymap.core.data.PipelineFeatureSource;
 import org.polymap.core.project.ILayer;

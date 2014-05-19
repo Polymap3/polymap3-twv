@@ -36,16 +36,14 @@ import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.EntityType;
 import org.polymap.core.project.ui.util.SimpleFormData;
 
-import org.polymap.rhei.data.entityfeature.ManyAssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
-import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.form.IFormEditorPage2;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.TwvRepository;
-import org.polymap.twv.model.data.VermarkterComposite;
+import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.ui.ActionButton;
 import org.polymap.twv.ui.DeleteCompositeAction;
@@ -56,7 +54,7 @@ import org.polymap.twv.ui.rhei.SelectableCompositesFeatureContentProvider.Featur
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
-public class WegVermarkter2FormEditorPage
+public class WegSchilder2FormEditorPage
         extends TwvDefaultFormEditorPage
         implements IFormEditorPage2 {
 
@@ -69,17 +67,17 @@ public class WegVermarkter2FormEditorPage
     // private ManyAssociationAdapter<VermarkterComposite> vermarkterAdapter;
     // list der vermarkter die noch am Weg dran sind, Änderungen passieren nur hier
     // als Adapter
-    private final List<VermarkterComposite> wegVermarkter      = new ArrayList<VermarkterComposite>();
+    private final List<SchildComposite> wegSchilder      = new ArrayList<SchildComposite>();
+    private final List<SchildComposite> toDelete      = new ArrayList<SchildComposite>();
 
     // liste der Vermarkter die gerade ausgewählt um diese bspw. zu Löschen
-    private final List<VermarkterComposite> selectedVermarkter = new ArrayList<VermarkterComposite>();
+    private final List<SchildComposite> selectedSchild = new ArrayList<SchildComposite>();
 
 
-    public WegVermarkter2FormEditorPage( Feature feature, FeatureStore featureStore ) {
-        super( WegVermarkter2FormEditorPage.class.getName(), "Vermarkter", feature, featureStore );
+    public WegSchilder2FormEditorPage( Feature feature, FeatureStore featureStore ) {
+        super( WegSchilder2FormEditorPage.class.getName(), "Schilder", feature, featureStore );
         this.weg = twvRepository.findEntity( WegComposite.class, feature.getIdentifier().getID() );
-        wegVermarkter.addAll( weg.vermarkter().toList() );
-        // selectedVermarkter = weg.vermarkter().toList();
+        wegSchilder.addAll( SchildComposite.Mixin.forEntity( weg ) );
     }
 
 
@@ -95,46 +93,22 @@ public class WegVermarkter2FormEditorPage
         viewer = new FeatureTableViewer( parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL );
         viewer.getTable().setLayoutData( new SimpleFormData().fill().left( 2 ).height( 400 ).right( 90 ).create() );
 
-        VermarkterSelector addAction = new VermarkterSelector(wegVermarkter) {
-
-            @Override
-            public void fieldChange( FormFieldEvent ev ) {
-                // TODO Auto-generated method stub
-                throw new RuntimeException( "not yet implemented." );
-            }
-
-
-            @Override
-            protected void addSelected( List<VermarkterComposite> elements )
-                    throws Exception {
-                wegVermarkter.addAll( elements );
-                // if something returns, add them to wegVermarkter
-                // and reload
-                doLoad( new NullProgressMonitor() );
-                isDirty = true;
-                site.fireEvent( this, "vermarkter", IFormFieldListener.VALUE_CHANGE,
-                        wegVermarkter );
-            }
-        };
-        ActionButton addBtn = new ActionButton( parent, addAction );
-        addBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING ).right( 98, -SPACING ).height( 30 )
-                .create() );
-
         DeleteCompositeAction deleteAction = new DeleteCompositeAction() {
 
             protected void execute()
                     throws Exception {
-                for (VermarkterComposite vermarkter : selectedVermarkter) {
-                    wegVermarkter.remove( vermarkter );
+                for (SchildComposite schild : selectedSchild) {
+                    toDelete.add( schild );
+                    wegSchilder.remove( schild );
                 }
                 doLoad( new NullProgressMonitor() );
                 isDirty = true;
-                site.fireEvent( this, "vermarkter", IFormFieldListener.VALUE_CHANGE,
-                        wegVermarkter );
+                site.fireEvent( this, "schilder", IFormFieldListener.VALUE_CHANGE,
+                        wegSchilder );
             }
         };
         ActionButton delBtn = new ActionButton( parent, deleteAction );
-        delBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING ).top( addBtn, SPACING )
+        delBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING )
                 .right( 98, -SPACING ).height( 30 ).create() );
 
         parent.layout( true );
@@ -145,15 +119,15 @@ public class WegVermarkter2FormEditorPage
             public void selectionChanged( SelectionChangedEvent event ) {
                 StructuredSelection selection = (StructuredSelection)event.getSelection();
                 List<FeatureTableElement> selections = selection.toList();
-                selectedVermarkter.clear();
+                selectedSchild.clear();
                 for (FeatureTableElement tableRow : selections) {
-                    selectedVermarkter.add( (VermarkterComposite)tableRow.getComposite() );
+                    selectedSchild.add( (SchildComposite)tableRow.getComposite() );
                 }
             }
         } );
 
         // columns
-        EntityType<VermarkterComposite> type = addViewerColumns( viewer );
+        EntityType<SchildComposite> type = addViewerColumns( viewer );
 
         // model/content
         viewer.setContent( new SelectableCompositesFeatureContentProvider( null, type ) );
@@ -173,35 +147,37 @@ public class WegVermarkter2FormEditorPage
             public void doubleClick( DoubleClickEvent event ) {
                 StructuredSelection selection = (StructuredSelection)event.getSelection();
                 FeatureTableElement tableRow = (FeatureTableElement)selection.getFirstElement();
-                TwvPlugin.openEditor( fs, "Vermarkter", (VermarkterComposite)tableRow.getComposite() );
+                TwvPlugin.openEditor( fs, "Schild", (SchildComposite)tableRow.getComposite() );
             }
         } );
     }
 
 
-    protected EntityType<VermarkterComposite> addViewerColumns( FeatureTableViewer viewer ) {
+    protected EntityType<SchildComposite> addViewerColumns( FeatureTableViewer viewer ) {
         final TwvRepository repo = TwvRepository.instance();
-        final EntityType<VermarkterComposite> type = repo.entityType( VermarkterComposite.class );
+        final EntityType<SchildComposite> type = repo.entityType( SchildComposite.class );
 
         PropertyDescriptor prop = null;
-        prop = new PropertyDescriptorAdapter( type.getProperty( "name" ) );
-        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Name" ) );
-        prop = new PropertyDescriptorAdapter( type.getProperty( "ansprechpartner" ) );
-        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Ansprechpartner" ) );
-        prop = new PropertyDescriptorAdapter( type.getProperty( "telefon" ) );
-        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Telefon" ) );
-        prop = new PropertyDescriptorAdapter( type.getProperty( "email" ) );
-        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "EMail" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "laufendeNr" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Nummer" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "bestandsNr" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bestandsnummer" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "beschriftung" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Beschriftung" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "schildart" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Schildart" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "bildName" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bildname" ) );
         return type;
     }
 
 
-    public List<VermarkterComposite> getElements() {
+    public List<SchildComposite> getElements() {
         // List<VermarkterComposite> allVC = new ArrayList<VermarkterComposite>();
         // for (VermarkterComposite vc : weg.vermarkter()) {
         // allVC.add( vc );
         // }
-        return wegVermarkter;
+        return wegSchilder;
     }
 
 
@@ -226,7 +202,7 @@ public class WegVermarkter2FormEditorPage
             // vermarkter aus adapter holen und selektieren
             // Umweg über selectedIndices, da ich sonst nicht mehr an die
             // TableElemente
-            selectedVermarkter.clear();
+            selectedSchild.clear();
             // selectedVermarkter.addAll( weg.vermarkter().toList() );
             viewer.getTable().deselectAll();
             // viewer.getTable().select(
@@ -240,7 +216,9 @@ public class WegVermarkter2FormEditorPage
     @Override
     public void doSubmit( IProgressMonitor monitor )
             throws Exception {
-        new ManyAssociationAdapter<VermarkterComposite>( weg.vermarkter() ).setValue( wegVermarkter );
+        for (SchildComposite schild : toDelete) {
+            schild.wege().remove( weg );
+        }
         isDirty = false;
     }
 

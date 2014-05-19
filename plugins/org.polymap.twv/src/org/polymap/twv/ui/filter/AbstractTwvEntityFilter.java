@@ -52,7 +52,7 @@ public abstract class AbstractTwvEntityFilter
 
 
     public <T extends Entity> AbstractTwvEntityFilter( ILayer layer, Class<T> type, String name, TwvRepository module ) {
-        super( "__twv--", layer, name, null, 10000, type );
+        super( "__twv--" + name, layer, name, null, 10000, type );
         this.module = module;
         this.propertyNames = new ArrayList();
         EntityType<?> entityType = module.entityType( entityClass );

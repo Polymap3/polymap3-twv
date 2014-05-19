@@ -25,10 +25,13 @@ import org.eclipse.swt.widgets.Control;
 import org.polymap.core.data.ui.featuretable.DefaultFeatureTableColumn;
 import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.EntityType;
+import org.polymap.core.runtime.Polymap;
 
 import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
 import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
+import org.polymap.rhei.field.NumberValidator;
+import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.field.UploadFormField;
 import org.polymap.rhei.field.UploadFormField.UploadedImage;
@@ -80,7 +83,7 @@ public class WegWegobjektFormEditorPage
 
         Composite parent = site.getPageBody();
         Control baseForm = createForm( parent );
-        createTableForm( parent, baseForm );
+        createTableForm( parent, baseForm, false, false );
     }
 
 
@@ -117,6 +120,20 @@ public class WegWegobjektFormEditorPage
     // kopiert von WegobjektFormEditorPage
     public Control createForm( Composite parent ) {
 
+        Composite line0 = newFormField( "Nummer" )
+                .setParent( parent )
+                .setEnabled( false )
+                .setProperty(
+                        new ReloadablePropertyAdapter<WegobjektComposite>( selectedComposite, prefix + "laufendeNr",
+                                new PropertyCallback<WegobjektComposite>() {
+
+                                    public Property get( WegobjektComposite entity ) {
+                                        return entity.laufendeNr();
+                                    }
+                                } ) ).setField( reloadable( new StringFormField( StringFormField.Style.ALIGN_RIGHT ) ) )
+                .setValidator( new NumberValidator( Integer.class, Polymap.getSessionLocale(), 12, 0 ) )
+                .setLayoutData( left().create() ).setToolTipText( "laufende Wegobjektnummer" ).create();
+        
         Composite line1 = newFormField( "Name" )
                 .setParent( parent )
                 .setProperty(
@@ -128,7 +145,7 @@ public class WegWegobjektFormEditorPage
                                     }
                                 } ) )
                 .setField( reloadable( namedAssocationsPicklist( WegobjektNameComposite.class, true ) ) )
-                .setLayoutData( left().create() ).create();
+                .setLayoutData( left().top( line0 ).create() ).create();
 
         Composite line2 = newFormField( "Beschreibung" )
                 .setParent( parent )
@@ -198,6 +215,8 @@ public class WegWegobjektFormEditorPage
         final EntityType<WegobjektComposite> type = repo.entityType( WegobjektComposite.class );
 
         PropertyDescriptor prop = null;
+        prop = new PropertyDescriptorAdapter( type.getProperty( "laufendeNr" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Nummer" ) );
         prop = new PropertyDescriptorAdapter( type.getProperty( "beschreibung" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Beschreibung" ) );
         prop = new PropertyDescriptorAdapter( type.getProperty( "name" ) );

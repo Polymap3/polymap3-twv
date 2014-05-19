@@ -13,14 +13,29 @@
 package org.polymap.twv.ui.form;
 
 import org.geotools.data.FeatureStore;
+import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
+import org.opengis.feature.FeatureVisitor;
+import org.opengis.feature.Property;
+
+import com.google.common.collect.Iterables;
 
 import org.eclipse.swt.widgets.Composite;
 
+import org.polymap.core.data.DataPlugin;
+import org.polymap.core.data.PipelineFeatureSource;
+import org.polymap.core.project.ILayer;
+import org.polymap.core.project.IMap;
+import org.polymap.core.project.Layers;
+import org.polymap.core.runtime.Polymap;
+
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
+import org.polymap.rhei.data.entityfeature.ManyAssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
 import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
+import org.polymap.rhei.field.NumberValidator;
+import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.field.UploadFormField;
 import org.polymap.rhei.field.UploadFormField.UploadedImage;
@@ -56,15 +71,21 @@ public class WegobjektFormEditorPage
                 .getIdentifier().getID() );
         site.setEditorTitle( formattedTitle( "Wegobjekt", wegobjekt.name().get(), null ) );
         site.setFormTitle( formattedTitle( "Wegobjekt", wegobjekt.name().get(), getTitle() ) );
-
+        
         Composite parent = site.getPageBody();
+        Composite line0 = newFormField( "Nummer" ).setProperty( new PropertyAdapter( wegobjekt.laufendeNr() ) )
+                .setField( new StringFormField( StringFormField.Style.ALIGN_RIGHT ) )
+                .setValidator( new NumberValidator( Integer.class, Polymap.getSessionLocale(), 12, 0 ) )
+                .setEnabled( false ).setLayoutData( left().create() ).setToolTipText( "eindeutige Wegobjektnummer" )
+                .create();
+
         Composite line1 = newFormField( "Wegobjektname" )
                 .setParent( parent )
                 .setProperty(
                         new AssociationAdapter<WegobjektNameComposite>( wegobjekt
                                 .wegobjektName() ) )
                 .setField( namedAssocationsPicklist( WegobjektNameComposite.class, true ) )
-                .setLayoutData( left().create() ).create();
+                .setLayoutData( left().top( line0 ).create() ).create();
 
         Composite line2 = newFormField( "Beschreibung" ).setParent( parent )
                 .setProperty( new PropertyAdapter( wegobjekt.beschreibung() ) )
@@ -72,12 +93,44 @@ public class WegobjektFormEditorPage
                 .setLayoutData( left().top( line1 ).height( 80 ).right( RIGHT ).create() )
                 .setToolTipText( "Beschreibung des Wegobjektes" ).create();
 
-        Composite line3 = newFormField( "Weg" ).setParent( parent )
-                .setProperty( new AssociationAdapter<WegComposite>( wegobjekt.weg() ) )
+        Composite line3 = newFormField( "Wege" ).setParent( parent )
+                .setProperty( new ManyAssociationAdapter<WegComposite>( wegobjekt.wege() ) )
                 .setValidator( new NotNullValidator() )
-                .setField( namedAssocationsPicklist( WegComposite.class ) )
-                .setLayoutData( left().top( line2 ).create() ).create();
+                .setField( namedAssocationsSelectlist( WegComposite.class, true ) )
+                .setLayoutData( left().top( line2 ).height( 120 ).create() ).create();
+        
+        // Gemeinden
+        final StringBuilder buf = new StringBuilder( 256 );
+        try {
+            IMap map = ((PipelineFeatureSource)fs).getLayer().getMap();
+            ILayer layer = Iterables
+                    .getOnlyElement( Iterables.filter( map.getLayers(), Layers.hasLabel( "Gemeinden" ) ) );
 
+            fs = PipelineFeatureSource.forLayer( layer, false );
+            FeatureCollection gemeinden = fs.getFeatures( DataPlugin.ff.intersects(
+                    DataPlugin.ff.property( fs.getSchema().getGeometryDescriptor().getLocalName() ),
+                    DataPlugin.ff.literal( wegobjekt.geom().get() ) ) );
+            gemeinden.accepts( new FeatureVisitor() {
+
+                public void visit( Feature gemeinde ) {
+                    buf.append( buf.length() > 0 ? ", " : "" );
+                    Property nameProp = gemeinde.getProperty( "ORTSNAME" );
+                    buf.append( nameProp != null ? nameProp.getValue().toString() : "-" );
+                }
+            }, null );
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            buf.append( "-konnten nicht ermittelt werden- (" + e.getLocalizedMessage() + ")" );
+        }
+        Composite line5a = newFormField( "Kommune" ).setEnabled( false ).setField( new StringFormField() )
+                .setLayoutData( right().top( line2 ).create() ).setProperty( new PropertyAdapter( wegobjekt.geom() ) {
+
+                    public Object getValue() {
+                        return buf.toString();
+                    }
+                } ).create();
+        
         Composite line4 = newFormField( "Bild" ).setParent( parent )
                 .setProperty( new ImageValuePropertyAdapter( "bild", wegobjekt.bild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )

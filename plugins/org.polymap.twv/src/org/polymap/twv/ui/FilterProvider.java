@@ -35,7 +35,9 @@ import org.polymap.twv.model.data.VermarkterComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
 import org.polymap.twv.ui.filter.DefaultEntityFilter;
+import org.polymap.twv.ui.filter.SchildFilter;
 import org.polymap.twv.ui.filter.WegFilter;
+import org.polymap.twv.ui.filter.WegobjektFilter;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
@@ -83,7 +85,8 @@ public class FilterProvider
                 }
                 else if (type.isAssignableFrom( WegobjektComposite.class )) {
                     result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ).exclude(
-                            "name", "bildName" ) );
+                            "name", "bildName", "weg" ) );
+                    result.add( new WegobjektFilter( layer, repo ) );
                 }
                 else if (type.isAssignableFrom( VermarkterComposite.class )) {
                     result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) );
@@ -103,7 +106,8 @@ public class FilterProvider
                         }
                     };
 
-                    result.add( filter.exclude( "bildName" ) );
+                    result.add( filter.exclude( "bildName", "weg" ) );
+                    result.add( new SchildFilter( layer, repo ) );
                 }
                 else {
                     result.add( new DefaultEntityFilter( layer, provider.getEntityType().getType(), repo ) );

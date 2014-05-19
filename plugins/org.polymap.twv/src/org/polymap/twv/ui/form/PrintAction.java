@@ -15,7 +15,7 @@ public class PrintAction
 
 
     protected PrintAction( WegComposite beleg ) {
-        super( "Drucken" );
+        super( "Datenblatt" );
         setImageDescriptor( ImageDescriptor
                 .createFromURL( TwvPlugin.getDefault().getResource( "icons/pruefdruck.gif" ) ) );
         // setToolTipText( "Anzeige Prüfdruck in neuem Fenster für Ausdruck." );

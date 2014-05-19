@@ -60,11 +60,11 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
 
     private boolean                dirty;
 
-    private List<T>         model             = new ArrayList<T>();
+    private List<T>                model             = new ArrayList<T>();
 
     protected CompositeProvider<T> selectedComposite = new CompositeProvider<T>();
 
-    private List<IFormField> reloadables = new ArrayList<IFormField>();
+    private List<IFormField>       reloadables       = new ArrayList<IFormField>();
 
 
     /**
@@ -74,8 +74,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
      * @param feature
      * @param featureStore
      */
-    public TwvDefaultFormEditorPageWithFeatureTable( String id, String title, Feature feature,
-            FeatureStore featureStore ) {
+    public TwvDefaultFormEditorPageWithFeatureTable( String id, String title, Feature feature, FeatureStore featureStore ) {
         super( id, title, feature, featureStore );
     }
 
@@ -88,36 +87,28 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
 
     protected abstract EntityType addViewerColumns( FeatureTableViewer viewer );
 
-
-    /**
-     * 
-     * @param parent
-     */
-    protected Composite createTableForm( Composite parent, Control top ) {
-        return createTableForm( parent, top, false );
-    }
-
-    protected void refreshReloadables() throws Exception {
+    protected void refreshReloadables()
+            throws Exception {
         boolean enabled = selectedComposite.get() != null;
         for (IFormField field : reloadables) {
             field.setEnabled( enabled );
             field.load();
         }
     }
-    
+
 
     protected IFormField reloadable( IFormField formField ) {
-        reloadables.add(formField);
+        reloadables.add( formField );
         return formField;
     }
-    
-    protected Composite createTableForm( Composite parent, Control top, boolean addAllowed ) {
+
+
+    protected Composite createTableForm( Composite parent, Control top, boolean addAllowed, boolean deleteAllowed ) {
 
         int TOPSPACING = 3;
         viewer = new FeatureTableViewer( parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL );
         viewer.getTable().setLayoutData(
-                new SimpleFormData().fill().left( 2 ).height( 100 ).right( 90 )
-                        .top( top, TOPSPACING ).create() );
+                new SimpleFormData().fill().left( 2 ).height( 100 ).right( 90 ).top( top, TOPSPACING ).create() );
 
         // columns
         EntityType<T> type = addViewerColumns( viewer );
@@ -148,55 +139,56 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                     viewer.getTable().select(
                             ((SelectableCompositesFeatureContentProvider)viewer.getContentProvider())
                                     .getIndicesForElements( newComposite ) );
-                    //refreshReloadables();
+                    // refreshReloadables();
                 }
             };
             addBtn = new ActionButton( parent, addAction );
-            addBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING )
-                    .top( top, TOPSPACING ).right( 98, -SPACING ).height( 30 ).create() );
+            addBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING ).top( top, TOPSPACING )
+                    .right( 98, -SPACING ).height( 30 ).create() );
         }
 
-        DeleteCompositeAction<T> deleteAction = new DeleteCompositeAction<T>() {
+        if (deleteAllowed) {
+            DeleteCompositeAction<T> deleteAction = new DeleteCompositeAction<T>() {
 
-            protected void execute()
-                    throws Exception {
+                protected void execute()
+                        throws Exception {
 
-                if (selectedComposite.get() != null) {
-                    T toSelect = selectedComposite.get();
-                    model.remove( toSelect );
-                    if (viewer != null) {
-                        Collection<T> viewerInput = (Collection<T>)viewer.getInput();
-                        viewerInput.remove( toSelect );
+                    if (selectedComposite.get() != null) {
+                        T toSelect = selectedComposite.get();
+                        model.remove( toSelect );
+                        if (viewer != null) {
+                            Collection<T> viewerInput = (Collection<T>)viewer.getInput();
+                            viewerInput.remove( toSelect );
+                        }
+                        TwvRepository.instance().removeEntity( toSelect );
+                        selectedComposite.set( null );
+
+                        doLoad( new NullProgressMonitor() );
+                        refreshReloadables();
+
+                        dirty = true;
+                        // pageSite.fireEvent( this, this.getClass().getSimpleName(),
+                        // IFormFieldListener.VALUE_CHANGE, null );
                     }
-                    TwvRepository.instance().removeEntity( toSelect );
-                    selectedComposite.set( null );
-
-                    doLoad( new NullProgressMonitor() );
-                    refreshReloadables();
-
-                    dirty = true;
-//                    pageSite.fireEvent( this, this.getClass().getSimpleName(),
-//                            IFormFieldListener.VALUE_CHANGE, null );
+                    // Polymap.getSessionDisplay().asyncExec( new Runnable() {
+                    //
+                    // public void run() {
+                    // // update dirty/valid flags of the editor
+                    // pageSite.fireEvent( this, getClass().getSimpleName(),
+                    // IFormFieldListener.VALUE_CHANGE, null );
+                    //
+                    // viewer.refresh( true );
+                    // viewer.getTable().layout( true );
+                    // }
+                    //
+                    // } );
                 }
-                // Polymap.getSessionDisplay().asyncExec( new Runnable() {
-                //
-                // public void run() {
-                // // update dirty/valid flags of the editor
-                // pageSite.fireEvent( this, getClass().getSimpleName(),
-                // IFormFieldListener.VALUE_CHANGE, null );
-                //
-                // viewer.refresh( true );
-                // viewer.getTable().layout( true );
-                // }
-                //
-                // } );
-            }
-        };
-        ActionButton delBtn = new ActionButton( parent, deleteAction );
-        delBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING )
-                .top( addBtn != null ? addBtn : top, addBtn != null ? SPACING : TOPSPACING )
-                .right( 98, -SPACING ).height( 30 ).create() );
-
+            };
+            ActionButton delBtn = new ActionButton( parent, deleteAction );
+            delBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING )
+                    .top( addBtn != null ? addBtn : top, addBtn != null ? SPACING : TOPSPACING ).right( 98, -SPACING )
+                    .height( 30 ).create() );
+        }
         parent.layout( true );
 
         viewer.addSelectionChangedListener( new ISelectionChangedListener() {
@@ -309,8 +301,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
         try {
             dirty = true;
             // update dirty/valid flags of the editor
-            pageSite.fireEvent( this, this.getClass().getSimpleName(),
-                    IFormFieldListener.VALUE_CHANGE, null );
+            pageSite.fireEvent( this, this.getClass().getSimpleName(), IFormFieldListener.VALUE_CHANGE, null );
             if (!viewer.isBusy()) {
                 viewer.refresh( true );
             }

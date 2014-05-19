@@ -138,7 +138,7 @@ public interface WegComposite
         public static void beforeRemove( WegComposite weg ) {
             TwvRepository repository = TwvRepository.instance();
             for (SchildComposite schild : SchildComposite.Mixin.forEntity( weg )) {
-                repository.removeEntity( schild );
+                schild.wege().remove( weg );
             }
             for (WegobjektComposite wegObjekt : WegobjektComposite.Mixin.forEntity( weg )) {
                 repository.removeEntity( wegObjekt );

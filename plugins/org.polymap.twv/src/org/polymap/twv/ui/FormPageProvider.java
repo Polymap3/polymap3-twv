@@ -36,9 +36,9 @@ import org.polymap.twv.ui.form.SchildFormEditorPage;
 import org.polymap.twv.ui.form.VermarkterFormEditorPage;
 import org.polymap.twv.ui.form.WegErfassungFormEditorPage;
 import org.polymap.twv.ui.form.WegFormEditorPage;
-import org.polymap.twv.ui.form.WegSchilderFormEditorPage;
+import org.polymap.twv.ui.form.WegSchilder2FormEditorPage;
 import org.polymap.twv.ui.form.WegVermarkter2FormEditorPage;
-import org.polymap.twv.ui.form.WegWegobjektFormEditorPage;
+import org.polymap.twv.ui.form.WegWegobjekt2FormEditorPage;
 import org.polymap.twv.ui.form.WegobjektFormEditorPage;
 
 /**
@@ -59,8 +59,8 @@ public class FormPageProvider
             result.add( new WegErfassungFormEditorPage( feature, formEditor.getFeatureStore() ) );
 //            result.add( new WegVermarkterFormEditorPage( feature, formEditor.getFeatureStore() ) );
           result.add( new WegVermarkter2FormEditorPage( feature, formEditor.getFeatureStore() ) );
-            result.add( new WegWegobjektFormEditorPage( feature, formEditor.getFeatureStore() ) );
-            result.add( new WegSchilderFormEditorPage( feature, formEditor.getFeatureStore() ) );
+            result.add( new WegWegobjekt2FormEditorPage( feature, formEditor.getFeatureStore() ) );
+            result.add( new WegSchilder2FormEditorPage( feature, formEditor.getFeatureStore() ) );
 //            result.add( new WegReportPage( feature, formEditor.getFeatureStore() ) );
         }
         else if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "schild" )) {

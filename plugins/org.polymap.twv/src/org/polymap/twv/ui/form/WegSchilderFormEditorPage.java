@@ -85,7 +85,7 @@ public class WegSchilderFormEditorPage
 
         Composite parent = site.getPageBody();
         Control schildForm = createSchildForm( parent );
-        createTableForm( parent, schildForm );
+        createTableForm( parent, schildForm, false, false );
     }
 
 
@@ -264,7 +264,7 @@ public class WegSchilderFormEditorPage
 
         PropertyDescriptor prop = null;
         prop = new PropertyDescriptorAdapter( type.getProperty( "laufendeNr" ) );
-        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "laufende Nr." ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Nummer" ) );
         prop = new PropertyDescriptorAdapter( type.getProperty( "bestandsNr" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bestandsnummer" ) );
         prop = new PropertyDescriptorAdapter( type.getProperty( "bildName" ) );

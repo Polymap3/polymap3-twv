@@ -13,13 +13,24 @@
 package org.polymap.twv.ui.form;
 
 import org.geotools.data.FeatureStore;
+import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
+import org.opengis.feature.FeatureVisitor;
+import org.opengis.feature.Property;
+
+import com.google.common.collect.Iterables;
 
 import org.eclipse.swt.widgets.Composite;
 
+import org.polymap.core.data.DataPlugin;
+import org.polymap.core.data.PipelineFeatureSource;
+import org.polymap.core.project.ILayer;
+import org.polymap.core.project.IMap;
+import org.polymap.core.project.Layers;
 import org.polymap.core.runtime.Polymap;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
+import org.polymap.rhei.data.entityfeature.ManyAssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
 import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
@@ -101,9 +112,41 @@ public class SchildFormEditorPage
                 .setField( new TextFormField() )
                 .setLayoutData( left().top( line4 ).height( 50 ).right( RIGHT ).create() ).create();
 
-        Composite line5 = newFormField( "Weg" ).setProperty( new AssociationAdapter<WegComposite>( schild.weg() ) )
-                .setValidator( new NotNullValidator() ).setField( namedAssocationsPicklist( WegComposite.class ) )
-                .setLayoutData( left().top( line41 ).create() ).create();
+        Composite line5 = newFormField( "Wege" ).setProperty( new ManyAssociationAdapter<WegComposite>( schild.wege() ) )
+                .setValidator( new NotNullValidator() ).setField( namedAssocationsSelectlist( WegComposite.class, true ) )
+                .setLayoutData( left().top( line41 ).height( 120 ).create() ).create();
+        
+        // Gemeinden
+        final StringBuilder buf = new StringBuilder( 256 );
+        try {
+            IMap map = ((PipelineFeatureSource)fs).getLayer().getMap();
+            ILayer layer = Iterables
+                    .getOnlyElement( Iterables.filter( map.getLayers(), Layers.hasLabel( "Gemeinden" ) ) );
+
+            fs = PipelineFeatureSource.forLayer( layer, false );
+            FeatureCollection gemeinden = fs.getFeatures( DataPlugin.ff.intersects(
+                    DataPlugin.ff.property( fs.getSchema().getGeometryDescriptor().getLocalName() ),
+                    DataPlugin.ff.literal( schild.geom().get() ) ) );
+            gemeinden.accepts( new FeatureVisitor() {
+
+                public void visit( Feature gemeinde ) {
+                    buf.append( buf.length() > 0 ? ", " : "" );
+                    Property nameProp = gemeinde.getProperty( "ORTSNAME" );
+                    buf.append( nameProp != null ? nameProp.getValue().toString() : "-" );
+                }
+            }, null );
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            buf.append( "-konnten nicht ermittelt werden- (" + e.getLocalizedMessage() + ")" );
+        }
+        Composite line5a = newFormField( "Kommune" ).setEnabled( false ).setField( new StringFormField() )
+                .setLayoutData( right().top( line41 ).create() ).setProperty( new PropertyAdapter( schild.geom() ) {
+
+                    public Object getValue() {
+                        return buf.toString();
+                    }
+                } ).create();
 
         Composite line6 = newFormField( "Bild" ).setProperty( new ImageValuePropertyAdapter( "bild", schild.bild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )

@@ -12,6 +12,9 @@
  */
 package org.polymap.twv.model.data;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,6 +22,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.ComputedPropertyInstance;
@@ -26,8 +30,6 @@ import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.PropertyInfo;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.query.grammar.BooleanExpression;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
 import com.vividsolutions.jts.geom.Point;
@@ -50,6 +52,9 @@ import org.polymap.twv.model.TwvRepository;
 public interface WegobjektComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
+    @Optional
+    Property<Integer> laufendeNr();
+    
     @Computed
     Property<String> name();
 
@@ -80,7 +85,11 @@ public interface WegobjektComposite
 
 
     @Optional
+    @Deprecated
     Association<WegComposite> weg();
+
+    @Optional
+    ManyAssociation<WegComposite> wege();
 
 
     /**
@@ -145,12 +154,16 @@ public interface WegobjektComposite
         }
 
 
-        public static Iterable<WegobjektComposite> forEntity( WegComposite weg ) {
-            WegobjektComposite template = QueryExpressions.templateFor( WegobjektComposite.class );
-            BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
-            Query<WegobjektComposite> matches = TwvRepository.instance().findEntities( WegobjektComposite.class, expr,
+        public static Set<WegobjektComposite> forEntity( WegComposite weg ) {
+            Query<WegobjektComposite> all = TwvRepository.instance().findEntities( WegobjektComposite.class, null,
                     0, -1 );
-            return matches;
+            Set<WegobjektComposite> alleFound = new HashSet<WegobjektComposite>();
+            for (WegobjektComposite wegObjekt : all) {
+                if (wegObjekt.wege().contains( weg )) {
+                    alleFound.add( wegObjekt );
+                }
+            }
+            return alleFound;
         }
     }
 

@@ -12,17 +12,17 @@
  */
 package org.polymap.twv.model;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.LayerAssembly;
@@ -105,6 +105,7 @@ public class TwvRepositoryAssembler
         // project layer / module
         LayerAssembly domainLayer = _app.layerAssembly( "application-layer" );
         ModuleAssembly domainModule = domainLayer.moduleAssembly( TWV_MODULE );
+       
         domainModule.addEntities( AusweisungComposite.class, MarkierungComposite.class, SchildartComposite.class,
                 SchildComposite.class, SchildmaterialComposite.class, VermarkterComposite.class,
                 WegbeschaffenheitComposite.class, WegComposite.class, WegobjektComposite.class,
@@ -116,7 +117,7 @@ public class TwvRepositoryAssembler
         domainModule.addValues( ImageValue.class );
 
         domainModule.addServices( LuceneEntityStoreService.class )
-                .setMetaInfo( new LuceneEntityStoreInfo( TwvPlugin.getModuleRoot() ) ).instantiateOnStartup()
+                .setMetaInfo( new LuceneEntityStoreInfo( createDataDir() ) ).instantiateOnStartup()
                 .identifiedBy( "lucene-repository" );
 
         // indexer
@@ -126,6 +127,7 @@ public class TwvRepositoryAssembler
                 .instantiateOnStartup();
 
         domainModule.addServices( HRIdentityGeneratorService.class, SchildNummerGeneratorService.class );
+        domainModule.addServices( HRIdentityGeneratorService.class, WegobjektNummerGeneratorService.class );
 
         // FIXME nötige Änderungen in Rhei fehlen noch
         // FilterFactory.instance().disableStandardFilter();
@@ -230,8 +232,10 @@ public class TwvRepositoryAssembler
         }
         // next version
         migrateVermarkter( uow );
-        fixIncorrectManyAssociations( uow );
+        // fixIncorrectManyAssociations( uow );
         renumberSchilder( uow );
+        renumberWegobjekt( uow );
+        migrateWege( uow );
 
         uow.complete();
     }
@@ -239,10 +243,6 @@ public class TwvRepositoryAssembler
 
     private void renumberSchilder( UnitOfWork uow ) {
         QueryBuilder<SchildComposite> builder = module.queryBuilderFactory().newQueryBuilder( SchildComposite.class );
-        // SchildComposite template = QueryExpressions.templateFor(
-        // SchildComposite.class );
-        // builder = builder.where( QueryExpressions.eq( template.laufendeNr(), null
-        // ) );
         Query<SchildComposite> query = builder.newQuery( uow ).maxResults( 10000 ).firstResult( 0 );
 
         SchildNummerGeneratorService schildNummer = (SchildNummerGeneratorService)module.serviceFinder()
@@ -251,6 +251,22 @@ public class TwvRepositoryAssembler
             if (schild.laufendeNr().get() == null) {
                 log.info( "Setting new number..." );
                 schild.laufendeNr().set( schildNummer.generate() );
+            }
+        }
+    }
+
+
+    private void renumberWegobjekt( UnitOfWork uow ) {
+        QueryBuilder<WegobjektComposite> builder = module.queryBuilderFactory().newQueryBuilder(
+                WegobjektComposite.class );
+        Query<WegobjektComposite> query = builder.newQuery( uow ).maxResults( 10000 ).firstResult( 0 );
+
+        WegobjektNummerGeneratorService nummer = (WegobjektNummerGeneratorService)module.serviceFinder()
+                .findService( WegobjektNummerGeneratorService.class ).get();
+        for (WegobjektComposite wegobjekt : query) {
+            if (wegobjekt.laufendeNr().get() == null) {
+                log.info( "Setting new number..." );
+                wegobjekt.laufendeNr().set( nummer.generate() );
             }
         }
     }
@@ -297,12 +313,51 @@ public class TwvRepositoryAssembler
     }
 
 
-    private void fixIncorrectManyAssociations( UnitOfWork uow )
-            throws ConcurrentEntityModificationException, UnitOfWorkCompletionException {
-        log.info( "Create Vermarkters to be removed later by hand" );
-        EntityBuilder<VermarkterComposite> entityBuilder = uow.newEntityBuilder( VermarkterComposite.class,
-                "VermarkterComposite-20130415-0942-0" );
-        entityBuilder.instance().name().set( "_delete_me_" );
-        entityBuilder.newInstance();
+    //
+    //
+    // private void fixIncorrectManyAssociations( UnitOfWork uow )
+    // throws ConcurrentEntityModificationException, UnitOfWorkCompletionException {
+    // log.info( "Create Vermarkters to be removed later by hand" );
+    // EntityBuilder<VermarkterComposite> entityBuilder = uow.newEntityBuilder(
+    // VermarkterComposite.class,
+    // "VermarkterComposite-20130415-0942-0" );
+    // entityBuilder.instance().name().set( "_delete_me_" );
+    // entityBuilder.newInstance();
+    // }
+
+    private void migrateWege( UnitOfWork uow )
+            throws IOException {
+        File file = new File( createDataDir(), "migration.Wege" );
+        if (!file.exists()) {
+            log.info( "Migrating Wege" );
+            int count = 0;
+            Query<SchildComposite> query = getModule().queryBuilderFactory().newQueryBuilder(
+                    SchildComposite.class ).newQuery( uow ).maxResults( Integer.MAX_VALUE )
+                    .firstResult( 0 );
+            for (SchildComposite schild : query) {
+                WegComposite weg = schild.weg().get();
+                if (weg != null) {
+                    schild.wege().add( weg );
+                    count++;
+                }
+            }
+            Query<WegobjektComposite> queryW = getModule().queryBuilderFactory().newQueryBuilder(
+                    WegobjektComposite.class ).newQuery( uow ).maxResults( Integer.MAX_VALUE )
+                    .firstResult( 0 );
+            for (WegobjektComposite wegobjekt : queryW) {
+                WegComposite weg = wegobjekt.weg().get();
+                if (weg != null) {
+                    wegobjekt.wege().add( weg );
+                    count++;
+                }
+            }
+            file.createNewFile();
+            log.info( "Migration of " + count + " Wege Completed" );
+        }
+    }
+
+
+    private File createDataDir() {
+        return TwvPlugin.getModuleRoot();
     }
 }

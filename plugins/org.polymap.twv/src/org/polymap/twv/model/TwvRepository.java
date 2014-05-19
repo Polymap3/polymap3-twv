@@ -54,7 +54,6 @@ import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.VermarkterComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
-import org.polymap.twv.model.data.WegobjektComposite;
 import org.polymap.twv.model.data.WegobjektNameComposite;
 import org.polymap.twv.model.data.WidmungComposite;
 
@@ -75,19 +74,22 @@ public class TwvRepository
     public static final TwvRepository instance() {
         return Qi4jPlugin.Session.instance().module( TwvRepository.class );
     }
-//    
-//    public static final TwvRepository globalInstance() {
-//        return Qi4jPlugin.Session..globalInstance().module( Anta2Repository.class );
-//    }
+
+    //
+    // public static final TwvRepository globalInstance() {
+    // return Qi4jPlugin.Session..globalInstance().module( Anta2Repository.class );
+    // }
 
     // instance *******************************************
 
-    private IOperationSaveListener                         operationListener = new OperationSaveListener();
+    private IOperationSaveListener                            operationListener = new OperationSaveListener();
 
     /** Allow direct access for operations. */
-    protected TwvService                                   twvService;
+    protected TwvService                                      twvService;
 
-    private ServiceReference<SchildNummerGeneratorService> schildNummer;
+    private ServiceReference<SchildNummerGeneratorService>    schildNummer;
+
+    private ServiceReference<WegobjektNummerGeneratorService> wegobjektNummer;
 
 
     // public static class SimpleEntityProvider<T extends Entity>
@@ -107,29 +109,29 @@ public class TwvRepository
             OperationSupport.instance().addOperationSaveListener( operationListener );
         }
         schildNummer = assembler.getModule().serviceFinder().findService( SchildNummerGeneratorService.class );
+        wegobjektNummer = assembler.getModule().serviceFinder().findService( WegobjektNummerGeneratorService.class );
     }
 
 
     public void init( final Session session ) {
         try {
             twvService = new TwvService( new WegEntityProvider( this, new NameImpl( TwvRepository.NAMESPACE, "Weg" ) ),
-                    new SchildEntityProvider( this, new NameImpl(
-                            TwvRepository.NAMESPACE, "Schild" ) ), new TwvEntityProvider<AusweisungComposite>( this,
-                            AusweisungComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Ausweisung" ) ),
-                    new TwvEntityProvider<MarkierungComposite>( this, MarkierungComposite.class, new NameImpl(
-                            TwvRepository.NAMESPACE, "Markierung" ) ), new TwvEntityProvider<SchildartComposite>( this,
-                            SchildartComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Schildart" ) ),
+                    new SchildEntityProvider( this, new NameImpl( TwvRepository.NAMESPACE, "Schild" ) ),
+                    new TwvEntityProvider<AusweisungComposite>( this, AusweisungComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Ausweisung" ) ), new TwvEntityProvider<MarkierungComposite>(
+                            this, MarkierungComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Markierung" ) ),
+                    new TwvEntityProvider<SchildartComposite>( this, SchildartComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Schildart" ) ),
                     new TwvEntityProvider<EntfernungskontrolleComposite>( this, EntfernungskontrolleComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Entfernungskontrolle" ) ),
                     new TwvEntityProvider<SchildComposite>( this, SchildComposite.class, new NameImpl(
-                            TwvRepository.NAMESPACE, "Schild" ) ), new TwvEntityProvider<SchildmaterialComposite>(
+                            TwvRepository.NAMESPACE, SchildComposite.NAME ) ), new TwvEntityProvider<SchildmaterialComposite>(
                             this, SchildmaterialComposite.class, new NameImpl( TwvRepository.NAMESPACE,
                                     "Schildmaterial" ) ), new TwvEntityProvider<VermarkterComposite>( this,
                             VermarkterComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ) ),
                     new TwvEntityProvider<WegbeschaffenheitComposite>( this, WegbeschaffenheitComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Wegbeschaffenheit" ) ),
-                    new TwvEntityProvider<WegobjektComposite>( this, WegobjektComposite.class, new NameImpl(
-                            TwvRepository.NAMESPACE, "Wegobjekt" ) ),
+                    new WegobjektEntityProvider( this, new NameImpl( TwvRepository.NAMESPACE, "Wegobjekt" ) ),
                     new TwvEntityProvider<WegobjektNameComposite>( this, WegobjektNameComposite.class, new NameImpl(
                             TwvRepository.NAMESPACE, "Wegobjektname" ) ),
                     new TwvEntityProvider<FoerderregionComposite>( this, FoerderregionComposite.class, new NameImpl(
@@ -186,6 +188,11 @@ public class TwvRepository
 
     public Integer nextSchildNummer() {
         return schildNummer.get().generate();
+    }
+
+
+    public Integer nextWegobjektNummer() {
+        return wegobjektNummer.get().generate();
     }
 
 

@@ -31,6 +31,16 @@
             path="/rest">
       </servlet>
    </extension>
+    <extension
+         point="org.polymap.core.data.featureOperations">
+      <featureOperation
+            class="org.polymap.twv.export.SchildStatistikExporter"
+            icon="icons/exportas.gif"
+            id="org.polymap.twv.export.SchildStatistikExporter"
+            label="Statistik Schilder"
+            tooltip="Export Statistik Schilder">
+      </featureOperation>
+   </extension>   
    <!--extension
          point="org.eclipse.ui.importWizards">
       <wizard

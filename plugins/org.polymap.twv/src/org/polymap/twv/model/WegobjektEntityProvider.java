@@ -20,16 +20,16 @@ import org.opengis.feature.type.Name;
 import org.polymap.core.qi4j.QiModule;
 import org.polymap.core.qi4j.QiModule.EntityCreator;
 
-import org.polymap.twv.model.data.SchildComposite;
+import org.polymap.twv.model.data.WegobjektComposite;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
-public class SchildEntityProvider
-        extends TwvEntityProvider<SchildComposite> {
+public class WegobjektEntityProvider
+        extends TwvEntityProvider<WegobjektComposite> {
 
-    public SchildEntityProvider( QiModule repo, Name entityName ) {
-        super( repo, SchildComposite.class, entityName );
+    public WegobjektEntityProvider( QiModule repo, Name entityName ) {
+        super( repo, WegobjektComposite.class, entityName );
     }
 
 
@@ -38,17 +38,17 @@ public class SchildEntityProvider
         FeatureType type = super.buildFeatureType( schema );
 
         // aussortieren für die Tabelle
-        SimpleFeatureType filtered = SimpleFeatureTypeBuilder.retype( (SimpleFeatureType)type,
-                new String[] { "geom", "laufendeNr", "bestandsNr", "schildart", "beschriftung", "befestigung",
-                        "standort" } );
+        SimpleFeatureType filtered = SimpleFeatureTypeBuilder.retype( (SimpleFeatureType)type, new String[] { "geom",
+                "laufendeNr", "wegobjektName", "beschreibung" } );
         return filtered;
     }
 
+
     @Override
-    public SchildComposite newEntity( EntityCreator<SchildComposite> creator )
+    public WegobjektComposite newEntity( EntityCreator<WegobjektComposite> creator )
             throws Exception {
-        SchildComposite composite = super.newEntity( creator );
-        composite.laufendeNr().set( TwvRepository.instance().nextSchildNummer() );
+        WegobjektComposite composite = super.newEntity( creator );
+        composite.laufendeNr().set( TwvRepository.instance().nextWegobjektNummer() );
         return composite;
     }
 }

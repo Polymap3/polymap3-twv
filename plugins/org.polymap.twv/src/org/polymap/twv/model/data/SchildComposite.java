@@ -12,6 +12,9 @@
  */
 package org.polymap.twv.model.data;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,6 +22,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.ComputedPropertyInstance;
@@ -26,8 +30,6 @@ import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.PropertyInfo;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.query.grammar.BooleanExpression;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -48,6 +50,8 @@ import org.polymap.twv.model.TwvRepository;
 public interface SchildComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite {
 
+    String NAME = "Schild";
+    
     @Optional
     Property<String> bestandsNr();
 
@@ -98,7 +102,11 @@ public interface SchildComposite
 
 
     @Optional
+    @Deprecated
     Association<WegComposite> weg();
+
+    @Optional
+    ManyAssociation<WegComposite> wege();
 
 
     /**
@@ -142,11 +150,16 @@ public interface SchildComposite
         }
 
 
-        public static Iterable<SchildComposite> forEntity( WegComposite weg ) {
-            SchildComposite template = QueryExpressions.templateFor( SchildComposite.class );
-            BooleanExpression expr = QueryExpressions.eq( template.weg(), weg );
-            Query<SchildComposite> matches = TwvRepository.instance().findEntities( SchildComposite.class, expr, 0, -1 );
-            return matches;
+        public static Set<SchildComposite> forEntity( WegComposite weg ) {
+            Query<SchildComposite> alleSchilder = TwvRepository.instance().findEntities( SchildComposite.class, null,
+                    0, -1 );
+            Set<SchildComposite> alleGefundenenSchilder = new HashSet<SchildComposite>();
+            for (SchildComposite schild : alleSchilder) {
+                if (schild.wege().contains( weg )) {
+                    alleGefundenenSchilder.add( schild );
+                }
+            }
+            return alleGefundenenSchilder;
         }
     }
 }
