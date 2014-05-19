@@ -35,7 +35,9 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import org.polymap.core.data.PipelineFeatureSource;
 import org.polymap.core.project.ILayer;
 import org.polymap.core.project.IMap;
+import org.polymap.core.project.LayerVisitor;
 import org.polymap.core.project.Layers;
+import org.polymap.core.project.ProjectRepository;
 
 import org.polymap.twv.model.data.WegComposite;
 
@@ -50,20 +52,43 @@ public class WegGemeindenCalculator {
     
     private WegComposite            weg;
 
-    private IMap                    map;
+    private ILayer                  gemeindeLayer;
 
 
+    /**
+     * 
+     * 
+     * @param weg
+     * @param map Die {@link IMap}, in der der "Gemeinden" Layer gesucht wird.
+     */
     public WegGemeindenCalculator( WegComposite weg, IMap map ) {
         this.weg = weg;
-        this.map = map;
+        this.gemeindeLayer = getOnlyElement( filter( map.getLayers(), Layers.hasLabel( "Gemeinden" ) ) );
+    }
+     
+    
+    /**
+     * Der "Gemeinden" Layer wird in allen Projekten gesucht.
+     * 
+     * @param weg
+     */
+    public WegGemeindenCalculator( WegComposite weg ) {
+        this.weg = weg;
+        this.gemeindeLayer = ProjectRepository.instance().visit( new LayerVisitor() {
+            public boolean visit( ILayer layer ) {
+                return layer.getLabel().equalsIgnoreCase( "gemeinden" );
+            }
+        });
+        if (gemeindeLayer == null) {
+            throw new RuntimeException( "Es existiert keine Ebene mit dem Namen \"Gemeinden\"." );
+        }
     }
      
     
     public FeatureCollection gemeinden() throws Exception {
         MultiLineString wegGeom = weg.geom().get();
-        ILayer layer = getOnlyElement( filter( map.getLayers(), Layers.hasLabel( "Gemeinden" ) ) );
 
-        PipelineFeatureSource fs = PipelineFeatureSource.forLayer( layer, false );
+        PipelineFeatureSource fs = PipelineFeatureSource.forLayer( gemeindeLayer, false );
         return fs.getFeatures( ff.intersects(
                 ff.property( fs.getSchema().getGeometryDescriptor().getLocalName() ), ff.literal( wegGeom ) ) );
     }
