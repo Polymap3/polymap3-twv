@@ -15,33 +15,35 @@ package org.polymap.twv.ui.form;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.geotools.data.FeatureStore;
-import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
-import org.opengis.feature.Property;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
+import org.geotools.data.FeatureStore;
+import org.opengis.feature.Feature;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.google.common.collect.Iterables;
-
+import com.google.common.base.Joiner;
 import org.eclipse.swt.widgets.Composite;
 
-import org.polymap.core.data.DataPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import org.polymap.core.data.PipelineFeatureSource;
-import org.polymap.core.project.ILayer;
 import org.polymap.core.project.IMap;
-import org.polymap.core.project.Layers;
+import org.polymap.core.runtime.Polymap;
+import org.polymap.core.runtime.event.EventHandler;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
+import org.polymap.rhei.data.entityfeature.PlainValuePropertyAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
 import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
+import org.polymap.rhei.field.NumberValidator;
 import org.polymap.rhei.field.PicklistFormField;
 import org.polymap.rhei.field.StringFormField;
 import org.polymap.rhei.field.TextFormField;
 import org.polymap.rhei.field.TextFormFieldWithSuggestions;
+import org.polymap.rhei.form.IFormEditorPage2;
 import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.model.data.AusweisungComposite;
@@ -59,21 +61,51 @@ import org.polymap.twv.ui.TwvDefaultFormEditorPage;
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
 public class WegFormEditorPage
-        extends TwvDefaultFormEditorPage {
+        extends TwvDefaultFormEditorPage
+        implements IFormEditorPage2 {
 
     private static Log         log               = LogFactory.getLog( WegFormEditorPage.class );
 
-    private final WegComposite weg;
+    private final WegComposite      weg;
 
-    private KategorieComposite selectedKategorie = null;
+    private KategorieComposite      selectedKategorie = null;
 
-    private IFormFieldListener kategorieSelectionListener;
+    private IFormFieldListener      kategorieSelectionListener;
+
+    private PropertyChangeListener  laengeListener;
 
 
     public WegFormEditorPage( Feature feature, FeatureStore featureStore ) {
         super( WegFormEditorPage.class.getName(), "Basisdaten", feature, featureStore );
 
         weg = twvRepository.findEntity( WegComposite.class, feature.getIdentifier().getID() );
+    }
+
+    
+    @Override
+    public void dispose() {
+        if (laengeListener != null && weg != null) {
+            weg.removePropertyChangeListener( laengeListener );
+            laengeListener = null;
+        }
+    }
+    
+    @Override
+    public boolean isDirty() {
+        return false;
+    }
+
+    @Override
+    public boolean isValid() {
+        return true;
+    }
+
+    @Override
+    public void doLoad( IProgressMonitor monitor ) throws Exception {
+    }
+
+    @Override
+    public void doSubmit( IProgressMonitor monitor ) throws Exception {
     }
 
 
@@ -124,46 +156,58 @@ public class WegFormEditorPage
                 .setLayoutData( right().top( line2 ).create() ).create();
 
         // Gemeinden
-        final StringBuilder buf = new StringBuilder( 256 );
+        IMap map = ((PipelineFeatureSource)fs).getLayer().getMap();
+        final WegGemeindenCalculator calculator = new WegGemeindenCalculator( weg, map );
+        String gemeindeNamen = null;
         try {
-            IMap map = ((PipelineFeatureSource)fs).getLayer().getMap();
-            ILayer layer = Iterables
-                    .getOnlyElement( Iterables.filter( map.getLayers(), Layers.hasLabel( "Gemeinden" ) ) );
-
-            fs = PipelineFeatureSource.forLayer( layer, false );
-            FeatureCollection gemeinden = fs.getFeatures( DataPlugin.ff.intersects(
-                    DataPlugin.ff.property( fs.getSchema().getGeometryDescriptor().getLocalName() ),
-                    DataPlugin.ff.literal( weg.geom().get() ) ) );
-            gemeinden.accepts( new FeatureVisitor() {
-
-                public void visit( Feature gemeinde ) {
-                    buf.append( buf.length() > 0 ? ", " : "" );
-                    Property nameProp = gemeinde.getProperty( "ORTSNAME" );
-                    buf.append( nameProp != null ? nameProp.getValue().toString() : "-" );
-                }
-            }, null );
-            log.info( "Kommunen: " + buf.toString() );
+            gemeindeNamen = Joiner.on( ", " ).join( calculator.gemeindeNamen() );
         }
         catch (Exception e) {
             log.warn( "", e );
-            buf.append( "-konnten nicht ermittelt werden- (" + e.getLocalizedMessage() + ")" );
+            gemeindeNamen = "-konnten nicht ermittelt werden- (" + e.getLocalizedMessage() + ")";
         }
-        Composite line5 = newFormField( "Kommunen" ).setEnabled( false ).setField( new StringFormField() )
-                .setLayoutData( right().top( line4 ).create() ).setProperty( new PropertyAdapter( weg.geom() ) {
+        Composite line5 = newFormField( "Kommunen" )
+                .setEnabled( false )
+                .setField( new StringFormField() )
+                .setLayoutData( right().top( line4 ).create() )
+                .setProperty( new PlainValuePropertyAdapter<String>( "_kommunen_", gemeindeNamen ) )
+                .create();
 
-                    public Object getValue() {
-                        return buf.toString();
+        // laengeImLandkreis: wird über Berechnung eingeblendet
+        double laengeImLandkreis = -1d;
+        try {
+            laengeImLandkreis = calculator.laengeImLandkreis();
+        }
+        catch (Exception e) {
+            log.warn( "", e );
+        }
+        NumberValidator lengthValidator = new NumberValidator( Double.class, Polymap.getSessionLocale(), 10, 2, 0, 2 );
+        Composite line55 = newFormField( "Länge Landkreis (m)" )
+                .setEnabled( false )
+                .setProperty( new PlainValuePropertyAdapter<Double>( "_laengeImLandkreis_", laengeImLandkreis ) )
+                .setField( new StringFormField() )
+                .setValidator( lengthValidator )
+                .setLayoutData( left().top( line3 ).create() )
+                .setToolTipText( "Länge im Landkreis Mittelsachsenin in Metern\nGesamtlänge: " + lengthValidator.getNumberFormat().format( calculator.gesamtLaenge() ) )
+                .create();
+
+        // listen to geom changes
+        weg.addPropertyChangeListener( laengeListener = new PropertyChangeListener() {
+            @EventHandler(display=true)
+            public void propertyChange( PropertyChangeEvent ev ) {
+                if (ev.getPropertyName().equals( weg.geom().qualifiedName().name() )) {
+                    try {
+                        site.setFieldValue( "_kommunen_", Joiner.on( ", " ).join( calculator.gemeindeNamen() ) );
+                        site.setFieldValue( "_laengeImLandkreis_", calculator.laengeImLandkreis() );
                     }
-                } ).create();
-
-        // TODO falko laengeImLandkreis wird über Berechnung eingeblendet
-
-        // Composite line4 = newFormField( "Länge Landkreis" )
-        // .setProperty( new PropertyAdapter( weg.laengeImLandkreis() ) )
-        // .setField( new StringFormField() ).setLayoutData( left().top( line3
-        // ).create() )
-        // .setToolTipText( "Länge im Landkreis Mittelsachsen" ).create();
-
+                    catch (Exception e) {
+                        log.warn( "", e );
+                    }
+                }
+            }
+        });
+        
+        // Gesamtlänge: als Feld
         Composite line6 = newFormField( "Gesamtlänge" ).setProperty( new PropertyAdapter( weg.laengeUeberregional() ) )
                 .setField( new StringFormField() ).setLayoutData( right().top( line5 ).create() )
                 .setToolTipText( "Überregionale Gesamtlänge" ).create();
