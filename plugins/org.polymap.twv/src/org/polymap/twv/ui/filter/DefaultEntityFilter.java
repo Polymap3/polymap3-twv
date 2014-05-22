@@ -124,7 +124,7 @@ public class DefaultEntityFilter
                 }
 //            }
         }
-
+       result.pack();
         return result;
     }
 

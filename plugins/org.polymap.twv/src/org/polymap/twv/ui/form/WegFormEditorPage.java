@@ -28,6 +28,8 @@ import com.google.common.base.Joiner;
 
 import org.eclipse.swt.widgets.Composite;
 
+import org.eclipse.jface.action.Action;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import org.polymap.core.data.PipelineFeatureSource;
@@ -273,8 +275,8 @@ public class WegFormEditorPage
             }
         } );
     }
-//    
-//    public Action[] getEditorActions() {
-//        return new Action[] { new PrintAction( weg ) };
-//    }
+    
+    public Action[] getEditorActions() {
+        return new Action[] { new PrintAction( weg ) };
+    }
 }

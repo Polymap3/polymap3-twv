@@ -43,7 +43,7 @@ import org.polymap.core.project.ProjectRepository;
 import org.polymap.twv.model.data.WegComposite;
 
 /**
- * Berechnungen für einen Weg-Geometrie innerhalb von (Gemeinden) Polygonen.
+ * Berechnungen für eine Weg-Geometrie innerhalb von (Gemeinden) Polygonen.
  *
  * @author <a href="http://www.polymap.de">Falko Bräutigam</a>
  */
@@ -118,11 +118,11 @@ public class WegGemeindenCalculator {
         gemeinden().accepts( new FeatureVisitor() {
             public void visit( Feature gemeinde ) {
                 Geometry intersection = wegGeom.intersection( (Geometry)gemeinde.getDefaultGeometryProperty().getValue() );
-                log.info( "INTERSECTION: " + intersection );
+//                log.info( "INTERSECTION: " + intersection );
                 
                 double sum = result.get().doubleValue() + intersection.getLength();
                 result.set( sum );
-                log.info( "LENGHT: " + sum );
+//                log.info( "LENGHT: " + sum );
             }
         }, null );
         return result.get().doubleValue();
