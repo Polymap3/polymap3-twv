@@ -26,6 +26,7 @@ import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.Property;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -76,7 +77,10 @@ public class WegGemeindenCalculator {
         this.weg = weg;
         this.gemeindeLayer = ProjectRepository.instance().visit( new LayerVisitor() {
             public boolean visit( ILayer layer ) {
-                return layer.getLabel().equalsIgnoreCase( "gemeinden" );
+                if (layer.getLabel().equalsIgnoreCase( "gemeinden" )) {
+                    result = layer;
+                }
+                return result == null;
             }
         });
         if (gemeindeLayer == null) {

@@ -31,53 +31,35 @@ import org.polymap.core.project.LayerVisitor;
 import org.polymap.core.project.ProjectRepository;
 
 import org.polymap.twv.model.data.FoerderregionComposite;
-import org.polymap.twv.model.data.PfeilrichtungComposite;
-import org.polymap.twv.model.data.SchildComposite;
-import org.polymap.twv.model.data.SchildartComposite;
-import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.WegComposite;
+import org.polymap.twv.model.data.WegobjektComposite;
+import org.polymap.twv.model.data.WegobjektNameComposite;
 
 /**
  * @author <a href="http://www.polymap.de">Steffen Stundzig</a>
  */
-public class SchildStatistikExporter
-        extends AbstractExcelExporter<SchildComposite> {
+public class WegObjektStatistikExporter
+        extends AbstractExcelExporter<WegobjektComposite> {
 
-    private static Log log = LogFactory.getLog( SchildStatistikExporter.class );
+    private static Log log = LogFactory.getLog( WegObjektStatistikExporter.class );
 
 
-    public SchildStatistikExporter() {
-        super( SchildComposite.class, SchildComposite.NAME, "statistik_schild", "Schilder" );
+    public WegObjektStatistikExporter() {
+        super( WegobjektComposite.class, WegobjektComposite.NAME, "statistik_wegobjekte", "Wegobjekte" );
     }
 
 
-    protected List<Value> createValues( SchildComposite schild, List<String> errors ) {
+    protected List<Value> createValues( WegobjektComposite wegobjekt, List<String> errors ) {
 
         List<Value> result = new ArrayList<Value>();
-        result.add( new Value( "Nummer", schild.laufendeNr().get() ) );
-        result.add( new Value( "Bestandsnummer", schild.bestandsNr().get() ) );
-        SchildartComposite art = schild.schildart().get();
-        // if (art == null) {
-        // errors.add( "Keine Schildart gefunden!" );
-        // }
-        result.add( new Value( "Schildart", art != null ? art.name().get() : "" ) );
-        PfeilrichtungComposite pfeil = schild.pfeilrichtung().get();
-        // if (pfeil == null) {
-        // errors.add( "Keine Pfeilrichtung gefunden!" );
-        // }
-        result.add( new Value( "Pfeilrichtung", pfeil != null ? pfeil.name().get() : "" ) );
-        SchildmaterialComposite material = schild.material().get();
-        // if (material == null) {
-        // errors.add( "Kein Schildmaterial gefunden!" );
-        // }
-        result.add( new Value( "Material", material != null ? material.name().get() : "" ) );
-        result.add( new Value( "Beschriftung", schild.beschriftung().get() ) );
-        result.add( new Value( "Befestigung", schild.befestigung().get() ) );
-        result.add( new Value( "Standort", schild.standort().get() ) );
+        result.add( new Value( "Nummer", wegobjekt.laufendeNr().get() ) );
+        WegobjektNameComposite name = wegobjekt.wegobjektName().get();
+        result.add( new Value( "Name", name != null ? name.name().get() : "" ) );
+        result.add( new Value( "Beschreibung", wegobjekt.beschreibung().get() ) );
 
         List<String> wege = new ArrayList<String>();
         List<String> foerderregionen = new ArrayList<String>();
-        for (WegComposite weg : schild.wege().toSet()) {
+        for (WegComposite weg : wegobjekt.wege().toSet()) {
             if (!wege.contains( weg.name().get() )) {
                 wege.add( weg.name().get() );
                 for (FoerderregionComposite fc : weg.foerderregionen().toSet()) {
@@ -108,11 +90,11 @@ public class SchildStatistikExporter
                     return result == null;
                 }
             } );
-            if (gemeindeLayer != null && schild.geom().get() != null) {
+            if (gemeindeLayer != null && wegobjekt.geom().get() != null) {
                 PipelineFeatureSource fs = PipelineFeatureSource.forLayer( gemeindeLayer, false );
                 FeatureCollection gemeinden = fs.getFeatures( DataPlugin.ff.intersects(
                         DataPlugin.ff.property( fs.getSchema().getGeometryDescriptor().getLocalName() ),
-                        DataPlugin.ff.literal( schild.geom().get() ) ) );
+                        DataPlugin.ff.literal( wegobjekt.geom().get() ) ) );
                 gemeinden.accepts( new FeatureVisitor() {
 
                     public void visit( Feature gemeinde ) {

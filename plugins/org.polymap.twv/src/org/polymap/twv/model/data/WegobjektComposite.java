@@ -52,6 +52,9 @@ import org.polymap.twv.model.TwvRepository;
 public interface WegobjektComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
+    String NAME = "Wegobjekt";
+
+
     @Optional
     Property<Integer> laufendeNr();
     

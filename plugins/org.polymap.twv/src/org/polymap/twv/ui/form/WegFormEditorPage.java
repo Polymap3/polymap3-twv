@@ -20,10 +20,12 @@ import java.beans.PropertyChangeListener;
 
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.Feature;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.common.base.Joiner;
+
 import org.eclipse.swt.widgets.Composite;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -181,14 +183,14 @@ public class WegFormEditorPage
         catch (Exception e) {
             log.warn( "", e );
         }
-        NumberValidator lengthValidator = new NumberValidator( Double.class, Polymap.getSessionLocale(), 10, 2, 0, 2 );
+        NumberValidator lengthValidator = new NumberValidator( Double.class, Polymap.getSessionLocale(), 10, 0, 0, 0 );
         Composite line55 = newFormField( "Länge Landkreis (m)" )
                 .setEnabled( false )
                 .setProperty( new PlainValuePropertyAdapter<Double>( "_laengeImLandkreis_", laengeImLandkreis ) )
                 .setField( new StringFormField() )
                 .setValidator( lengthValidator )
                 .setLayoutData( left().top( line3 ).create() )
-                .setToolTipText( "Länge im Landkreis Mittelsachsenin in Metern\nGesamtlänge: " + lengthValidator.getNumberFormat().format( calculator.gesamtLaenge() ) )
+                .setToolTipText( "Länge im Landkreis Mittelsachsen in Metern\nGesamtlänge: " + lengthValidator.getNumberFormat().format( calculator.gesamtLaenge() ) )
                 .create();
 
         // listen to geom changes

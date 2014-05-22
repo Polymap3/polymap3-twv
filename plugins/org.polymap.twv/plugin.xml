@@ -38,7 +38,14 @@
             icon="icons/exportas.gif"
             id="org.polymap.twv.export.SchildStatistikExporter"
             label="Statistik Schilder"
-            tooltip="Export Statistik Schilder">
+            tooltip="Export der Statistik für Schilder als CSV Datei">
+      </featureOperation>
+      <featureOperation
+            class="org.polymap.twv.export.WegObjektStatistikExporter"
+            icon="icons/exportas.gif"
+            id="org.polymap.twv.export.WegObjektStatistikExporter"
+            label="Statistik Wegobjekte"
+            tooltip="Export der Statistik für Wegobjekte als CSV Datei">
       </featureOperation>
    </extension>   
    <!--extension

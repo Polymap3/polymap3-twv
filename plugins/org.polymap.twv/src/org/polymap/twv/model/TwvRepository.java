@@ -54,6 +54,7 @@ import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.VermarkterComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
+import org.polymap.twv.model.data.WegobjektComposite;
 import org.polymap.twv.model.data.WegobjektNameComposite;
 import org.polymap.twv.model.data.WidmungComposite;
 
@@ -131,7 +132,7 @@ public class TwvRepository
                             VermarkterComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ) ),
                     new TwvEntityProvider<WegbeschaffenheitComposite>( this, WegbeschaffenheitComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Wegbeschaffenheit" ) ),
-                    new WegobjektEntityProvider( this, new NameImpl( TwvRepository.NAMESPACE, "Wegobjekt" ) ),
+                    new WegobjektEntityProvider( this, new NameImpl( TwvRepository.NAMESPACE, WegobjektComposite.NAME ) ),
                     new TwvEntityProvider<WegobjektNameComposite>( this, WegobjektNameComposite.class, new NameImpl(
                             TwvRepository.NAMESPACE, "Wegobjektname" ) ),
                     new TwvEntityProvider<FoerderregionComposite>( this, FoerderregionComposite.class, new NameImpl(
