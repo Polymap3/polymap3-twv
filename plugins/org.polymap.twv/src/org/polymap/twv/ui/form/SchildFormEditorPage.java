@@ -151,7 +151,7 @@ public class SchildFormEditorPage
                     }
                 } ).create();
 
-        Composite line5b = newFormField( "Bedarf" ).setProperty( new PropertyAdapter( schild.bedarf() ) )
+        Composite line5b = newFormField( "Bedarf" ).setToolTipText( "fehlende bzw. zu errichtende Schilder und Objekte" ).setProperty( new PropertyAdapter( schild.bedarf() ) )
                 .setField( new CheckboxFormField() ).setLayoutData( left().top( line5 ).create() ).create();
 
         Composite line6 = newFormField( "Bild" ).setProperty( new ImageValuePropertyAdapter( "bild", schild.bild() ) )

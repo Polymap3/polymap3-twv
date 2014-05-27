@@ -132,7 +132,7 @@ public class WegobjektFormEditorPage
                     }
                 } ).create();
 
-        Composite line5b = newFormField( "Bedarf" ).setProperty( new PropertyAdapter( wegobjekt.bedarf() ) )
+        Composite line5b = newFormField( "Bedarf" ).setToolTipText( "fehlende bzw. zu errichtende Schilder und Objekte" ).setProperty( new PropertyAdapter( wegobjekt.bedarf() ) )
                 .setField( new CheckboxFormField() ).setLayoutData( left().top( line3 ).create() ).create();
         
         Composite line4 = newFormField( "Bild" ).setParent( parent )
