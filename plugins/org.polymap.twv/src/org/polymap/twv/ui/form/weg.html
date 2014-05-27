@@ -35,6 +35,9 @@ table {
     width: 100%;
     border-spacing: 3px;
 }
+thead {
+    display: table-header-group;
+}
 @media screen {
   body {
     margin-left: 50px;
@@ -47,11 +50,11 @@ table {
 
 <body style="font-size:14px; font-family:'Times New Roman',Times,serif">    
 
-  <h1 style="page-break-before:always;">WEGNAME</h2>
+  <h1>WEGNAME</h2>
 
   <table>
     <tr>
-      <td>Kommunen:</td><td>KOMMUNE</td>
+      <td style="width: 10%">Kommunen:</td><td>KOMMUNE</td>
     </tr>
     <tr>
       <td>Kategorie:</td><td>KATEGORIE</td>
@@ -65,9 +68,21 @@ table {
     <tr>
       <td>Wegbeschaffenheit:</td><td>WEGBESCHAFFENHEIT</td>
     </tr>
+     <tr>
+      <td>M&auml;ngel:</td><td>MAENGEL</td>
+    </tr>
+    <tr>
+      <td>Bemerkungen:</td><td>BEMERKUNGEN</td>
+    </tr>
+    <tr>
+      <td>Erfasser:</td><td>ERFASSER</td>
+    </tr>
+    <tr>
+      <td>Wegewart:</td><td>WEGEWART</td>
+    </tr>
   </table>
 
-  <h2 style="page-break-before:always;">Wegobjekte</h2>
+  <h2>Wegobjekte</h2>
   <p>
   <table>
     <thead>
@@ -83,7 +98,7 @@ table {
   </table>
   </p>
 
-  <h2 style="page-break-before:always;">Schilder</h2>
+  <h2>Schilder</h2>
   <p>
   <table>
     <thead>
@@ -102,21 +117,5 @@ table {
     SCHILD
   </table>
   </p>
-</div>
-<div style="width:100%">
-  <table>
-    <tr>
-      <td>M&auml;ngel:</td><td>MAENGEL</td>
-    </tr>
-    <tr>
-      <td>Bemerkungen:</td><td>BEMERKUNGEN</td>
-    </tr>
-    <tr>
-      <td>Erfasser:</td><td>ERFASSER</td>
-    </tr>
-    <tr>
-      <td>Wegewart:</td><td>WEGEWART</td>
-    </tr>
-  </table>
 </div>
 </body>

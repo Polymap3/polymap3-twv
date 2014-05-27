@@ -153,7 +153,7 @@ public class SchildFormEditorPage
                 .setLayoutData( left().top( line5 ).create() ).create();
 
         final ImageViewer viewer = new ImageViewer( site.getPageBody(), left().top( line6 ).height( 250 ).width( 250 )
-                .create() );
+                .create(), (schild.laufendeNr().get() != null ? schild.laufendeNr().get() : "neu") + "" );
 
         if (schild.bild().get().thumbnailFileName().get() != null) {
             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.bild().get() ) );
@@ -164,7 +164,7 @@ public class SchildFormEditorPage
                 .setLayoutData( right().top( line5 ).create() ).create();
 
         final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().top( line6a ).height( 250 ).width( 250 )
-                .create() );
+                .create(), (schild.laufendeNr().get() != null ? schild.laufendeNr().get() : "neu") + "_detail" );
 
         if (schild.detailBild().get().thumbnailFileName().get() != null) {
             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.detailBild().get() ) );

@@ -53,7 +53,7 @@ public class ImageViewer {
     private UploadedImage imageData;
 
 
-    public ImageViewer( Composite parent, FormData layout ) {
+    public ImageViewer( Composite parent, FormData layout, final String fileName ) {
 
         imageView = new Label( parent, SWT.NONE );
         // imageView.setEnabled( true );
@@ -88,7 +88,15 @@ public class ImageViewer {
 
                         @Override
                         public String getFilename() {
-                            return imageData.originalFileName();
+                            String extension = ".jpg";
+                            String originalName = imageData.originalFileName();
+                            if (originalName != null) {
+                                int ext = originalName.lastIndexOf( '.' );
+                                if (ext > 0) {
+                                    extension = originalName.substring( ext ).toLowerCase();
+                                }
+                            }
+                            return fileName + extension;
                         }
 
 

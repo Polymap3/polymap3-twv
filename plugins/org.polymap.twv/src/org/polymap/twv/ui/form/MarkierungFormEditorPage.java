@@ -38,15 +38,14 @@ import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
 public class MarkierungFormEditorPage
         extends TwvDefaultFormEditorPage {
 
-    private final MarkierungComposite   markierung;
+    private final MarkierungComposite markierung;
 
-    private final String editorTitle;
+    private final String              editorTitle;
 
-    private IFormFieldListener uploadListener;
+    private IFormFieldListener        uploadListener;
 
 
-    public MarkierungFormEditorPage( String editorTitle, Feature feature,
-            FeatureStore featureStore ) {
+    public MarkierungFormEditorPage( String editorTitle, Feature feature, FeatureStore featureStore ) {
         super( MarkierungFormEditorPage.class.getName(), "Basisdaten", feature, featureStore );
 
         markierung = twvRepository.findEntity( MarkierungComposite.class, feature.getIdentifier().getID() );
@@ -66,30 +65,39 @@ public class MarkierungFormEditorPage
         Composite line1 = newFormField( "Name" ).setProperty( new PropertyAdapter( markierung.name() ) )
                 .setValidator( new NotNullValidator() ).setField( new StringFormField() )
                 .setLayoutData( left().right( 100 ).create() ).create();
-        
-         newFormField( "Bild" )
-                .setProperty( new ImageValuePropertyAdapter( "bild", markierung.bild() ) )
+
+        newFormField( "Bild" ).setProperty( new ImageValuePropertyAdapter( "bild", markierung.bild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
-         
-         final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line1 )
-                 .height( 250 ).width( 250 ).create() );
 
-         if (markierung.bild().get().thumbnailFileName().get() != null) {
-             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( markierung.bild().get() ) );
-         }
+        final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line1 ).height( 250 ).width( 250 )
+                .create(), createBildname() );
 
-         site.addFieldListener( uploadListener = new IFormFieldListener() {
+        if (markierung.bild().get().thumbnailFileName().get() != null) {
+            viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( markierung.bild().get() ) );
+        }
 
-             @Override
-             public void fieldChange( FormFieldEvent ev ) {
-                 if (ev.getNewValue() != null && "bild".equals( ev.getFieldName() )) {
-                     // repaint image preview
-                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+        site.addFieldListener( uploadListener = new IFormFieldListener() {
 
-                     viewer.setImage( uploadedImage );
-                 }
-             }
-         } );
+            @Override
+            public void fieldChange( FormFieldEvent ev ) {
+                if (ev.getNewValue() != null && "bild".equals( ev.getFieldName() )) {
+                    // repaint image preview
+                    UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
+
+                    viewer.setImage( uploadedImage );
+                }
+            }
+        } );
+    }
+
+
+    private String createBildname() {
+        String name = markierung.name().get();
+        if (name == null || name.isEmpty()) {
+            name = markierung.id();
+        }
+        name = name.replaceAll( "\\W", "_" );
+        return name;
     }
 }

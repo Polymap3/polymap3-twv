@@ -137,7 +137,7 @@ public class WegobjektFormEditorPage
                 .setLayoutData( left().top( line3 ).create() ).create();
 
         final ImageViewer imagePreview = new ImageViewer( site.getPageBody(), left().top( line4 )
-                .height( 250 ).width( 250 ).create() );
+                .height( 250 ).width( 250 ).create(), (wegobjekt.laufendeNr().get() != null ? wegobjekt.laufendeNr().get() : "neu") + "" );
 
         if (wegobjekt.bild().get().thumbnailFileName().get() != null) {
             imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.bild()
@@ -150,7 +150,7 @@ public class WegobjektFormEditorPage
                 .setLayoutData( right().top( line3 ).create() ).create();
 
         final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().top( line5 )
-                .height( 250 ).width( 250 ).create() );
+                .height( 250 ).width( 250 ).create(), (wegobjekt.laufendeNr().get() != null ? wegobjekt.laufendeNr().get() : "neu") + "_detail" );
 
         if (wegobjekt.detailBild().get().thumbnailFileName().get() != null) {
             imagePreview2.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.detailBild()
