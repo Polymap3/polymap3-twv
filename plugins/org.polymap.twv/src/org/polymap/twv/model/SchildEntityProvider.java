@@ -40,7 +40,7 @@ public class SchildEntityProvider
         // aussortieren für die Tabelle
         SimpleFeatureType filtered = SimpleFeatureTypeBuilder.retype( (SimpleFeatureType)type,
                 new String[] { "geom", "laufendeNr", "bestandsNr", "schildart", "beschriftung", "befestigung",
-                        "standort" } );
+                        "standort", "bedarf" } );
         return filtered;
     }
 

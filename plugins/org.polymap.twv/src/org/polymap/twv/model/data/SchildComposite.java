@@ -65,6 +65,10 @@ public interface SchildComposite
 
 
     @Optional
+    Property<Boolean> bedarf();
+
+
+    @Optional
     Property<Integer> laufendeNr();
 
 

@@ -32,6 +32,7 @@ import org.polymap.core.runtime.Polymap;
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.ManyAssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
+import org.polymap.rhei.field.CheckboxFormField;
 import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.field.NumberValidator;
@@ -130,11 +131,14 @@ public class WegobjektFormEditorPage
                         return buf.toString();
                     }
                 } ).create();
+
+        Composite line5b = newFormField( "Bedarf" ).setProperty( new PropertyAdapter( wegobjekt.bedarf() ) )
+                .setField( new CheckboxFormField() ).setLayoutData( left().top( line3 ).create() ).create();
         
         Composite line4 = newFormField( "Bild" ).setParent( parent )
                 .setProperty( new ImageValuePropertyAdapter( "bild", wegobjekt.bild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
-                .setLayoutData( left().top( line3 ).create() ).create();
+                .setLayoutData( left().top( line5b ).create() ).create();
 
         final ImageViewer imagePreview = new ImageViewer( site.getPageBody(), left().top( line4 )
                 .height( 250 ).width( 250 ).create(), (wegobjekt.laufendeNr().get() != null ? wegobjekt.laufendeNr().get() : "neu") + "" );
@@ -147,7 +151,7 @@ public class WegobjektFormEditorPage
         Composite line5 = newFormField( "Detailbild" ).setParent( parent )
                 .setProperty( new ImageValuePropertyAdapter( "detailBild", wegobjekt.detailBild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
-                .setLayoutData( right().top( line3 ).create() ).create();
+                .setLayoutData( right().top( line5b ).create() ).create();
 
         final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().top( line5 )
                 .height( 250 ).width( 250 ).create(), (wegobjekt.laufendeNr().get() != null ? wegobjekt.laufendeNr().get() : "neu") + "_detail" );

@@ -71,6 +71,10 @@ public interface WegobjektComposite
 
 
     @Optional
+    Property<Boolean> bedarf();
+
+
+    @Optional
     Property<Point> geom();
 
 

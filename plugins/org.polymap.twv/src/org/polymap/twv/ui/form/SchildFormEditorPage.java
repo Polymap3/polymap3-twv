@@ -32,6 +32,7 @@ import org.polymap.core.runtime.Polymap;
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
 import org.polymap.rhei.data.entityfeature.ManyAssociationAdapter;
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
+import org.polymap.rhei.field.CheckboxFormField;
 import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
 import org.polymap.rhei.field.NumberValidator;
@@ -69,7 +70,8 @@ public class SchildFormEditorPage
     public void createFormContent( final IFormEditorPageSite site ) {
         super.createFormContent( site );
 
-        final SchildComposite schild = twvRepository.findEntity( SchildComposite.class, feature.getIdentifier().getID() );
+        final SchildComposite schild = twvRepository
+                .findEntity( SchildComposite.class, feature.getIdentifier().getID() );
 
         site.setEditorTitle( formattedTitle( "Schild", schild.laufendeNr().get(), null ) );
         site.setFormTitle( formattedTitle( "Schild", schild.laufendeNr().get(), getTitle() ) );
@@ -90,8 +92,7 @@ public class SchildFormEditorPage
                 .setLayoutData( left().top( line0 ).create() ).create();
 
         Composite line2 = newFormField( "Pfeilrichtung" )
-
-        .setProperty( new AssociationAdapter<PfeilrichtungComposite>( schild.pfeilrichtung() ) )
+                .setProperty( new AssociationAdapter<PfeilrichtungComposite>( schild.pfeilrichtung() ) )
                 .setField( namedAssocationsPicklist( PfeilrichtungComposite.class ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
 
@@ -112,10 +113,12 @@ public class SchildFormEditorPage
                 .setField( new TextFormField() )
                 .setLayoutData( left().top( line4 ).height( 50 ).right( RIGHT ).create() ).create();
 
-        Composite line5 = newFormField( "Wege" ).setProperty( new ManyAssociationAdapter<WegComposite>( schild.wege() ) )
-                .setValidator( new NotNullValidator() ).setField( namedAssocationsSelectlist( WegComposite.class, true ) )
+        Composite line5 = newFormField( "Wege" )
+                .setProperty( new ManyAssociationAdapter<WegComposite>( schild.wege() ) )
+                .setValidator( new NotNullValidator() )
+                .setField( namedAssocationsSelectlist( WegComposite.class, true ) )
                 .setLayoutData( left().top( line41 ).height( 120 ).create() ).create();
-        
+
         // Gemeinden
         final StringBuilder buf = new StringBuilder( 256 );
         try {
@@ -148,9 +151,12 @@ public class SchildFormEditorPage
                     }
                 } ).create();
 
+        Composite line5b = newFormField( "Bedarf" ).setProperty( new PropertyAdapter( schild.bedarf() ) )
+                .setField( new CheckboxFormField() ).setLayoutData( left().top( line5 ).create() ).create();
+
         Composite line6 = newFormField( "Bild" ).setProperty( new ImageValuePropertyAdapter( "bild", schild.bild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
-                .setLayoutData( left().top( line5 ).create() ).create();
+                .setLayoutData( left().top( line5b ).create() ).create();
 
         final ImageViewer viewer = new ImageViewer( site.getPageBody(), left().top( line6 ).height( 250 ).width( 250 )
                 .create(), (schild.laufendeNr().get() != null ? schild.laufendeNr().get() : "neu") + "" );
@@ -159,17 +165,19 @@ public class SchildFormEditorPage
             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.bild().get() ) );
         }
 
-        Composite line6a = newFormField( "Detailbild" ).setProperty( new ImageValuePropertyAdapter( "detailBild", schild.detailBild() ) )
+        Composite line6a = newFormField( "Detailbild" )
+                .setProperty( new ImageValuePropertyAdapter( "detailBild", schild.detailBild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
-                .setLayoutData( right().top( line5 ).create() ).create();
+                .setLayoutData( right().top( line5b ).create() ).create();
 
-        final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().top( line6a ).height( 250 ).width( 250 )
-                .create(), (schild.laufendeNr().get() != null ? schild.laufendeNr().get() : "neu") + "_detail" );
+        final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().top( line6a ).height( 250 )
+                .width( 250 ).create(), (schild.laufendeNr().get() != null ? schild.laufendeNr().get() : "neu")
+                + "_detail" );
 
         if (schild.detailBild().get().thumbnailFileName().get() != null) {
             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.detailBild().get() ) );
         }
-        
+
         site.addFieldListener( uploadListener = new IFormFieldListener() {
 
             @Override
