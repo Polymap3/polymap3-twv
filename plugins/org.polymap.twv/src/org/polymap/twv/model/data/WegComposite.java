@@ -33,7 +33,6 @@ import org.polymap.core.qi4j.event.PropertyChangeSupport;
 
 import org.polymap.twv.model.JsonState;
 import org.polymap.twv.model.Named;
-import org.polymap.twv.model.TwvRepository;
 
 /**
  * 
@@ -136,12 +135,11 @@ public interface WegComposite
 
 
         public static void beforeRemove( WegComposite weg ) {
-            TwvRepository repository = TwvRepository.instance();
             for (SchildComposite schild : SchildComposite.Mixin.forEntity( weg )) {
                 schild.wege().remove( weg );
             }
             for (WegobjektComposite wegObjekt : WegobjektComposite.Mixin.forEntity( weg )) {
-                repository.removeEntity( wegObjekt );
+                wegObjekt.wege().remove( weg );
             }
         }
     }
