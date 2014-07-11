@@ -27,6 +27,7 @@ import org.polymap.core.data.PipelineFeatureSource;
 import org.polymap.core.project.ILayer;
 import org.polymap.core.project.IMap;
 import org.polymap.core.project.Layers;
+import org.polymap.core.project.ui.util.SimpleFormData;
 import org.polymap.core.runtime.Polymap;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
@@ -48,6 +49,8 @@ import org.polymap.twv.model.data.SchildComposite;
 import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.WegComposite;
+import org.polymap.twv.ui.ActionButton;
+import org.polymap.twv.ui.DeleteImageAction;
 import org.polymap.twv.ui.ImageViewer;
 import org.polymap.twv.ui.TwvDefaultFormEditorPage;
 import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
@@ -151,18 +154,38 @@ public class SchildFormEditorPage
                     }
                 } ).create();
 
-        Composite line5b = newFormField( "Bedarf" ).setToolTipText( "fehlende bzw. zu errichtende Schilder und Objekte" ).setProperty( new PropertyAdapter( schild.bedarf() ) )
-                .setField( new CheckboxFormField() ).setLayoutData( left().top( line5 ).create() ).create();
+        Composite line5b = newFormField( "Bedarf" )
+                .setToolTipText( "fehlende bzw. zu errichtende Schilder und Objekte" )
+                .setProperty( new PropertyAdapter( schild.bedarf() ) ).setField( new CheckboxFormField() )
+                .setLayoutData( left().top( line5 ).create() ).create();
 
         Composite line6 = newFormField( "Bild" ).setProperty( new ImageValuePropertyAdapter( "bild", schild.bild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( left().top( line5b ).create() ).create();
 
-        final ImageViewer viewer = new ImageViewer( site.getPageBody(), left().top( line6 ).height( 250 ).width( 250 )
-                .create(), (schild.laufendeNr().get() != null ? schild.laufendeNr().get() : "neu") + "" );
+        final ImageViewer viewer = new ImageViewer( site.getPageBody(), left().right( 45 ).top( line6 ).height( 250 )
+                .width( 250 ).create(), (schild.laufendeNr().get() != null ? schild.laufendeNr().get() : "neu") + "" );
+        final ActionButton delBildBtn = new ActionButton( site.getPageBody(), new DeleteImageAction() {
+
+            @Override
+            protected void execute()
+                    throws Exception {
+                setEnabled( false );
+                // disableDelBildButton();
+                site.setFieldValue( "bild",
+                        new UploadFormField.DefaultUploadedImage( null, null, null, null, null, -1l ) );
+                viewer.setImage( null );
+            }
+
+        } );
+        delBildBtn.setLayoutData( new SimpleFormData().left( viewer.getControl() ).top( line6 ).height( 30 ).create() );
 
         if (schild.bild().get().thumbnailFileName().get() != null) {
             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.bild().get() ) );
+            delBildBtn.setEnabled( true );
+        }
+        else {
+            delBildBtn.setEnabled( false );
         }
 
         Composite line6a = newFormField( "Detailbild" )
@@ -170,27 +193,48 @@ public class SchildFormEditorPage
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( right().top( line5b ).create() ).create();
 
-        final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().top( line6a ).height( 250 )
-                .width( 250 ).create(), (schild.laufendeNr().get() != null ? schild.laufendeNr().get() : "neu")
-                + "_detail" );
+        final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().right( 95 ).top( line6a )
+                .height( 250 ).width( 250 ).create(), (schild.laufendeNr().get() != null ? schild.laufendeNr().get()
+                : "neu") + "_detail" );
+        final ActionButton delDetailBildBtn = new ActionButton( site.getPageBody(), new DeleteImageAction() {
+
+            @Override
+            protected void execute()
+                    throws Exception {
+                setEnabled( false );
+                imagePreview2.setImage( null );
+                site.setFieldValue( "detailBild", new UploadFormField.DefaultUploadedImage( null, null, null, null,
+                        null, -1l ) );
+            }
+        } );
+        delDetailBildBtn.setLayoutData( new SimpleFormData().left( imagePreview2.getControl() ).top( line6a )
+                .height( 30 ).create() );
 
         if (schild.detailBild().get().thumbnailFileName().get() != null) {
             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( schild.detailBild().get() ) );
+            delDetailBildBtn.setEnabled( true );
+        }
+        else {
+            delDetailBildBtn.setEnabled( false );
         }
 
         site.addFieldListener( uploadListener = new IFormFieldListener() {
 
             @Override
             public void fieldChange( FormFieldEvent ev ) {
-                if (ev.getNewValue() != null && "bild".equals( ev.getFieldName() )) {
-                    // repaint image preview
+                if (ev.getNewValue() != null && schild.bild().qualifiedName().name().equals( ev.getFieldName() )) {
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
-
                     viewer.setImage( uploadedImage );
+                    if (uploadedImage.thumbnailFileName() != null) {
+                        delBildBtn.setEnabled( true );
+                    }
                 }
                 if (ev.getNewValue() != null && schild.detailBild().qualifiedName().name().equals( ev.getFieldName() )) {
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
                     imagePreview2.setImage( uploadedImage );
+                    if (uploadedImage.thumbnailFileName() != null) {
+                        delDetailBildBtn.setEnabled( true );
+                    }
                 }
             }
         } );

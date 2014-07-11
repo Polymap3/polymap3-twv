@@ -27,6 +27,7 @@ import org.polymap.core.data.PipelineFeatureSource;
 import org.polymap.core.project.ILayer;
 import org.polymap.core.project.IMap;
 import org.polymap.core.project.Layers;
+import org.polymap.core.project.ui.util.SimpleFormData;
 import org.polymap.core.runtime.Polymap;
 
 import org.polymap.rhei.data.entityfeature.AssociationAdapter;
@@ -46,6 +47,8 @@ import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
 import org.polymap.twv.model.data.WegobjektNameComposite;
+import org.polymap.twv.ui.ActionButton;
+import org.polymap.twv.ui.DeleteImageAction;
 import org.polymap.twv.ui.ImageViewer;
 import org.polymap.twv.ui.TwvDefaultFormEditorPage;
 import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
@@ -72,7 +75,7 @@ public class WegobjektFormEditorPage
                 .getIdentifier().getID() );
         site.setEditorTitle( formattedTitle( "Wegobjekt", wegobjekt.name().get(), null ) );
         site.setFormTitle( formattedTitle( "Wegobjekt", wegobjekt.name().get(), getTitle() ) );
-        
+
         Composite parent = site.getPageBody();
         Composite line0 = newFormField( "Nummer" ).setProperty( new PropertyAdapter( wegobjekt.laufendeNr() ) )
                 .setField( new StringFormField( StringFormField.Style.ALIGN_RIGHT ) )
@@ -80,17 +83,13 @@ public class WegobjektFormEditorPage
                 .setEnabled( false ).setLayoutData( left().create() ).setToolTipText( "eindeutige Wegobjektnummer" )
                 .create();
 
-        Composite line1 = newFormField( "Wegobjektname" )
-                .setParent( parent )
-                .setProperty(
-                        new AssociationAdapter<WegobjektNameComposite>( wegobjekt
-                                .wegobjektName() ) )
+        Composite line1 = newFormField( "Wegobjektname" ).setParent( parent )
+                .setProperty( new AssociationAdapter<WegobjektNameComposite>( wegobjekt.wegobjektName() ) )
                 .setField( namedAssocationsPicklist( WegobjektNameComposite.class, true ) )
                 .setLayoutData( left().top( line0 ).create() ).create();
 
         Composite line2 = newFormField( "Beschreibung" ).setParent( parent )
-                .setProperty( new PropertyAdapter( wegobjekt.beschreibung() ) )
-                .setField( new TextFormField() )
+                .setProperty( new PropertyAdapter( wegobjekt.beschreibung() ) ).setField( new TextFormField() )
                 .setLayoutData( left().top( line1 ).height( 80 ).right( RIGHT ).create() )
                 .setToolTipText( "Beschreibung des Wegobjektes" ).create();
 
@@ -99,7 +98,7 @@ public class WegobjektFormEditorPage
                 .setValidator( new NotNullValidator() )
                 .setField( namedAssocationsSelectlist( WegComposite.class, true ) )
                 .setLayoutData( left().top( line2 ).height( 120 ).create() ).create();
-        
+
         // Gemeinden
         final StringBuilder buf = new StringBuilder( 256 );
         try {
@@ -132,20 +131,40 @@ public class WegobjektFormEditorPage
                     }
                 } ).create();
 
-        Composite line5b = newFormField( "Bedarf" ).setToolTipText( "fehlende bzw. zu errichtende Schilder und Objekte" ).setProperty( new PropertyAdapter( wegobjekt.bedarf() ) )
-                .setField( new CheckboxFormField() ).setLayoutData( left().top( line3 ).create() ).create();
-        
+        Composite line5b = newFormField( "Bedarf" )
+                .setToolTipText( "fehlende bzw. zu errichtende Schilder und Objekte" )
+                .setProperty( new PropertyAdapter( wegobjekt.bedarf() ) ).setField( new CheckboxFormField() )
+                .setLayoutData( left().top( line3 ).create() ).create();
+
         Composite line4 = newFormField( "Bild" ).setParent( parent )
                 .setProperty( new ImageValuePropertyAdapter( "bild", wegobjekt.bild() ) )
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( left().top( line5b ).create() ).create();
 
-        final ImageViewer imagePreview = new ImageViewer( site.getPageBody(), left().top( line4 )
-                .height( 250 ).width( 250 ).create(), (wegobjekt.laufendeNr().get() != null ? wegobjekt.laufendeNr().get() : "neu") + "" );
+        final ImageViewer imagePreview = new ImageViewer( site.getPageBody(), left().right( 45 ).top( line4 )
+                .height( 250 ).width( 250 ).create(), (wegobjekt.laufendeNr().get() != null ? wegobjekt.laufendeNr()
+                .get() : "neu") + "" );
+
+        final ActionButton delBildBtn = new ActionButton( site.getPageBody(), new DeleteImageAction() {
+
+            @Override
+            protected void execute()
+                    throws Exception {
+                setEnabled( false );
+                imagePreview.setImage( null );
+                site.setFieldValue( "bild",
+                        new UploadFormField.DefaultUploadedImage( null, null, null, null, null, -1l ) );
+            }
+        } );
+        delBildBtn.setLayoutData( new SimpleFormData().left( imagePreview.getControl() ).top( line4 ).height( 30 )
+                .create() );
 
         if (wegobjekt.bild().get().thumbnailFileName().get() != null) {
-            imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.bild()
-                    .get() ) );
+            imagePreview.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.bild().get() ) );
+            delBildBtn.setEnabled( true );
+        }
+        else {
+            delBildBtn.setEnabled( false );
         }
 
         Composite line5 = newFormField( "Detailbild" ).setParent( parent )
@@ -153,12 +172,28 @@ public class WegobjektFormEditorPage
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( right().top( line5b ).create() ).create();
 
-        final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().top( line5 )
-                .height( 250 ).width( 250 ).create(), (wegobjekt.laufendeNr().get() != null ? wegobjekt.laufendeNr().get() : "neu") + "_detail" );
+        final ImageViewer imagePreview2 = new ImageViewer( site.getPageBody(), right().right( 95 ).top( line5 )
+                .height( 250 ).width( 250 ).create(), (wegobjekt.laufendeNr().get() != null ? wegobjekt.laufendeNr()
+                .get() : "neu") + "_detail" );
+        final ActionButton delDetailBildBtn = new ActionButton( site.getPageBody(), new DeleteImageAction() {
 
+            @Override
+            protected void execute()
+                    throws Exception {
+                setEnabled( false );
+                imagePreview2.setImage( null );
+                site.setFieldValue( "detailBild", new UploadFormField.DefaultUploadedImage( null, null, null, null,
+                        null, -1l ) );
+            }
+        } );
+        delDetailBildBtn.setLayoutData( new SimpleFormData().left( imagePreview2.getControl() ).top( line5 )
+                .height( 30 ).create() );
         if (wegobjekt.detailBild().get().thumbnailFileName().get() != null) {
-            imagePreview2.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.detailBild()
-                    .get() ) );
+            imagePreview2.setImage( ImageValuePropertyAdapter.convertToUploadedImage( wegobjekt.detailBild().get() ) );
+            delDetailBildBtn.setEnabled( true );
+        }
+        else {
+            delDetailBildBtn.setEnabled( false );
         }
 
         site.addFieldListener( uploadListener = new IFormFieldListener() {
@@ -168,10 +203,17 @@ public class WegobjektFormEditorPage
                 if (ev.getNewValue() != null && wegobjekt.bild().qualifiedName().name().equals( ev.getFieldName() )) {
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
                     imagePreview.setImage( uploadedImage );
+                    if (uploadedImage.thumbnailFileName() != null) {
+                        delBildBtn.setEnabled( true );
+                    }
                 }
-                if (ev.getNewValue() != null && wegobjekt.detailBild().qualifiedName().name().equals( ev.getFieldName() )) {
+                if (ev.getNewValue() != null
+                        && wegobjekt.detailBild().qualifiedName().name().equals( ev.getFieldName() )) {
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
                     imagePreview2.setImage( uploadedImage );
+                    if (uploadedImage.thumbnailFileName() != null) {
+                        delDetailBildBtn.setEnabled( true );
+                    }
                 }
             }
         } );
