@@ -18,6 +18,8 @@ import org.opengis.feature.Feature;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import org.polymap.core.project.ui.util.SimpleFormData;
+
 import org.polymap.rhei.data.entityfeature.PropertyAdapter;
 import org.polymap.rhei.field.FormFieldEvent;
 import org.polymap.rhei.field.IFormFieldListener;
@@ -28,6 +30,8 @@ import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.data.MarkierungComposite;
+import org.polymap.twv.ui.ActionButton;
+import org.polymap.twv.ui.DeleteImageAction;
 import org.polymap.twv.ui.ImageViewer;
 import org.polymap.twv.ui.TwvDefaultFormEditorPage;
 import org.polymap.twv.ui.rhei.ImageValuePropertyAdapter;
@@ -70,11 +74,28 @@ public class MarkierungFormEditorPage
                 .setField( new UploadFormField( TwvPlugin.getImagesRoot(), false ) )
                 .setLayoutData( left().top( line1 ).create() ).create();
 
-        final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().top( line1 ).height( 250 ).width( 250 )
-                .create(), createBildname() );
+        final ImageViewer viewer = new ImageViewer( site.getPageBody(), right().right( 95 ).top( line1 ).height( 250 )
+                .width( 250 ).create(), createBildname() );
+        final ActionButton delBildBtn = new ActionButton( site.getPageBody(), new DeleteImageAction() {
+
+            @Override
+            protected void execute()
+                    throws Exception {
+                setEnabled( false );
+                site.setFieldValue( "bild",
+                        new UploadFormField.DefaultUploadedImage( null, null, null, null, null, -1l ) );
+                viewer.setImage( null );
+            }
+
+        } );
+        delBildBtn.setLayoutData( new SimpleFormData().left( viewer.getControl() ).top( line1 ).height( 30 ).create() );
 
         if (markierung.bild().get().thumbnailFileName().get() != null) {
             viewer.setImage( ImageValuePropertyAdapter.convertToUploadedImage( markierung.bild().get() ) );
+            delBildBtn.setEnabled( true );
+        }
+        else {
+            delBildBtn.setEnabled( false );
         }
 
         site.addFieldListener( uploadListener = new IFormFieldListener() {
@@ -84,8 +105,10 @@ public class MarkierungFormEditorPage
                 if (ev.getNewValue() != null && "bild".equals( ev.getFieldName() )) {
                     // repaint image preview
                     UploadedImage uploadedImage = (UploadedImage)ev.getNewValue();
-
                     viewer.setImage( uploadedImage );
+                    if (uploadedImage.thumbnailFileName() != null) {
+                        delBildBtn.setEnabled( true );
+                    }
                 }
             }
         } );
