@@ -52,6 +52,7 @@ import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.VermarkterComposite;
+import org.polymap.twv.model.data.WegAbschnittBeschaffenheitComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
@@ -105,13 +106,14 @@ public class TwvRepositoryAssembler
         // project layer / module
         LayerAssembly domainLayer = _app.layerAssembly( "application-layer" );
         ModuleAssembly domainModule = domainLayer.moduleAssembly( TWV_MODULE );
-       
+
         domainModule.addEntities( AusweisungComposite.class, MarkierungComposite.class, SchildartComposite.class,
                 SchildComposite.class, SchildmaterialComposite.class, VermarkterComposite.class,
                 WegbeschaffenheitComposite.class, WegComposite.class, WegobjektComposite.class,
                 WegobjektNameComposite.class, WidmungComposite.class, EntfernungskontrolleComposite.class,
                 FoerderregionComposite.class, PfeilrichtungComposite.class, KategorieComposite.class,
-                UnterkategorieComposite.class, PrioritaetComposite.class, ProfilComposite.class );
+                UnterkategorieComposite.class, PrioritaetComposite.class, ProfilComposite.class,
+                WegAbschnittBeschaffenheitComposite.class );
 
         // persistence: workspace/Lucene
         domainModule.addValues( ImageValue.class );
@@ -331,9 +333,8 @@ public class TwvRepositoryAssembler
         if (!file.exists()) {
             log.info( "Migrating Wege" );
             int count = 0;
-            Query<SchildComposite> query = getModule().queryBuilderFactory().newQueryBuilder(
-                    SchildComposite.class ).newQuery( uow ).maxResults( Integer.MAX_VALUE )
-                    .firstResult( 0 );
+            Query<SchildComposite> query = getModule().queryBuilderFactory().newQueryBuilder( SchildComposite.class )
+                    .newQuery( uow ).maxResults( Integer.MAX_VALUE ).firstResult( 0 );
             for (SchildComposite schild : query) {
                 WegComposite weg = schild.weg().get();
                 if (weg != null) {
@@ -341,8 +342,8 @@ public class TwvRepositoryAssembler
                     count++;
                 }
             }
-            Query<WegobjektComposite> queryW = getModule().queryBuilderFactory().newQueryBuilder(
-                    WegobjektComposite.class ).newQuery( uow ).maxResults( Integer.MAX_VALUE )
+            Query<WegobjektComposite> queryW = getModule().queryBuilderFactory()
+                    .newQueryBuilder( WegobjektComposite.class ).newQuery( uow ).maxResults( Integer.MAX_VALUE )
                     .firstResult( 0 );
             for (WegobjektComposite wegobjekt : queryW) {
                 WegComposite weg = wegobjekt.weg().get();

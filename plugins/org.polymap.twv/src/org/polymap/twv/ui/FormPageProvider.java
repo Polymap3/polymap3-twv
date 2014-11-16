@@ -34,6 +34,7 @@ import org.polymap.twv.ui.form.MarkierungFormEditorPage;
 import org.polymap.twv.ui.form.NamedFormEditorPage;
 import org.polymap.twv.ui.form.SchildFormEditorPage;
 import org.polymap.twv.ui.form.VermarkterFormEditorPage;
+import org.polymap.twv.ui.form.WegBeschaffenheitFormEditorPage;
 import org.polymap.twv.ui.form.WegErfassungFormEditorPage;
 import org.polymap.twv.ui.form.WegFormEditorPage;
 import org.polymap.twv.ui.form.WegSchilder2FormEditorPage;
@@ -56,6 +57,7 @@ public class FormPageProvider
         List<IFormEditorPage> result = new ArrayList<IFormEditorPage>();
         if (feature.getType().getName().getLocalPart().equalsIgnoreCase( "weg" )) {
             result.add( new WegFormEditorPage( feature, formEditor.getFeatureStore() ) );
+            result.add( new WegBeschaffenheitFormEditorPage( feature, formEditor.getFeatureStore() ) );
             result.add( new WegErfassungFormEditorPage( feature, formEditor.getFeatureStore() ) );
 //            result.add( new WegVermarkterFormEditorPage( feature, formEditor.getFeatureStore() ) );
           result.add( new WegVermarkter2FormEditorPage( feature, formEditor.getFeatureStore() ) );

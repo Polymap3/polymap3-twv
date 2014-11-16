@@ -22,6 +22,7 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -35,6 +36,8 @@ import org.polymap.core.data.ui.featuretable.DefaultFeatureTableColumn;
 import org.polymap.core.data.ui.featuretable.FeatureTableViewer;
 import org.polymap.core.model.EntityType;
 import org.polymap.core.project.ui.util.SimpleFormData;
+import org.polymap.core.runtime.Polymap;
+import org.polymap.core.workbench.PolymapWorkbench;
 
 import org.polymap.rhei.data.entityfeature.PropertyDescriptorAdapter;
 import org.polymap.rhei.field.IFormFieldListener;
@@ -43,6 +46,7 @@ import org.polymap.rhei.form.IFormEditorPageSite;
 
 import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.TwvRepository;
+import org.polymap.twv.model.data.WegAbschnittBeschaffenheitComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
 import org.polymap.twv.ui.ActionButton;
@@ -58,20 +62,21 @@ public class WegWegobjekt2FormEditorPage
         extends TwvDefaultFormEditorPage
         implements IFormEditorPage2 {
 
-    private WegComposite                    weg;
+    private WegComposite                   weg;
 
-    private FeatureTableViewer              viewer;
+    private FeatureTableViewer             viewer;
 
-    private boolean                         isDirty;
+    private boolean                        isDirty;
 
     // private ManyAssociationAdapter<VermarkterComposite> vermarkterAdapter;
     // list der vermarkter die noch am Weg dran sind, Änderungen passieren nur hier
     // als Adapter
-    private final List<WegobjektComposite> wegWegobjekte      = new ArrayList<WegobjektComposite>();
+    private final List<WegobjektComposite> wegWegobjekte = new ArrayList<WegobjektComposite>();
+
     private final List<WegobjektComposite> toDelete      = new ArrayList<WegobjektComposite>();
 
     // liste der Vermarkter die gerade ausgewählt um diese bspw. zu Löschen
-    private final List<WegobjektComposite> selected = new ArrayList<WegobjektComposite>();
+    private final List<WegobjektComposite> selected      = new ArrayList<WegobjektComposite>();
 
 
     public WegWegobjekt2FormEditorPage( Feature feature, FeatureStore featureStore ) {
@@ -97,19 +102,34 @@ public class WegWegobjekt2FormEditorPage
 
             protected void execute()
                     throws Exception {
-                for (WegobjektComposite schild : selected) {
-                    toDelete.add( schild );
-                    wegWegobjekte.remove( schild );
+                for (final WegobjektComposite schild : selected) {
+
+                    if (WegAbschnittBeschaffenheitComposite.Mixin.forEntity( schild ).iterator().hasNext()) {
+                        Polymap.getSessionDisplay().asyncExec( new Runnable() {
+
+                            public void run() {
+                                MessageDialog.open(
+                                        MessageDialog.ERROR,
+                                        PolymapWorkbench.getShellToParentOn(),
+                                        "Abschnitte vorhanden",
+                                        "Dieses Wegobjekt wird für die Abgrenzung von Wegbeschaffenheiten benutzt. Bitte ändern Sie erst die Beschaffenheiten, bevor Sie dieses Wegobjekt löschen.",
+                                        SWT.NONE );
+                            }
+                        } );
+                    }
+                    else {
+                        toDelete.add( schild );
+                        wegWegobjekte.remove( schild );
+                    }
                 }
                 doLoad( new NullProgressMonitor() );
                 isDirty = true;
-                site.fireEvent( this, "wegobjekte", IFormFieldListener.VALUE_CHANGE,
-                        wegWegobjekte );
+                site.fireEvent( this, "wegobjekte", IFormFieldListener.VALUE_CHANGE, wegWegobjekte );
             }
         };
         ActionButton delBtn = new ActionButton( parent, deleteAction );
-        delBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING )
-                .right( 98, -SPACING ).height( 30 ).create() );
+        delBtn.setLayoutData( new SimpleFormData().left( viewer.getTable(), SPACING ).right( 98, -SPACING ).height( 30 )
+                .create() );
 
         parent.layout( true );
 
@@ -160,10 +180,10 @@ public class WegWegobjekt2FormEditorPage
         PropertyDescriptor prop = null;
         prop = new PropertyDescriptorAdapter( type.getProperty( "laufendeNr" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Nummer" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "typ" ) );
+        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Typ" ) );
         prop = new PropertyDescriptorAdapter( type.getProperty( "beschreibung" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Beschreibung" ) );
-        prop = new PropertyDescriptorAdapter( type.getProperty( "name" ) );
-        viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Name" ) );
         return type;
     }
 

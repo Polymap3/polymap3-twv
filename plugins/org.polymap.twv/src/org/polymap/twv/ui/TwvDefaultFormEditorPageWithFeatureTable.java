@@ -160,9 +160,9 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                             Collection<T> viewerInput = (Collection<T>)viewer.getInput();
                             viewerInput.remove( toSelect );
                         }
-                        TwvRepository.instance().removeEntity( toSelect );
-                        selectedComposite.set( null );
-
+                        
+                        deleteComposite(toSelect);
+                        
                         doLoad( new NullProgressMonitor() );
                         refreshReloadables();
 
@@ -210,6 +210,12 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
             }
         } );
         return viewer.getTable();
+    }
+
+
+    protected void deleteComposite( T toSelect ) {
+        TwvRepository.instance().removeEntity( toSelect );
+        selectedComposite.set( null );
     }
 
 

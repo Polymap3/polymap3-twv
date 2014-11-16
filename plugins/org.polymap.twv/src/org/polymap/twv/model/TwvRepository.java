@@ -52,6 +52,7 @@ import org.polymap.twv.model.data.SchildartComposite;
 import org.polymap.twv.model.data.SchildmaterialComposite;
 import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.VermarkterComposite;
+import org.polymap.twv.model.data.WegAbschnittBeschaffenheitComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegbeschaffenheitComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
@@ -126,13 +127,16 @@ public class TwvRepository
                     new TwvEntityProvider<EntfernungskontrolleComposite>( this, EntfernungskontrolleComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Entfernungskontrolle" ) ),
                     new TwvEntityProvider<SchildComposite>( this, SchildComposite.class, new NameImpl(
-                            TwvRepository.NAMESPACE, SchildComposite.NAME ) ), new TwvEntityProvider<SchildmaterialComposite>(
-                            this, SchildmaterialComposite.class, new NameImpl( TwvRepository.NAMESPACE,
-                                    "Schildmaterial" ) ), new TwvEntityProvider<VermarkterComposite>( this,
-                            VermarkterComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ) ),
+                            TwvRepository.NAMESPACE, SchildComposite.NAME ) ),
+                    new TwvEntityProvider<SchildmaterialComposite>( this, SchildmaterialComposite.class, new NameImpl(
+                            TwvRepository.NAMESPACE, "Schildmaterial" ) ), new TwvEntityProvider<VermarkterComposite>(
+                            this, VermarkterComposite.class, new NameImpl( TwvRepository.NAMESPACE, "Vermarkter" ) ),
                     new TwvEntityProvider<WegbeschaffenheitComposite>( this, WegbeschaffenheitComposite.class,
                             new NameImpl( TwvRepository.NAMESPACE, "Wegbeschaffenheit" ) ),
-                    new WegobjektEntityProvider( this, new NameImpl( TwvRepository.NAMESPACE, WegobjektComposite.NAME ) ),
+                    new TwvEntityProvider<WegAbschnittBeschaffenheitComposite>( this,
+                            WegAbschnittBeschaffenheitComposite.class, new NameImpl( TwvRepository.NAMESPACE,
+                                    "Wegabschnittbeschaffenheit" ) ), new WegobjektEntityProvider( this, new NameImpl(
+                            TwvRepository.NAMESPACE, WegobjektComposite.NAME ) ),
                     new TwvEntityProvider<WegobjektNameComposite>( this, WegobjektNameComposite.class, new NameImpl(
                             TwvRepository.NAMESPACE, "Wegobjektname" ) ),
                     new TwvEntityProvider<FoerderregionComposite>( this, FoerderregionComposite.class, new NameImpl(
@@ -221,6 +225,14 @@ public class TwvRepository
     public void removeEntity( Entity entity ) {
         if (entity instanceof WegComposite) {
             WegComposite.Mixin.beforeRemove( (WegComposite)entity );
+            for (WegAbschnittBeschaffenheitComposite wegObjekt : WegAbschnittBeschaffenheitComposite.Mixin.forEntity( (WegComposite)entity )) {
+                super.removeEntity( wegObjekt );
+            }
+        }
+        if (entity instanceof WegobjektComposite) {
+            for (WegAbschnittBeschaffenheitComposite wegObjekt : WegAbschnittBeschaffenheitComposite.Mixin.forEntity( (WegobjektComposite)entity )) {
+                super.removeEntity( wegObjekt );
+            }
         }
         else if (entity instanceof VermarkterComposite) {
             VermarkterComposite vermarkter = (VermarkterComposite)entity;

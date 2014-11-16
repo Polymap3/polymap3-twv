@@ -40,6 +40,7 @@ import org.polymap.core.workbench.PolymapWorkbench;
 
 import org.polymap.twv.TwvPlugin;
 import org.polymap.twv.model.data.SchildComposite;
+import org.polymap.twv.model.data.WegAbschnittBeschaffenheitComposite;
 import org.polymap.twv.model.data.WegComposite;
 import org.polymap.twv.model.data.WegobjektComposite;
 
@@ -160,8 +161,26 @@ public class PrintAction
         } );
         template = template.replaceAll( "WEGOBJEKT", getWegobjekte( gemeindeLayer ) );
         template = template.replaceAll( "SCHILD", getSchilder( gemeindeLayer ) );
+        template = template.replaceAll( "WEGBESCHAFFENHEIT", getBeschaffenheiten() );
+
 
         return template;
+    }
+
+
+ 
+    private String getBeschaffenheiten() {
+        StringBuffer ret = new StringBuffer();
+        for (WegAbschnittBeschaffenheitComposite objekt : WegAbschnittBeschaffenheitComposite.Mixin.forEntity( weg )) {
+            ret.append( "<tr><td>" );
+            ret.append( objekt.objektVon().get() != null ? objekt.objektVon().get().name().get() : "" );
+            ret.append( "</td><td>" );
+            ret.append( objekt.objektBis().get() != null ? objekt.objektBis().get().name().get() : "" );
+            ret.append( "</td><td>" );
+            ret.append( unnull( objekt.name().get() ) );
+            ret.append( "</td><td>" );
+        }
+        return ret.toString();
     }
 
 
@@ -173,7 +192,7 @@ public class PrintAction
             ret.append( "<tr><td>" );
             ret.append( objekt.laufendeNr().get() );
             ret.append( "</td><td>" );
-            ret.append( unnull( objekt.name().get() ) );
+            ret.append( unnull( objekt.typ().get() ) );
             ret.append( "</td><td>" );
             ret.append( unnull( objekt.beschreibung().get() ) );
             ret.append( "</td><td>" );

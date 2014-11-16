@@ -61,6 +61,8 @@ public interface WegobjektComposite
     @Computed
     Property<String> name();
 
+    @Computed
+    Property<String> typ();
 
     @Optional
     Association<WegobjektNameComposite> wegobjektName();
@@ -113,12 +115,34 @@ public interface WegobjektComposite
                 throws UnitOfWorkCompletionException {
         }
 
-        private PropertyInfo nameProperty = new GenericPropertyInfo( WegobjektComposite.class, "name" );
-
 
         @Override
         public Property<String> name() {
-            return new ComputedPropertyInstance<String>( nameProperty ) {
+            return new ComputedPropertyInstance<String>( new GenericPropertyInfo( WegobjektComposite.class, "name" ) ) {
+
+                public String get() {
+                    String name = null;
+                    if (laufendeNr().get() != null) {
+                        name = laufendeNr().get().toString();
+                    }
+                    if (typ().get() != null) {
+                        name = ((name != null) ? name + " " : "") + typ().get();
+                    }
+                    return name;
+                }
+
+
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                    // ignored
+                }
+            };
+        }
+
+        @Override
+        public Property<String> typ() {
+            return new ComputedPropertyInstance<String>( new GenericPropertyInfo( WegobjektComposite.class, "typ" ) ) {
 
                 public String get() {
                     if (wegobjektName().get() != null) {

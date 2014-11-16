@@ -57,7 +57,6 @@ import org.polymap.twv.model.data.PrioritaetComposite;
 import org.polymap.twv.model.data.ProfilComposite;
 import org.polymap.twv.model.data.UnterkategorieComposite;
 import org.polymap.twv.model.data.WegComposite;
-import org.polymap.twv.model.data.WegbeschaffenheitComposite;
 import org.polymap.twv.model.data.WidmungComposite;
 import org.polymap.twv.ui.TwvDefaultFormEditorPage;
 
@@ -223,20 +222,20 @@ public class WegFormEditorPage
                 .setField( new TextFormField() ).setLayoutData( left().right( 100 ).height( 50 ).top( line6 ).create() )
                 .create();
 
-        Composite line8 = newFormField( "Wegbeschaffenheit" )
-                .setToolTipText(
-                        "z.B. naturnah, Asphalt, sandgeschlämmte Schotterdecke (technische Zustandsbeschreibung)" )
-                .setProperty( new PropertyAdapter( weg.beschaffenheit() ) )
-                .setField(
-                        new TextFormFieldWithSuggestions( twvRepository.entitiesWithNames(
-                                WegbeschaffenheitComposite.class ).keySet() ) )
-                .setLayoutData( left().right( 100 ).top( line7 ).create() ).create();
+//        Composite line8 = newFormField( "Wegbeschaffenheit" )
+//                .setToolTipText(
+//                        "z.B. naturnah, Asphalt, sandgeschlämmte Schotterdecke (technische Zustandsbeschreibung)" )
+//                .setProperty( new PropertyAdapter( weg.beschaffenheit() ) )
+//                .setField(
+//                        new TextFormFieldWithSuggestions( twvRepository.entitiesWithNames(
+//                                WegbeschaffenheitComposite.class ).keySet() ) )
+//                .setLayoutData( left().right( 100 ).top( line7 ).create() ).create();
 
         Composite line9 = newFormField( "Widmung" )
                 .setProperty( new PropertyAdapter( weg.widmung() ) )
                 .setField(
                         new TextFormFieldWithSuggestions( twvRepository.entitiesWithNames( WidmungComposite.class )
-                                .keySet() ) ).setLayoutData( left().right( 100 ).top( line8 ).create() ).create();
+                                .keySet() ) ).setLayoutData( left().right( 100 ).top( line7 ).create() ).create();
 
         Composite line10 = newFormField( "Profil" )
                 .setToolTipText(
