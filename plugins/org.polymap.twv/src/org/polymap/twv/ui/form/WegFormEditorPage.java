@@ -219,7 +219,7 @@ public class WegFormEditorPage
                 .setProperty( new PropertyAdapter( weg.beschreibung() ) )
                 .setToolTipText(
                         "z.B. Ortsangaben, überwiegend Nutzung öffentlicher Straßen und Wege, separate Radverkehrsanlagen, Feld- und Waldwege (für den Touristen nützliche Hinweise)" )
-                .setField( new TextFormField() ).setLayoutData( left().right( 100 ).height( 50 ).top( line6 ).create() )
+                .setField( new TextFormField() ).setLayoutData( left().right( 100 ).height( 150 ).top( line6 ).create() )
                 .create();
 
 //        Composite line8 = newFormField( "Wegbeschaffenheit" )
@@ -235,7 +235,7 @@ public class WegFormEditorPage
                 .setProperty( new PropertyAdapter( weg.widmung() ) )
                 .setField(
                         new TextFormFieldWithSuggestions( twvRepository.entitiesWithNames( WidmungComposite.class )
-                                .keySet() ) ).setLayoutData( left().right( 100 ).top( line7 ).create() ).create();
+                                .keySet(), 100 ) ).setLayoutData( left().right( 100 ).top( line7 ).create() ).create();
 
         Composite line10 = newFormField( "Profil" )
                 .setToolTipText(

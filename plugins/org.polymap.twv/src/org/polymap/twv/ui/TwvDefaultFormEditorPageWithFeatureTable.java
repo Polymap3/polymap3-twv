@@ -67,6 +67,11 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
     private List<IFormField>       reloadables       = new ArrayList<IFormField>();
 
 
+    protected List<T> getModel() {
+        return model;
+    }
+
+
     /**
      * 
      * @param id
@@ -86,6 +91,7 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
 
 
     protected abstract EntityType addViewerColumns( FeatureTableViewer viewer );
+
 
     protected void refreshReloadables()
             throws Exception {
@@ -160,9 +166,9 @@ public abstract class TwvDefaultFormEditorPageWithFeatureTable<T extends Entity>
                             Collection<T> viewerInput = (Collection<T>)viewer.getInput();
                             viewerInput.remove( toSelect );
                         }
-                        
-                        deleteComposite(toSelect);
-                        
+
+                        deleteComposite( toSelect );
+
                         doLoad( new NullProgressMonitor() );
                         refreshReloadables();
 

@@ -142,7 +142,6 @@ public class PrintAction
                 .name().get() : "" ) );
         template = template.replaceAll( "MARKIERUNG", unnull( weg.markierung().get() != null ? weg.markierung().get()
                 .name().get() : "" ) );
-        template = template.replaceAll( "WEGBESCHAFFENHEIT", unnull( weg.beschaffenheit().get() ) );
         template = template.replaceAll( "WEGBESCHREIBUNG", unnull( weg.beschreibung().get() ) );
         template = template.replaceAll( "MAENGEL", unnull( weg.maengel().get() ) );
         template = template.replaceAll( "BEMERKUNG", unnull( weg.bemerkung().get() ) );
@@ -161,14 +160,15 @@ public class PrintAction
         } );
         template = template.replaceAll( "WEGOBJEKT", getWegobjekte( gemeindeLayer ) );
         template = template.replaceAll( "SCHILD", getSchilder( gemeindeLayer ) );
-        template = template.replaceAll( "WEGBESCHAFFENHEIT", getBeschaffenheiten() );
-
+        template = template.replaceAll( "WEGBESCHAFFENHEITENTEXT",
+                new WegBeschaffenheitCalculator( weg ).beschaffenheitenAsText() );
+        template = template.replaceAll( "WEGBESCHAFFENHEITEN", getBeschaffenheiten() );
+        template = template.replaceAll( "WEGBESCHAFFENHEIT", unnull( weg.beschaffenheit().get() ) );
 
         return template;
     }
 
 
- 
     private String getBeschaffenheiten() {
         StringBuffer ret = new StringBuffer();
         for (WegAbschnittBeschaffenheitComposite objekt : WegAbschnittBeschaffenheitComposite.Mixin.forEntity( weg )) {
@@ -216,6 +216,7 @@ public class PrintAction
         }
         return ret.toString();
     }
+
 
     private String getSchilder( ILayer gemeindeLayer )
             throws Exception {

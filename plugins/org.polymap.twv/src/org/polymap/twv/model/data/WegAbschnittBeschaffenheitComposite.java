@@ -20,6 +20,9 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Computed;
+import org.qi4j.api.property.ComputedPropertyInstance;
+import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
@@ -42,7 +45,11 @@ public interface WegAbschnittBeschaffenheitComposite
         extends QiEntity, PropertyChangeSupport, ModelChangeSupport, EntityComposite, Named {
 
     @Optional
+    @Computed
     Property<String> name();
+
+    @Optional
+    Association<WegbeschaffenheitComposite> beschaffenheit();
 
 
     @Optional
@@ -65,6 +72,25 @@ public interface WegAbschnittBeschaffenheitComposite
 
         private static Log log = LogFactory.getLog( Mixin.class );
 
+        @Override
+        public Property<String> name() {
+            return new ComputedPropertyInstance<String>( new GenericPropertyInfo( WegobjektComposite.class, "name" ) ) {
+
+                public String get() {
+                    if (beschaffenheit().get() != null) {
+                        return beschaffenheit().get().name().get();
+                    }
+                    return null;
+                }
+
+
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                    // ignored
+                }
+            };
+        }
 
         public static Iterable<WegAbschnittBeschaffenheitComposite> forEntity( WegComposite weg ) {
             WegAbschnittBeschaffenheitComposite template = QueryExpressions
