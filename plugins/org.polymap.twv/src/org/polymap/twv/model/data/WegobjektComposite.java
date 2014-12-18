@@ -141,6 +141,33 @@ public interface WegobjektComposite
         }
 
         @Override
+        public Property<String> nameLang() {
+            return new ComputedPropertyInstance<String>( new GenericPropertyInfo( WegobjektComposite.class, "nameLang" ) ) {
+
+                public String get() {
+                    StringBuffer name = new StringBuffer(name().get());
+                    name.append(" - ");
+                    String beschr = beschreibung().get();
+                    if (beschr != null) {
+                        if (beschr.length() > 50) {
+                            name.append( beschr.substring( 0,  47 ) ).append("...");
+                        } else {
+                            name.append( beschr );
+                        }
+                    }
+                    return name.toString();
+                }
+
+
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                    // ignored
+                }
+            };
+        }
+
+        @Override
         public Property<String> typ() {
             return new ComputedPropertyInstance<String>( new GenericPropertyInfo( WegobjektComposite.class, "typ" ) ) {
 
@@ -197,5 +224,10 @@ public interface WegobjektComposite
             return alleFound;
         }
     }
+
+
+    @Optional
+    @Computed
+    Property<String> nameLang();
 
 }

@@ -55,6 +55,14 @@ public interface WegAbschnittBeschaffenheitComposite
     @Optional
     Association<WegobjektComposite> objektVon();
 
+    @Optional
+    @Computed
+    Property<String> objektVonName();
+
+    @Optional
+    @Computed
+    Property<String> objektBisName();
+    
 
     @Optional
     Association<WegobjektComposite> objektBis();
@@ -74,7 +82,7 @@ public interface WegAbschnittBeschaffenheitComposite
 
         @Override
         public Property<String> name() {
-            return new ComputedPropertyInstance<String>( new GenericPropertyInfo( WegobjektComposite.class, "name" ) ) {
+            return new ComputedPropertyInstance<String>( new GenericPropertyInfo( WegAbschnittBeschaffenheitComposite.class, "name" ) ) {
 
                 public String get() {
                     if (beschaffenheit().get() != null) {
@@ -92,6 +100,46 @@ public interface WegAbschnittBeschaffenheitComposite
             };
         }
 
+        @Override
+        public Property<String> objektVonName() {
+            return new ComputedPropertyInstance<String>( new GenericPropertyInfo( WegAbschnittBeschaffenheitComposite.class, "objektVonName" ) ) {
+
+                public String get() {
+                    if (objektVon().get() != null) {
+                        return objektVon().get().nameLang().get();
+                    }
+                    return null;
+                }
+
+
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                    // ignored
+                }
+            };
+        }
+
+        @Override
+        public Property<String> objektBisName() {
+            return new ComputedPropertyInstance<String>( new GenericPropertyInfo( WegAbschnittBeschaffenheitComposite.class, "objektBisName" ) ) {
+
+                public String get() {
+                    if (objektBis().get() != null) {
+                        return objektBis().get().nameLang().get();
+                    }
+                    return null;
+                }
+
+
+                @Override
+                public void set( String anIgnoredValue )
+                        throws IllegalArgumentException, IllegalStateException {
+                    // ignored
+                }
+            };
+        }
+        
         public static Iterable<WegAbschnittBeschaffenheitComposite> forEntity( WegComposite weg ) {
             WegAbschnittBeschaffenheitComposite template = QueryExpressions
                     .templateFor( WegAbschnittBeschaffenheitComposite.class );

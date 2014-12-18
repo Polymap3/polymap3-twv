@@ -150,7 +150,7 @@ public class WegBeschaffenheitFormEditorPage
                                 return entity.objektVon();
                             }
                         } ) ).setField( reloadable( wegobjectFormField( false ) ) )
-                .setLayoutData( left().top( line1 ).create() ).create();
+                .setLayoutData( left().right( 100 ).top( line1 ).create() ).create();
 
         Composite line2b = newFormField( "Bis Wegobjekt" )
                 .setParent( parent )
@@ -162,7 +162,7 @@ public class WegBeschaffenheitFormEditorPage
                                 return entity.objektBis();
                             }
                         } ) ).setField( reloadable( wegobjectFormField( false ) ) )
-                .setLayoutData( right().top( line1 ).create() ).create();
+                .setLayoutData( left().right( 100 ).top( line2a ).create() ).create();
 
         Composite line3 = newFormField( "Beschaffenheit" )
                 .setToolTipText( "Beschaffenheit aktueller Abschnitt" )
@@ -176,7 +176,7 @@ public class WegBeschaffenheitFormEditorPage
                                 return entity.beschaffenheit();
                             }
                         } ) ).setField( reloadable( namedAssocationsPicklist( WegbeschaffenheitComposite.class ) ) )
-                .setLayoutData( left().top( line2a ).right( 100 ).bottom( 100 ).create() ).create();
+                .setLayoutData( left().top( line2b ).right( 100 ).bottom( 100 ).create() ).create();
         return line3;
     }
 
@@ -188,9 +188,9 @@ public class WegBeschaffenheitFormEditorPage
                 .entityType( WegAbschnittBeschaffenheitComposite.class );
 
         PropertyDescriptor prop = null;
-        prop = new PropertyDescriptorAdapter( type.getProperty( "objektVon" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "objektVonName" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Von" ) );
-        prop = new PropertyDescriptorAdapter( type.getProperty( "objektBis" ) );
+        prop = new PropertyDescriptorAdapter( type.getProperty( "objektBisName" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Bis" ) );
         prop = new PropertyDescriptorAdapter( type.getProperty( "name" ) );
         viewer.addColumn( new DefaultFeatureTableColumn( prop ).setHeader( "Beschaffenheit" ) );
@@ -210,7 +210,7 @@ public class WegBeschaffenheitFormEditorPage
             public SortedMap<String, Object> get() {
                 SortedMap<String, Object> unterkategories = new TreeMap<String, Object>();
                 for (WegobjektComposite c : WegobjektComposite.Mixin.forEntity( weg )) {
-                    unterkategories.put( c.name().get(), c );
+                    unterkategories.put( c.nameLang().get(), c );
                 }
                 return unterkategories;
             }
