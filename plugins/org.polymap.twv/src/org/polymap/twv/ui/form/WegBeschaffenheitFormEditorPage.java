@@ -12,6 +12,7 @@
  */
 package org.polymap.twv.ui.form;
 
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -80,14 +81,12 @@ public class WegBeschaffenheitFormEditorPage
 
         Composite parent = site.getPageBody();
 
+        Set<String> suggestions = twvRepository.entitiesWithNames( WegbeschaffenheitComposite.class ).keySet();
         Composite line0 = newFormField( IFormFieldLabel.NO_LABEL )
                 .setToolTipText(
-                        "Beschaffenheit insgesamter Weg z.B. naturnah, Asphalt, sandgeschlämmte Schotterdecke (technische Zustandsbeschreibung)" )
+                        "Beschaffenheit insgesamter Weg, z.B. naturnah, Asphalt, sandgeschlämmte Schotterdecke (technische Zustandsbeschreibung)" )
                 .setProperty( new PropertyAdapter( weg.beschaffenheit() ) ).setParent( parent )
-                .setField( 
-                        //new TextFormField() )
-                 new TextFormFieldWithSuggestions( twvRepository.entitiesWithNames(
-                 WegbeschaffenheitComposite.class ).keySet(), 120 ) )
+                .setField( new TextFormFieldWithSuggestions( suggestions/*, 120*/ ) )
                 .setLayoutData( left().right( 100 ).create() ).create();
 
         // create a section für Abschnitte

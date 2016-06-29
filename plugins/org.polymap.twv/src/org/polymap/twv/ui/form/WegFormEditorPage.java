@@ -235,7 +235,7 @@ public class WegFormEditorPage
                 .setProperty( new PropertyAdapter( weg.widmung() ) )
                 .setField(
                         new TextFormFieldWithSuggestions( twvRepository.entitiesWithNames( WidmungComposite.class )
-                                .keySet(), 100 ) ).setLayoutData( left().right( 100 ).top( line7 ).create() ).create();
+                                .keySet()/*, 100*/ ) ).setLayoutData( left().right( 100 ).top( line7 ).create() ).create();
 
         Composite line10 = newFormField( "Profil" )
                 .setToolTipText(
